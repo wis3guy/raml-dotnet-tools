@@ -42,7 +42,8 @@ namespace Raml.Tools.WebApiGenerator
                        RequestObjects = schemaRequestObjects,
                        ResponseObjects = schemaResponseObjects,
                        Warnings = warnings,
-                       Enums = Enums
+                       Enums = Enums,
+                       ApiVersion = raml.Version
                    };
         }
 

@@ -51,7 +51,8 @@ namespace Raml.Common
             return new Result { Content = content, HasErrors = content.StartsWith("ErrorGeneratingOutput") || !string.IsNullOrWhiteSpace(errors), Errors = errors, Messages = messages };
         }
 
-        public Result TransformText<T>(string templatePath, string paramName, T param, string binPath, string targetNamespace, bool useAsyncMethods, bool includeHasModels = false, bool hasModels = true)
+        public Result TransformText<T>(string templatePath, string paramName, T param, string binPath, string targetNamespace, bool useAsyncMethods, 
+            bool includeHasModels = false, bool hasModels = true, bool includeApiVersionInRoutePrefix = false, string apiVersion = null)
         {
             // Get the T4 engine from VS
             var textTemplating = ServiceProvider.GetService(typeof(STextTemplating)) as ITextTemplating;
@@ -72,6 +73,8 @@ namespace Raml.Common
             host.Session["useAsyncMethods"] = useAsyncMethods;
             if(includeHasModels)
                 host.Session["hasModels"] = hasModels;
+            if (includeApiVersionInRoutePrefix)
+                host.Session["apiVersion"] = apiVersion;
 
             var content = textTemplating.ProcessTemplate(templatePath, templateFileContent, this, null);
             textTemplating.EndErrorSession();

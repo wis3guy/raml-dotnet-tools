@@ -11,11 +11,11 @@ namespace Raml.Common
     {
         public const string IncludesFolderName = "includes";
 
-        public static string AddRefFile(string ramlSourceFile, string targetNamespace, string ramlOriginalSource, string destFolderPath, string targetFileName, bool? useAsyncMethods = null, string clientRootClassName = null)
+        public static string AddRefFile(string ramlSourceFile, string targetNamespace, string ramlOriginalSource, string destFolderPath, string targetFileName, bool? useAsyncMethods = null, bool? includeApiVersionInRoutePrefix = null, string clientRootClassName = null)
         {
             var refFileName = Path.GetFileNameWithoutExtension(targetFileName) + ".ref";
             var refFilePath = Path.Combine(destFolderPath, refFileName);
-            var content = RamlPropertiesManager.BuildContent(targetNamespace, ramlOriginalSource, useAsyncMethods, clientRootClassName);
+            var content = RamlPropertiesManager.BuildContent(targetNamespace, ramlOriginalSource, useAsyncMethods, clientRootClassName, includeApiVersionInRoutePrefix);
 
             if (File.Exists(refFilePath))
                 new FileInfo(refFilePath).IsReadOnly = false;

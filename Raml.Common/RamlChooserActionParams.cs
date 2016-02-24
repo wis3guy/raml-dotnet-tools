@@ -22,5 +22,6 @@
         public bool? DoNotScaffold { get; private set; }
         public bool UseAsyncMethods { get; set; }
         public string ClientRootClassName { get; set; }
+        public bool IncludeApiVersionInRoutePrefix { get; set; }
     }
 }
