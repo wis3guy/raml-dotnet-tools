@@ -11,14 +11,14 @@ namespace Raml.Tools.Tests
     public class WebApiGeneratorRaml1Tests
     {
 
-        [Test]
+        [Test, Ignore]
         public async Task ShouldBuild_WhenAnnotationTargets()
         {
             var model = await GetAnnotationTargetsModel();
             Assert.IsNotNull(model);
         }
 
-        [Test]
+        [Test, Ignore]
         public async Task ShouldBuild_WhenAnnotations()
         {
             var model = await GetAnnotationsModel();

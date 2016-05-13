@@ -37,7 +37,8 @@ namespace Raml.Tools
                         var generatorParameter = new GeneratorParameter
                         {
                             Name = apiObject.Name.ToLower(),
-                            Type = DecodeRequestRaml1Type(RamlTypesHelper.GetTypeFromApiObject(apiObject)),
+                            Type = DecodeRequestRaml1Type(mimeType.Type),
+                            //Type = DecodeRequestRaml1Type(RamlTypesHelper.GetTypeFromApiObject(apiObject)),
                             Description = apiObject.Description
                         };
                         return generatorParameter;
@@ -190,7 +191,7 @@ namespace Raml.Tools
 
         private ApiObject GetRequestApiObjectByName(string schema)
         {
-            var type = schema.ToLowerInvariant();
+            var type = ExtractType(schema.ToLowerInvariant());
 
             if (schemaObjects.Values.Any(o => o.Name.ToLowerInvariant() == type))
                 return schemaObjects.Values.First(o => o.Name.ToLowerInvariant() == type);
@@ -199,6 +200,20 @@ namespace Raml.Tools
                 return schemaRequestObjects.Values.First(o => o.Name.ToLowerInvariant() == type);
 
             return null;
+        }
+
+        private static string ExtractType(string type)
+        {
+            if (type.EndsWith("[][]")) // array of arrays
+                return type.Substring(0, type.Length - 4);
+
+            if (type.EndsWith("[]")) // array
+                return type.Substring(0, type.Length - 2);
+
+            if (type.EndsWith("{}")) // Map
+                return type.Substring(0, type.Length - 2);
+
+            return type;
         }
 
         private ApiObject GetRequestApiObjectByParametrizedName(Method method, Resource resource, string schema, string fullUrl)

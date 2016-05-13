@@ -19,17 +19,6 @@ types:
             firstname: string
     arrayOfPerson:
         type: person[]
-        example: |
-            [
-                {
-                    "lastname": "smith",
-                    "firstname" : "john"
-                },
-                {
-                    "lastname": "jackson",
-                    "firstname" : "peter"
-                }
-            ]
     arrayOfObject:
         type: array
         items:
@@ -40,17 +29,6 @@ types:
                     required: true
                     maxLength: 255
                 firstname: string
-        example: |
-            {
-                {
-                    "lastname": "smith",
-                    "firstname" : "john"
-                },
-                {
-                    "lastname": "jackson",
-                    "firstname" : "peter"
-                }
-            }
     typeThatHasArrayProperty:
         type: person
         properties:
