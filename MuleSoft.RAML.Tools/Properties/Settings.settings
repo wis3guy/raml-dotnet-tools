@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="NugetPackagesSource" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">http://ec2-52-88-151-198.us-west-2.compute.amazonaws.com:9003/nuget/</Value>
+      <Value Profile="(Default)">http://ec2-52-37-246-79.us-west-2.compute.amazonaws.com:9003/nuget/</Value>
     </Setting>
     <Setting Name="NewtonsoftJsonPackageId" Type="System.String" Scope="Application">
       <Value Profile="(Default)">Newtonsoft.Json</Value>
