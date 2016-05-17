@@ -25,7 +25,7 @@ namespace MuleSoft.RAML.Tools.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://ec2-52-88-151-198.us-west-2.compute.amazonaws.com:9003/nuget/")]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://ec2-52-37-246-79.us-west-2.compute.amazonaws.com:9003/nuget/")]
         public string NugetPackagesSource {
             get {
                 return ((string)(this["NugetPackagesSource"]));
