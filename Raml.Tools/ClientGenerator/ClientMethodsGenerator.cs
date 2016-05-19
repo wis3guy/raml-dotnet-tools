@@ -16,6 +16,7 @@ namespace Raml.Tools.ClientGenerator
         private readonly IDictionary<string, ApiObject> headerObjects;
         private readonly IDictionary<string, ApiObject> responseHeadersObjects;
         private readonly string defaultHeaderType = typeof(HttpResponseHeaders).Name;
+        private readonly QueryParametersParser queryParametersParser;
 
         public ClientMethodsGenerator(RamlDocument raml, IDictionary<string, ApiObject> schemaResponseObjects, 
             IDictionary<string, ApiObject> uriParameterObjects, IDictionary<string, ApiObject> queryObjects, 
@@ -28,6 +29,7 @@ namespace Raml.Tools.ClientGenerator
             this.queryObjects = queryObjects;
             this.headerObjects = headerObjects;
             this.responseHeadersObjects = responseHeadersObjects;
+            queryParametersParser = new QueryParametersParser(schemaObjects);
         }
 
         public ICollection<ClientGeneratorMethod> GetMethods(Resource resource, string url, ClassObject parent, string objectName, IDictionary<string, Parameter> parentUriParameters)
@@ -131,7 +133,7 @@ namespace Raml.Tools.ClientGenerator
         {
             if (method.QueryParameters != null && method.QueryParameters.Any())
             {
-                var queryObject = QueryParametersParser.GetQueryObject(generatedMethod, method, objectName);
+                var queryObject = queryParametersParser.GetQueryObject(generatedMethod, method, objectName);
                 generatedMethod.Query = queryObject;
                 if (!queryObjects.ContainsKey(queryObject.Name))
                     queryObjects.Add(queryObject.Name, queryObject);

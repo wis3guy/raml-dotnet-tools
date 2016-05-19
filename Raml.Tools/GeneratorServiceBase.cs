@@ -28,7 +28,7 @@ namespace Raml.Tools
 		protected IDictionary<string, string> warnings;
 	    protected IDictionary<string, ApiEnum> enums;
 		protected readonly RamlDocument raml;
-	    private readonly string targetNamespace;
+	    protected readonly string targetNamespace;
 	    protected ICollection<string> classesNames;
 		protected IDictionary<string, ApiObject> uriParameterObjects;
         

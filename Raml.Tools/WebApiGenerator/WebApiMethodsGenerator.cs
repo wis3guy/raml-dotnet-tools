@@ -9,11 +9,14 @@ namespace Raml.Tools
 {
     public class WebApiMethodsGenerator : MethodsGeneratorBase
     {
+        private readonly QueryParametersParser queryParametersParser;
+
         public WebApiMethodsGenerator(RamlDocument raml, IDictionary<string, ApiObject> schemaResponseObjects, 
             IDictionary<string, ApiObject> schemaRequestObjects, IDictionary<string, string> linkKeysWithObjectNames, 
             IDictionary<string, ApiObject> schemaObjects)
             : base(raml, schemaResponseObjects, schemaRequestObjects, linkKeysWithObjectNames, schemaObjects)
         {
+            queryParametersParser = new QueryParametersParser(schemaObjects);
         }
 
         public IEnumerable<ControllerMethod> GetMethods(Resource resource, string url, ControllerObject parent, string objectName, IDictionary<string, Parameter> parentUriParameters)
@@ -37,7 +40,7 @@ namespace Raml.Tools
 
                     if (method.QueryParameters != null && method.QueryParameters.Any())
                     {
-                        var queryParameters = QueryParametersParser.ParseParameters(method);
+                        var queryParameters = queryParametersParser.ParseParameters(method);
                         generatedMethod.QueryParameters = queryParameters;
                     }
 
@@ -97,7 +100,7 @@ namespace Raml.Tools
             if (descriptor == null || descriptor.QueryParameters == null || !descriptor.QueryParameters.Any())
                 return securityParams;
 
-            return QueryParametersParser.ConvertParametersToProperties(descriptor.QueryParameters);
+            return queryParametersParser.ConvertParametersToProperties(descriptor.QueryParameters);
         }
     }
 }

@@ -37,7 +37,7 @@ namespace Raml.Tools
                         var generatorParameter = new GeneratorParameter
                         {
                             Name = apiObject.Name.ToLower(),
-                            Type = DecodeRequestRaml1Type(mimeType.Type),
+                            Type = GetParamType(mimeType, apiObject),
                             //Type = DecodeRequestRaml1Type(RamlTypesHelper.GetTypeFromApiObject(apiObject)),
                             Description = apiObject.Description
                         };
@@ -108,6 +108,14 @@ namespace Raml.Tools
             }
 
             return new GeneratorParameter { Name = "content", Type = "string" };
+        }
+
+        private string GetParamType(MimeType mimeType, ApiObject apiObject)
+        {
+            if (mimeType.Type.Contains("<<") && mimeType.Type.Contains(">>"))
+                return RamlTypesHelper.GetTypeFromApiObject(apiObject);
+
+            return DecodeRequestRaml1Type(mimeType.Type);
         }
 
         private GeneratorParameter CreateGeneratorParameter(ApiObject apiObject)
@@ -191,7 +199,7 @@ namespace Raml.Tools
 
         private ApiObject GetRequestApiObjectByName(string schema)
         {
-            var type = ExtractType(schema.ToLowerInvariant());
+            var type = RamlTypesHelper.ExtractType(schema.ToLowerInvariant());
 
             if (schemaObjects.Values.Any(o => o.Name.ToLowerInvariant() == type))
                 return schemaObjects.Values.First(o => o.Name.ToLowerInvariant() == type);
@@ -202,19 +210,7 @@ namespace Raml.Tools
             return null;
         }
 
-        private static string ExtractType(string type)
-        {
-            if (type.EndsWith("[][]")) // array of arrays
-                return type.Substring(0, type.Length - 4);
 
-            if (type.EndsWith("[]")) // array
-                return type.Substring(0, type.Length - 2);
-
-            if (type.EndsWith("{}")) // Map
-                return type.Substring(0, type.Length - 2);
-
-            return type;
-        }
 
         private ApiObject GetRequestApiObjectByParametrizedName(Method method, Resource resource, string schema, string fullUrl)
         {

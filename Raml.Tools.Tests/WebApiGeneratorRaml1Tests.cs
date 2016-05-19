@@ -26,6 +26,13 @@ namespace Raml.Tools.Tests
         }
 
         [Test]
+        public async Task ShouldBuildArrays()
+        {
+            var model = await BuildModel("files/raml1/arrayTypes.raml");
+            Assert.AreEqual(5, model.Objects.Count());
+        }
+
+        [Test]
         public async Task ShouldBuild_WhenCustomScalar()
         {
             var model = await GetCustomScalarModel();
@@ -198,6 +205,23 @@ namespace Raml.Tools.Tests
             Assert.AreEqual(3, model.Objects.Count());
             Assert.AreEqual("Links", model.Objects.First(o => o.Name == "Example").Properties.First(c => c.Name == "Links").Type);
             Assert.AreEqual("Link", model.Objects.First(o => o.Name == "Links").Properties.First(c => c.Name == "Self").Type);
+        }
+
+        [Test]
+        public async Task ShouldBuildDependentTypes()
+        {
+            var model = await BuildModel("files/raml1/dependentTypes.raml");
+            Assert.AreEqual(2, model.Objects.Count());
+            Assert.AreEqual("TypeA", model.Controllers.First().Methods.First().Parameter.Type);
+        }
+
+        [Test]
+        public async Task ShouldHandleComplexQueryParams()
+        {
+            var model = await BuildModel("files/raml1/queryParams.raml");
+            Assert.AreEqual(1, model.Objects.Count());
+            Assert.AreEqual(true, model.Objects.First().IsScalar);
+            Assert.AreEqual("string", model.Controllers.First().Methods.First().QueryParameters.First().Type);
         }
 
         private static async Task<WebApiGeneratorModel> GetAnnotationTargetsModel()

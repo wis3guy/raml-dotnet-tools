@@ -66,6 +66,9 @@ namespace Raml.Tools
             if (apiObject.IsMap)
                 return apiObject.Type;
 
+            if (apiObject.IsScalar)
+                return apiObject.Properties.First().Type;
+
             if (!string.IsNullOrWhiteSpace(apiObject.Type) && apiObject.Type != apiObject.Name)
                 return apiObject.Type;
 
@@ -101,6 +104,20 @@ namespace Raml.Tools
                     throw new InvalidOperationException("Verb not found " + method.Verb);
             }
             return verb;
+        }
+
+        public static string ExtractType(string type)
+        {
+            if (type.EndsWith("[][]")) // array of arrays
+                return type.Substring(0, type.Length - 4);
+
+            if (type.EndsWith("[]")) // array
+                return type.Substring(0, type.Length - 2);
+
+            if (type.EndsWith("{}")) // Map
+                return type.Substring(0, type.Length - 2);
+
+            return type;
         }
 
     }

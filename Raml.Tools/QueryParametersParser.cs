@@ -8,7 +8,14 @@ namespace Raml.Tools
 {
     public class QueryParametersParser
     {
-        public static ApiObject GetQueryObject(ClientGeneratorMethod generatedMethod, Method method, string objectName)
+        private readonly IDictionary<string, ApiObject> schemaObjects;
+
+        public QueryParametersParser(IDictionary<string, ApiObject> schemaObjects)
+        {
+            this.schemaObjects = schemaObjects;
+        }
+
+        public ApiObject GetQueryObject(ClientGeneratorMethod generatedMethod, Method method, string objectName)
         {
             var queryObject = new ApiObject { Name = generatedMethod.Name + objectName + "Query" };
             queryObject.Properties = ParseParameters(method);
@@ -17,12 +24,12 @@ namespace Raml.Tools
             return queryObject;
         }
 
-        public static IList<Property> ParseParameters(Method method)
+        public IList<Property> ParseParameters(Method method)
         {
             return ConvertParametersToProperties(method.QueryParameters);
         }
 
-        public static IList<Property> ConvertParametersToProperties(IEnumerable<KeyValuePair<string, Parameter>> parameters)
+        public IList<Property> ConvertParametersToProperties(IEnumerable<KeyValuePair<string, Parameter>> parameters)
         {
             var properties = new List<Property>();
             foreach (var parameter in parameters.Where(parameter => parameter.Value != null && parameter.Value.Type != null))
@@ -42,11 +49,25 @@ namespace Raml.Tools
 			return properties;
 		}
 
-	    private static string GetType(Parameter param)
+	    private string GetType(Parameter param)
 	    {
-	        return param.Type == null ? "string" : (
-	            NetTypeMapper.Map(param.Type) +
-	            (NetTypeMapper.Map(param.Type) == "string" || param.Required ? "" : "?"));
+	        if (param.Type == null)
+                return "string";
+	        
+            if(NetTypeMapper.Map(param.Type) != null)
+	            return NetTypeMapper.Map(param.Type) +
+	                   (NetTypeMapper.Map(param.Type) == "string" || param.Required ? "" : "?");
+
+	        var pureType = RamlTypesHelper.ExtractType(param.Type);
+
+            if (schemaObjects.ContainsKey(pureType))
+            {
+                var apiObject = schemaObjects[pureType];
+                return RamlTypesHelper.GetTypeFromApiObject(apiObject);
+            }
+
+	        return RamlTypesHelper.DecodeRaml1Type(param.Type);
 	    }
-	}
+
+    }
 }

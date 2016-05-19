@@ -20,7 +20,7 @@ namespace Raml.Tools.WebApiGenerator
             warnings = new Dictionary<string, string>();
             enums = new Dictionary<string, ApiEnum>();
 
-            var ns = NetNamingMapper.GetNamespace(raml.Title);
+            var ns = string.IsNullOrWhiteSpace(raml.Title) ? targetNamespace : NetNamingMapper.GetNamespace(raml.Title);
 
             new RamlTypeParser(raml.Types, schemaObjects, ns, enums, warnings).Parse();
 
