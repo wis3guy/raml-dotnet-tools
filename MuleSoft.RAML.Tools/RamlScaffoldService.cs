@@ -283,7 +283,7 @@ namespace MuleSoft.RAML.Tools
                     extensionPath, targetNamespace, "Controller", false);
             controllerImplementationTemplateParams.Title = Settings.Default.ControllerImplementationTemplateTitle;
             controllerImplementationTemplateParams.IncludeHasModels = true;
-            controllerImplementationTemplateParams.HasModels = model.Objects.Any() || model.Enums.Any();
+            controllerImplementationTemplateParams.HasModels = model.Objects.Any(o => o.IsScalar == false) || model.Enums.Any();
             controllerImplementationTemplateParams.UseAsyncMethods = useAsyncMethods;
             GenerateCodeFromTemplate(controllerImplementationTemplateParams);
         }
@@ -303,7 +303,7 @@ namespace MuleSoft.RAML.Tools
                     targetNamespace, "Controller", true, "I");
             controllerInterfaceParams.Title = Settings.Default.ControllerInterfaceTemplateTitle;
             controllerInterfaceParams.IncludeHasModels = true;
-            controllerInterfaceParams.HasModels = model.Objects.Any() || model.Enums.Any();
+            controllerInterfaceParams.HasModels = model.Objects.Any(o => o.IsScalar == false) || model.Enums.Any();
             controllerInterfaceParams.UseAsyncMethods = useAsyncMethods;
             GenerateCodeFromTemplate(controllerInterfaceParams);
         }
@@ -323,7 +323,7 @@ namespace MuleSoft.RAML.Tools
                     targetNamespace, "Controller");
             controllerBaseTemplateParams.Title = Settings.Default.BaseControllerTemplateTitle;
             controllerBaseTemplateParams.IncludeHasModels = true;
-            controllerBaseTemplateParams.HasModels = model.Objects.Any() || model.Enums.Any();
+            controllerBaseTemplateParams.HasModels = model.Objects.Any(o => o.IsScalar == false) || model.Enums.Any();
             controllerBaseTemplateParams.UseAsyncMethods = useAsyncMethods;
             GenerateCodeFromTemplate(controllerBaseTemplateParams);
         }
