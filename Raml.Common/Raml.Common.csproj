@@ -35,6 +35,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EdgeJs, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Edge.js.4.0.0\lib\EdgeJs.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="envdte, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
@@ -52,8 +56,8 @@
       <HintPath>..\packages\RAML.Api.Core.0.9.8\lib\net45\Raml.Api.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Raml.Parser, Version=0.8.103.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Raml.Parser.0.8.103\lib\net45\Raml.Parser.dll</HintPath>
+    <Reference Include="Raml.Parser, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Raml.Parser.1.0.0.0\lib\net45\Raml.Parser.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -159,7 +163,9 @@
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

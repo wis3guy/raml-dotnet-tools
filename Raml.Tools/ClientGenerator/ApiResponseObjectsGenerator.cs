@@ -28,7 +28,8 @@ namespace Raml.Tools.ClientGenerator
                 {
                     Name = classObject.Name + method.Name + "Response",
                     Description = "Response object for method " + method.Name + " of class " + classObject.Name,
-                    Properties = responseProperties
+                    Properties = responseProperties,
+                    IsUnionType = method.ReturnTypeObject != null && method.ReturnTypeObject.IsUnionType
                 };
                 objects.Add(respObject);
                 method.ResponseType = ClientGeneratorMethod.ModelsNamespacePrefix + respObject.Name;

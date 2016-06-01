@@ -20,6 +20,16 @@ namespace Raml.Tools.ClientGenerator
         public string ResponseType { get; set; }
 
         public IEnumerable<string> RequestContentTypes { get; set; }
+
+        public bool RequestIsXml
+        {
+            get
+            {
+                return RequestContentTypes.Any(c => c.Contains("xml")) &&
+                       !RequestContentTypes.Any(c => c.Contains("json"));
+            }
+        }
+
         public IEnumerable<string> ResponseContentTypes { get; set; }
 
         public string XmlComment
@@ -103,6 +113,8 @@ namespace Raml.Tools.ClientGenerator
         }
 
         public IEnumerable<GeneratorParameter> UriParameters { get; set; }
+
+        public int UriParametersCount { get { return UriParameters == null ? 0 : UriParameters.Count(); } }
 
         public ClientGeneratorMethod Parent { get; set; }
 

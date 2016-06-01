@@ -35,7 +35,7 @@ namespace $(namespace).Models
 <#
 	}
 
-	if(!apiObject.IsMultiple && apiObject.BaseClass != null) 
+	if(!apiObject.IsMultiple && !string.IsNullOrWhiteSpace(apiObject.BaseClass)) 
 	{
 #>
     public partial class <#= apiObject.Name #> <#= " : " +  apiObject.BaseClass #>

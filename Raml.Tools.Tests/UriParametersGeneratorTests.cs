@@ -41,7 +41,7 @@ namespace Raml.Tools.Tests
                                     UriParameters = uriParameters
                                 };
 
-            var generator = new UriParametersGenerator();
+            var generator = new UriParametersGenerator(new Dictionary<string, ApiObject>());
             var uriParameterObjects = new Dictionary<string, ApiObject>();
             var generatorMethod = new ClientGeneratorMethod { Name = "MethodOne"};
 
@@ -506,6 +506,51 @@ namespace Raml.Tools.Tests
             var model = service.BuildModel();
             Assert.AreEqual("bool", model.Classes.First(m => m.Name.Contains("Deep")).Methods.First().UriParameters.First(p => p.Name == "current").Type);
             Assert.AreEqual("int", model.Classes.First(m => m.Name.Contains("Deep")).Methods.First().UriParameters.First(p => p.Name == "id").Type);
+        }
+
+        [Test]
+        public void Should_Build_Uri_Parameters_When_Custom_Scalars()
+        {
+            var uriParameters = new Dictionary<string, Parameter>
+                                {
+                                    {
+                                        "id", new Parameter
+                                                {
+                                                    DisplayName = "id",
+                                                    Type = "CustomInt"
+                                                }
+                                    }
+                                };
+
+            var methods = new List<Method>
+                          {
+                              new Method
+                              {
+                                  Verb = "get"
+                              }
+                          };
+
+            var resource = new Resource
+            {
+                RelativeUri = "/abc{id}",
+                Methods = methods,
+                UriParameters = uriParameters
+            };
+
+            var schemaObjects = new Dictionary<string, ApiObject>();
+            schemaObjects.Add("CustomInt", new ApiObject
+            {
+                Type = "CustomInt",
+                Name = "CustomInt",
+                Properties = new[] { new Property { Name = "value", Type = "int"} }
+            });
+            var generator = new UriParametersGenerator(schemaObjects);
+            var uriParameterObjects = new Dictionary<string, ApiObject>();
+            var generatorMethod = new ClientGeneratorMethod { Name = "MethodOne" };
+
+            generator.Generate(resource, "/movies/abc{id}", generatorMethod, uriParameterObjects, new Dictionary<string, Parameter>());
+
+            Assert.AreEqual("CustomInt", generatorMethod.UriParameters.First().Type);
         }
     }
 }

@@ -127,8 +127,8 @@ namespace MuleSoft.RAML.Tools
             var installer = componentModel.GetService<IVsPackageInstaller>();
 
             var packs = installerServices.GetInstalledPackages(proj).ToArray();
-            NugetInstallerHelper.InstallPackageIfNeeded(proj, packs, installer, newtonsoftJsonPackageId, newtonsoftJsonPackageVersion);
-            NugetInstallerHelper.InstallPackageIfNeeded(proj, packs, installer, microsoftNetHttpPackageId, microsoftNetHttpPackageVersion);
+            NugetInstallerHelper.InstallPackageIfNeeded(proj, packs, installer, newtonsoftJsonPackageId, newtonsoftJsonPackageVersion, Settings.Default.NugetExternalPackagesSource);
+            NugetInstallerHelper.InstallPackageIfNeeded(proj, packs, installer, microsoftNetHttpPackageId, microsoftNetHttpPackageVersion, Settings.Default.NugetExternalPackagesSource);
 
             // System.Xml.XmlSerializer 4.0.11-beta-23516
             // NugetInstallerHelper.InstallPackageIfNeeded(proj, packs, installer, "System.Xml.XmlSerializer", "4.0.11-beta-23516");
@@ -283,7 +283,7 @@ namespace MuleSoft.RAML.Tools
                     extensionPath, targetNamespace, "Controller", false);
             controllerImplementationTemplateParams.Title = Settings.Default.ControllerImplementationTemplateTitle;
             controllerImplementationTemplateParams.IncludeHasModels = true;
-            controllerImplementationTemplateParams.HasModels = model.Objects.Any() || model.Enums.Any();
+            controllerImplementationTemplateParams.HasModels = model.Objects.Any(o => o.IsScalar == false) || model.Enums.Any();
             controllerImplementationTemplateParams.UseAsyncMethods = useAsyncMethods;
             GenerateCodeFromTemplate(controllerImplementationTemplateParams);
         }
@@ -303,7 +303,7 @@ namespace MuleSoft.RAML.Tools
                     targetNamespace, "Controller", true, "I");
             controllerInterfaceParams.Title = Settings.Default.ControllerInterfaceTemplateTitle;
             controllerInterfaceParams.IncludeHasModels = true;
-            controllerInterfaceParams.HasModels = model.Objects.Any() || model.Enums.Any();
+            controllerInterfaceParams.HasModels = model.Objects.Any(o => o.IsScalar == false) || model.Enums.Any();
             controllerInterfaceParams.UseAsyncMethods = useAsyncMethods;
             GenerateCodeFromTemplate(controllerInterfaceParams);
         }
@@ -323,7 +323,7 @@ namespace MuleSoft.RAML.Tools
                     targetNamespace, "Controller");
             controllerBaseTemplateParams.Title = Settings.Default.BaseControllerTemplateTitle;
             controllerBaseTemplateParams.IncludeHasModels = true;
-            controllerBaseTemplateParams.HasModels = model.Objects.Any() || model.Enums.Any();
+            controllerBaseTemplateParams.HasModels = model.Objects.Any(o => o.IsScalar == false) || model.Enums.Any();
             controllerBaseTemplateParams.UseAsyncMethods = useAsyncMethods;
             GenerateCodeFromTemplate(controllerBaseTemplateParams);
         }
@@ -341,6 +341,7 @@ namespace MuleSoft.RAML.Tools
                 models = model.Objects.Where(o => o.Properties.Any() || !string.IsNullOrWhiteSpace(o.GeneratedCode));
 
             models = models.Where(o => !o.IsArray || o.Type == null); // skip array of primitives
+            models = models.Where(o => !o.IsScalar); // skip scalar types
 
             var targetFolderPath = GetTargetFolderPath(generatedFolderPath, ramlItem.FileNames[0], folderItem.ContainingProject);
 
@@ -377,6 +378,9 @@ namespace MuleSoft.RAML.Tools
             var refFilePath = InstallerServices.GetRefFilePath(ramlFilePath);
             var includesFolderPath = generatedFolderPath + Path.DirectorySeparatorChar + InstallerServices.IncludesFolderName;
             var ramlSource = RamlReferenceReader.GetRamlSource(refFilePath);
+            if (string.IsNullOrWhiteSpace(ramlSource))
+                ramlSource = ramlFilePath;
+
             var includesManager = new RamlIncludesManager();
             var result = includesManager.Manage(ramlSource, includesFolderPath, generatedFolderPath + Path.DirectorySeparatorChar);
             if (result.IsSuccess)

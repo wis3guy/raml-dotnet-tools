@@ -124,7 +124,7 @@ namespace MuleSoft.RAML.Tools.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("4.1")]
+        [global::System.Configuration.DefaultSettingValueAttribute("5.0")]
         public string ClientTemplatesVersion {
             get {
                 return ((string)(this["ClientTemplatesVersion"]));
@@ -205,7 +205,7 @@ namespace MuleSoft.RAML.Tools.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1.1.0")]
+        [global::System.Configuration.DefaultSettingValueAttribute("1.2.0")]
         public string RAMLWebApiExplorerPackageVersion {
             get {
                 return ((string)(this["RAMLWebApiExplorerPackageVersion"]));
@@ -223,7 +223,7 @@ namespace MuleSoft.RAML.Tools.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0.8.104")]
+        [global::System.Configuration.DefaultSettingValueAttribute("1.0.0")]
         public string RAMLParserPackageVersion {
             get {
                 return ((string)(this["RAMLParserPackageVersion"]));
@@ -245,6 +245,42 @@ namespace MuleSoft.RAML.Tools.Properties {
         public string MicrosoftNetHttpPackageVersion {
             get {
                 return ((string)(this["MicrosoftNetHttpPackageVersion"]));
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("https://www.nuget.org/api/v2/")]
+        public string NugetExternalPackagesSource {
+            get {
+                return ((string)(this["NugetExternalPackagesSource"]));
+            }
+            set {
+                this["NugetExternalPackagesSource"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Edge.js")]
+        public string EdgePackageId {
+            get {
+                return ((string)(this["EdgePackageId"]));
+            }
+            set {
+                this["EdgePackageId"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("4.0.0")]
+        public string EdgePackageVersion {
+            get {
+                return ((string)(this["EdgePackageVersion"]));
+            }
+            set {
+                this["EdgePackageVersion"] = value;
             }
         }
     }

@@ -12,10 +12,11 @@ namespace Raml.Tools
     public abstract class GeneratorServiceBase
     {
         private readonly ObjectParser objectParser = new ObjectParser();
-        
+        private RamlTypeParser raml1TypesParser;
+
         protected readonly string[] suffixes = { "A", "B", "C", "D", "E", "F", "G" };
 
-        protected readonly UriParametersGenerator uriParametersGenerator = new UriParametersGenerator();
+        protected readonly UriParametersGenerator uriParametersGenerator;
         protected readonly SchemaParameterParser schemaParameterParser = new SchemaParameterParser(new EnglishPluralizationService());
         protected IDictionary<string, ApiObject> schemaObjects = new Dictionary<string, ApiObject>();
         protected IDictionary<string, ApiObject> schemaRequestObjects = new Dictionary<string, ApiObject>();
@@ -27,10 +28,11 @@ namespace Raml.Tools
 		protected IDictionary<string, string> warnings;
 	    protected IDictionary<string, ApiEnum> enums;
 		protected readonly RamlDocument raml;
-	    private readonly string targetNamespace;
+	    protected readonly string targetNamespace;
 	    protected ICollection<string> classesNames;
 		protected IDictionary<string, ApiObject> uriParameterObjects;
-		public const string RequestContentSuffix = "RequestContent";
+        
+        public const string RequestContentSuffix = "RequestContent";
 		public const string ResponseContentSuffix = "ResponseContent";
 
         public RamlDocument ParsedContent { get { return raml; } }
@@ -42,8 +44,28 @@ namespace Raml.Tools
 			this.raml = raml;
 		    this.targetNamespace = targetNamespace;
 		    apiObjectsCleaner = new ApiObjectsCleaner(schemaRequestObjects, schemaResponseObjects, schemaObjects);
+		    uriParametersGenerator = new UriParametersGenerator(schemaObjects);
+		    ApplyResourceTypesAndTraits(raml.Resources);
+            raml1TypesParser = new RamlTypeParser(raml.Types, schemaObjects, targetNamespace, enums, warnings);
 		}
 
+        private void ApplyResourceTypesAndTraits(ICollection<Resource> resources)
+        {
+            foreach (var resource in resources)
+            {
+                var methods = resource.Methods.ToList();
+
+                ResourceTypeApplier.Apply(raml.ResourceTypes, GetResourceType(resource.Type), methods, raml.Traits, resource,
+                    raml.MediaType);
+
+                foreach (var method in methods.Where(method => method.Is != null))
+                {
+                    TraitsApplier.ApplyTraitsToMethods(methods, raml.Traits, method.Is);
+                }
+                resource.Methods = methods;
+                ApplyResourceTypesAndTraits(resource.Resources);
+            }
+        }
 
         protected string GetUrl(string url, string relativeUrl)
         {
@@ -156,6 +178,10 @@ namespace Raml.Tools
             }
         }
 
+        private string GetResourceType(IDictionary<string, IDictionary<string, string>> type)
+        {
+            return type != null && type.Any() ? type.First().Key : string.Empty;
+        }
 
 
         private void ParseResourceRequestsRecursively(IEnumerable<Resource> resources, string fullUrl)
@@ -164,9 +190,11 @@ namespace Raml.Tools
             {
                 if (resource.Methods != null)
                 {
-                    foreach (var method in resource.Methods.Where(m => m.Body != null && m.Body.Any()))
+                    var methods = resource.Methods.Where(m => m.Body != null && m.Body.Any()).ToList();
+
+                    foreach (var method in methods)
                     {
-                        foreach (var kv in method.Body.Where(b => b.Value.Schema != null))
+                        foreach (var kv in method.Body.Where(b => b.Value != null && b.Value.Schema != null))
                         {
                             var key = GeneratorServiceHelper.GetKeyForResource(method, resource, fullUrl) + RequestContentSuffix;
                             if (schemaRequestObjects.ContainsKey(key)) 
@@ -175,6 +203,17 @@ namespace Raml.Tools
                             var obj = objectParser.ParseObject(key, kv.Value.Schema, schemaRequestObjects, warnings, enums, schemaResponseObjects, schemaObjects, targetNamespace);
 
                             AddObjectToObjectCollectionOrLink(obj, key, schemaRequestObjects, schemaObjects);                                
+                        }
+                        foreach (var kv in method.Body.Where(b => b.Value != null && b.Value.InlineType != null))
+                        {
+                            var key = GeneratorServiceHelper.GetKeyForResource(method, resource, fullUrl) + RequestContentSuffix;
+                            if (schemaRequestObjects.ContainsKey(key))
+                                continue;
+
+                            raml1TypesParser = new RamlTypeParser(raml.Types, schemaObjects, targetNamespace, enums, warnings);
+                            var obj = raml1TypesParser.ParseInline(key, kv.Value.InlineType, schemaRequestObjects);
+
+                            AddObjectToObjectCollectionOrLink(obj, key, schemaRequestObjects, schemaObjects);
                         }
                     }
                 }
@@ -232,6 +271,17 @@ namespace Raml.Tools
 
                                 AddObjectToObjectCollectionOrLink(obj, key, schemaResponseObjects, schemaObjects);
                             }
+
+                            foreach (var kv in response.Body.Where(b => b.Value.InlineType != null))
+                            {
+                                var key = GeneratorServiceHelper.GetKeyForResource(method, resource, fullUrl) + ParserHelpers.GetStatusCode(response.Code) + ResponseContentSuffix;
+                                if (schemaResponseObjects.ContainsKey(key)) continue;
+
+                                var obj = raml1TypesParser.ParseInline(key, kv.Value.InlineType, schemaResponseObjects);
+
+                                AddObjectToObjectCollectionOrLink(obj, key, schemaResponseObjects, schemaObjects);
+                            }
+
                         }
                     }
                 }

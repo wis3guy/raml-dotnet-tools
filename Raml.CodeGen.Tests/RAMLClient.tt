@@ -36,7 +36,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using RAML.Api.Core;
 using Raml.Common;
-
+using <#= model.Namespace #>.Models;
 
 namespace <#= model.Namespace #>
 {
@@ -564,7 +564,7 @@ foreach (var apiObject in model.Objects.Where(o => string.IsNullOrWhiteSpace(o.G
 <#
 	}	
 	
-	if(!apiObject.IsMultiple && apiObject.BaseClass != null) 
+	if(!apiObject.IsMultiple && !string.IsNullOrWhiteSpace(apiObject.BaseClass)) 
 	{
 #>
     public partial class <#= apiObject.Name #> <#= " : " +  apiObject.BaseClass #>

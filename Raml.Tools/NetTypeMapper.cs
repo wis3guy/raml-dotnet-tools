@@ -87,6 +87,10 @@ namespace Raml.Tools
                 {
                     "date",
                     "DateTime"
+                },
+                {
+                    "file",
+                    "byte[]"
                 }
             };
 

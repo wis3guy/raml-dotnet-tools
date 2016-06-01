@@ -30,5 +30,11 @@ namespace Raml.Tools.Tests
             Assert.AreEqual("decimal", NetTypeMapper.Map(JsonSchemaType.Float));
         }
 
+        [Test]
+        public void ShouldConvertToByteArrayWhenFile()
+        {
+            Assert.AreEqual("byte[]", NetTypeMapper.Map("file"));
+        }
+
     }
 }

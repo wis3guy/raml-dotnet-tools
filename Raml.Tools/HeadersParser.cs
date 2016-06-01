@@ -35,7 +35,7 @@ namespace Raml.Tools
             return ConvertHeadersToProperties(response.Headers);
         }
 
-        public static IList<Property> ConvertHeadersToProperties(IEnumerable<Parameter> headers)
+        public static IList<Property> ConvertHeadersToProperties(IDictionary<string, Parameter> headers)
         {
             var properties = new List<Property>();
             if (headers == null)
@@ -45,19 +45,19 @@ namespace Raml.Tools
 
             foreach (var header in headers)
             {
-                var description = ParserHelpers.RemoveNewLines(header.Description);
+                var description = ParserHelpers.RemoveNewLines(header.Value.Description);
 
-                var type = NetTypeMapper.Map(header.Type);
-                var typeSuffix = (type == "string" || header.Required ? "" : "?");
+                var type = NetTypeMapper.Map(header.Value.Type);
+                var typeSuffix = (type == "string" || header.Value.Required ? "" : "?");
 
                 properties.Add(new Property
                                {
                                    Type = type + typeSuffix,
-                                   Name = NetNamingMapper.GetPropertyName(header.DisplayName),
-                                   OriginalName = header.DisplayName,
+                                   Name = NetNamingMapper.GetPropertyName(header.Key),
+                                   OriginalName = header.Value.DisplayName,
                                    Description = description,
-                                   Example = header.Example,
-                                   Required = header.Required
+                                   Example = header.Value.Example,
+                                   Required = header.Value.Required
                                });
             }
             return properties;

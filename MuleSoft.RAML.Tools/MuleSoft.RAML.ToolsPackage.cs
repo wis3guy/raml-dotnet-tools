@@ -245,7 +245,7 @@ namespace MuleSoft.RAML.Tools
 
         private void AddRamlReferenceCallback(object sender, EventArgs e)
         {
-            var generationServices = new RamlReferenceService(ServiceProvider.GlobalProvider);
+            var generationServices = new RamlReferenceService(ServiceProvider.GlobalProvider, new ActivityLogger());
             var ramlChooser = new RamlChooser(this, generationServices.AddRamlReference, "Add RAML Reference", false, Settings.Default.RAMLExchangeUrl);
             ramlChooser.ShowDialog();
         }
@@ -356,7 +356,7 @@ namespace MuleSoft.RAML.Tools
 
         private void UpdateRAMLCommandOnBeforeQueryStatus(object sender, EventArgs e)
         {
-            ShowOrHideCommandContract(sender);
+            ShowOrHideUpdateRamlCommandContract(sender);
         }
 
         private void ExtractRAMLCommandOnBeforeQueryStatus(object sender, EventArgs e)
@@ -478,7 +478,7 @@ namespace MuleSoft.RAML.Tools
 
         private void UpdateRamlRefCommand_BeforeQueryStatus(object sender, EventArgs e)
         {
-            ShowOrHideCommand(sender, RamlReferenceService.ApiReferencesFolderName);
+            ShowOrHideUpdateRamlRefCommand(sender, RamlReferenceService.ApiReferencesFolderName);
         }
 
         private void ChangeCommandStatus(CommandID commandId, bool enable)
@@ -557,7 +557,7 @@ namespace MuleSoft.RAML.Tools
         }
 
 
-        private static void ShowOrHideCommand(object sender, string containingFolderName)
+        private static void ShowOrHideUpdateRamlRefCommand(object sender, string containingFolderName)
         {
             // get the menu that fired the event
             var menuCommand = sender as OleMenuCommand;
@@ -601,10 +601,15 @@ namespace MuleSoft.RAML.Tools
             if (folder.EndsWith(InstallerServices.IncludesFolderName))
                 return;
 
+            var refFile = InstallerServices.GetRefFilePath(itemFullPath);
+            var source = RamlReferenceReader.GetRamlSource(refFile);
+            if (string.IsNullOrWhiteSpace(source))
+                return;
+
             ShowAndEnableCommand(menuCommand, true);
         }
 
-        private static void ShowOrHideCommandContract(object sender)
+        private static void ShowOrHideUpdateRamlCommandContract(object sender)
         {
             // get the menu that fired the event
             var menuCommand = sender as OleMenuCommand;
@@ -644,6 +649,11 @@ namespace MuleSoft.RAML.Tools
                 return;
 
             if (!IsAspNet5OrWebApiCoreInstalled())
+                return;
+
+            var refFile = InstallerServices.GetRefFilePath(itemFullPath);
+            var source = RamlReferenceReader.GetRamlSource(refFile);
+            if(string.IsNullOrWhiteSpace(source))
                 return;
 
             ShowAndEnableCommand(menuCommand, true);

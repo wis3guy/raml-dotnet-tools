@@ -5,7 +5,6 @@ using System.Linq;
 using System.Windows.Forms;
 using EnvDTE;
 using Microsoft.VisualStudio.ComponentModelHost;
-using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using MuleSoft.RAML.Tools.Properties;
 using NuGet.VisualStudio;
@@ -16,6 +15,7 @@ namespace MuleSoft.RAML.Tools
     public class RamlReferenceService
     {
         private readonly IServiceProvider serviceProvider;
+        private readonly ILogger logger;
         private readonly string nugetPackagesSource = Settings.Default.NugetPackagesSource;
         private readonly string newtonsoftJsonPackageId = Settings.Default.NewtonsoftJsonPackageId;
         private readonly string newtonsoftJsonPackageVersion = Settings.Default.NewtonsoftJsonPackageVersion;
@@ -27,29 +27,29 @@ namespace MuleSoft.RAML.Tools
         private readonly string microsoftNetHttpPackageId = Settings.Default.MicrosoftNetHttpPackageId;
         private readonly string microsoftNetHttpPackageVersion = Settings.Default.MicrosoftNetHttpPackageVersion;
 
-        public RamlReferenceService(IServiceProvider serviceProvider)
+        public RamlReferenceService(IServiceProvider serviceProvider, ILogger logger)
         {
             this.serviceProvider = serviceProvider;
+            this.logger = logger;
         }
 
         public void AddRamlReference(RamlChooserActionParams parameters)
         {
             try
             {
-                ActivityLog.LogInformation(VisualStudioAutomationHelper.RamlVsToolsActivityLogSource, "Add RAML Reference process started");
+                logger.LogInformation("Add RAML Reference process started");
                 var dte = serviceProvider.GetService(typeof (SDTE)) as DTE;
                 var proj = VisualStudioAutomationHelper.GetActiveProject(dte);
 
                 InstallNugetDependencies(proj);
-                ActivityLog.LogInformation(VisualStudioAutomationHelper.RamlVsToolsActivityLogSource, "Nuget Dependencies installed");
+                logger.LogInformation("Nuget Dependencies installed");
 
                 AddFilesToProject(parameters.RamlFilePath, proj, parameters.TargetNamespace, parameters.RamlSource, parameters.TargetFileName, parameters.ClientRootClassName);
-                ActivityLog.LogInformation(VisualStudioAutomationHelper.RamlVsToolsActivityLogSource, "Files added to project");
+                logger.LogInformation("Files added to project");
             }
             catch (Exception ex)
             {
-                ActivityLog.LogError(VisualStudioAutomationHelper.RamlVsToolsActivityLogSource,
-                    VisualStudioAutomationHelper.GetExceptionInfo(ex));
+                logger.LogError(ex);
                 MessageBox.Show("Error when trying to add the RAML reference. " + ex.Message);
                 throw;
             }
@@ -62,10 +62,10 @@ namespace MuleSoft.RAML.Tools
             var installer = componentModel.GetService<IVsPackageInstaller>();
 
             var packs = installerServices.GetInstalledPackages(proj).ToArray();
-            NugetInstallerHelper.InstallPackageIfNeeded(proj, packs, installer, newtonsoftJsonPackageId, newtonsoftJsonPackageVersion);
-            NugetInstallerHelper.InstallPackageIfNeeded(proj, packs, installer, microsoftNetHttpPackageId, microsoftNetHttpPackageVersion);
-            
-            NugetInstallerHelper.InstallPackageIfNeeded(proj, packs, installer, webApiCorePackageId, webApiCorePackageVersion);
+            NugetInstallerHelper.InstallPackageIfNeeded(proj, packs, installer, newtonsoftJsonPackageId, newtonsoftJsonPackageVersion, Settings.Default.NugetExternalPackagesSource);
+            NugetInstallerHelper.InstallPackageIfNeeded(proj, packs, installer, microsoftNetHttpPackageId, microsoftNetHttpPackageVersion, Settings.Default.NugetExternalPackagesSource);
+
+            NugetInstallerHelper.InstallPackageIfNeeded(proj, packs, installer, webApiCorePackageId, webApiCorePackageVersion, Settings.Default.NugetExternalPackagesSource);
 
             // RAML.Api.Core
             if (!installerServices.IsPackageInstalled(proj, ramlApiCorePackageId))

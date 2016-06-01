@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using Raml.Parser.Expressions;
 
@@ -30,7 +32,7 @@ namespace Raml.Tools.Tests
                 Example = "Another example"
             };
 
-            var headers = new[] { headerOne, headerTwo };
+            var headers = new Dictionary<string, Parameter> { {"one", headerOne}, {"two", headerTwo} };
 
             //When
             var parsedParameters = HeadersParser.ConvertHeadersToProperties(headers);
@@ -43,7 +45,7 @@ namespace Raml.Tools.Tests
                     && x.Description == headerOne.Description 
                     && x.Example == headerOne.Example 
                     && x.Required == headerOne.Required 
-                    && x.Name == headerOne.DisplayName),
+                    && x.Name.Equals(headers.First().Key, StringComparison.InvariantCultureIgnoreCase)),
                 "There should be one header with all the same properties as the original header");
 
             Assert.DoesNotThrow(
@@ -51,7 +53,7 @@ namespace Raml.Tools.Tests
                     && x.Description == headerTwo.Description 
                     && x.Example == headerTwo.Example 
                     && x.Required == headerTwo.Required 
-                    && x.Name == headerTwo.DisplayName),
+                    && x.Name.Equals(headers.Last().Key, StringComparison.InvariantCultureIgnoreCase)),
                 "There should be one header with all the same properties as the original header");
         }
 
@@ -77,7 +79,7 @@ namespace Raml.Tools.Tests
                 Example = "Another example"
             };
 
-            var headers = new[] { headerOne, headerTwo };
+            var headers = new Dictionary<string, Parameter> { {"one", headerOne}, { "two", headerTwo }};
 
             var parsedParameters = HeadersParser.ConvertHeadersToProperties(headers);
 

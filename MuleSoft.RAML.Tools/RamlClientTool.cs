@@ -77,7 +77,11 @@ namespace MuleSoft.RAML.Tools
 
                 var containingFolder = Path.GetDirectoryName(wszInputFilePath);
                 var refFilePath = InstallerServices.GetRefFilePath(wszInputFilePath);
+                
                 var ramlSource = RamlReferenceReader.GetRamlSource(refFilePath);
+                if (string.IsNullOrWhiteSpace(ramlSource))
+                    ramlSource = wszInputFilePath;
+
                 var clientRootClassName = RamlReferenceReader.GetClientRootClassName(refFilePath);
 
                 var globalProvider = ServiceProvider.GlobalProvider;

@@ -10,6 +10,15 @@ namespace Raml.Tools
 {
     public class UriParametersGenerator
     {
+        private readonly IDictionary<string, ApiObject> schemaObjects;
+        private readonly QueryParametersParser queryParametersParser;
+
+        public UriParametersGenerator(IDictionary<string, ApiObject> schemaObjects)
+        {
+            this.schemaObjects = schemaObjects;
+            queryParametersParser = new QueryParametersParser(schemaObjects);
+        }
+
         public void Generate(Resource resource, string url, ClientGeneratorMethod clientGeneratorMethod,
             IDictionary<string, ApiObject> uriParameterObjects, IDictionary<string, Parameter> parentUriParameters)
         {
@@ -26,10 +35,10 @@ namespace Raml.Tools
 
             var properties = new List<Property>();
             if (resource.BaseUriParameters != null)
-                properties.AddRange(QueryParametersParser.ConvertParametersToProperties(resource.BaseUriParameters));
+                properties.AddRange(queryParametersParser.ConvertParametersToProperties(resource.BaseUriParameters));
 
             if (resource.UriParameters != null)
-                properties.AddRange(QueryParametersParser.ConvertParametersToProperties(resource.UriParameters)
+                properties.AddRange(queryParametersParser.ConvertParametersToProperties(resource.UriParameters)
                     .Where(up => properties.All(p => !String.Equals(up.Name, p.Name, StringComparison.InvariantCultureIgnoreCase))));
 
             var urlParameters = ExtractParametersFromUrl(url).ToArray();
@@ -56,8 +65,9 @@ namespace Raml.Tools
             var parameters = resource.BaseUriParameters
                     .Select(p => new GeneratorParameter { Name = p.Key, Type = NetTypeMapper.Map(p.Value.Type), Description = p.Value.Description })
                     .ToList();
+
             parameters.AddRange(resource.UriParameters
-                .Select(p => new GeneratorParameter { Name = p.Key, Type = NetTypeMapper.Map(p.Value.Type), Description = p.Value.Description })
+                .Select(p => new GeneratorParameter { Name = p.Key, Type = GetParameterType(p), Description = p.Value.Description })
                 .ToList());
 
             var urlParameters = ExtractParametersFromUrl(url).ToArray();
@@ -67,6 +77,24 @@ namespace Raml.Tools
 
             parameters.AddRange(matchedParameters);
             return parameters;
+        }
+
+        private string GetParameterType(KeyValuePair<string, Parameter> parameter)
+        {
+            var parameterType = NetTypeMapper.Map(parameter.Value.Type);
+            if(parameterType != null)
+                return parameterType;
+
+            if (schemaObjects.ContainsKey(parameter.Value.Type))
+            {
+                var schemaObject = schemaObjects[parameter.Value.Type];
+                if(schemaObject.IsScalar)
+                    return schemaObject.Properties.First().Type;
+
+                return schemaObject.Type;
+            }
+
+            return "object";
         }
 
         private IEnumerable<GeneratorParameter> MatchParameters(IDictionary<string, Parameter> parentUriParameters, GeneratorParameter[] urlParameters)

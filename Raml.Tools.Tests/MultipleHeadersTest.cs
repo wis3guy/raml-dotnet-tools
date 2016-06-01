@@ -17,47 +17,65 @@ namespace Raml.Tools.Tests
         {
             var doc = new RamlDocument {Title = "test"};
 
-            var okHeaders = new List<Parameter>
-                            {
-                                new Parameter
-                                {
-                                    DisplayName = "code",
-                                    Type = "integer"
-                                },
-                                new Parameter
-                                {
-                                    DisplayName = "token",
-                                    Type = "string"
-                                }
-                            };
+            var okHeaders = new Dictionary<string, Parameter>
+            {
+                {
+                    "code",
+                    new Parameter
+                    {
+                        DisplayName = "code",
+                        Type = "integer"
+                    }
+                },
+                {
+                    "token",
+                    new Parameter
+                    {
+                        DisplayName = "token",
+                        Type = "string"
+                    }
+                }
+            };
 
-            var errorHeaders = new List<Parameter>
-                            {
-                                new Parameter
-                                {
-                                    DisplayName = "code",
-                                    Type = "integer"
-                                },
-                                new Parameter
-                                {
-                                    DisplayName = "error",
-                                    Type = "string"
-                                }
-                            };
+            var errorHeaders = new Dictionary<string, Parameter>
+            {
+                {
+                    "code",
+                    new Parameter
+                    {
+                        DisplayName = "code",
+                        Type = "integer"
+                    }
+                },
+                {
+                    "error",
+                    new Parameter
+                    {
+                        DisplayName = "error",
+                        Type = "string"
+                    }
+                }
+            };
 
-            var badRequestHeaders = new List<Parameter>
-                            {
-                                new Parameter
-                                {
-                                    DisplayName = "code",
-                                    Type = "integer"
-                                },
-                                new Parameter
-                                {
-                                    DisplayName = "description",
-                                    Type = "string"
-                                }
-                            };
+            var badRequestHeaders = new Dictionary<string, Parameter>
+            {
+                {
+                    "code",
+                    new Parameter
+                    {
+                        DisplayName = "code",
+                        Type = "integer"
+                    }
+                },
+                {
+                    "description",
+                    new Parameter
+                    {
+                        DisplayName = "description",
+                        Type = "string"
+                    }
+                }
+            };
 
             var okResponse = new Response
                              {

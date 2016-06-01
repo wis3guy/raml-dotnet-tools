@@ -30,7 +30,7 @@ namespace $(namespace)
 		{
 #>
 
-        <#= method.XmlComment ?? string.Empty #>
+<#= method.XmlComment ?? string.Empty #>
         [Http<#= method.Verb #>]
         [Route("<#= method.Url #>")]
 <# if(useAsyncMethods) { #>

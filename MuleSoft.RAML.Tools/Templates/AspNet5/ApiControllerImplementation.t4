@@ -26,7 +26,7 @@ namespace $(namespace)
 		foreach (var method in controllerObject.Methods)
 		{
 #>
-		<#= method.XmlComment ?? string.Empty #>
+<#= method.XmlComment ?? string.Empty #>
 <# if(useAsyncMethods) { #>
         public async Task<IActionResult> <#= method.Name #>(<#= method.ParametersStringForAspNet5 #>)
 <# } else { #>

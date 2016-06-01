@@ -12,6 +12,8 @@ namespace Raml.Common
         {
             var info = new RamlInfo();
 
+            string tempPath;
+
             if (ramlSource.StartsWith("http"))
             {
                 Uri uri;
@@ -31,6 +33,8 @@ namespace Raml.Common
                 try
                 {
                     info.RamlContents = Downloader.GetContents(uri);
+                    tempPath = Path.GetTempFileName();
+                    File.WriteAllText(tempPath, info.RamlContents);
                 }
                 catch (HttpRequestException rex)
                 {
@@ -75,6 +79,7 @@ namespace Raml.Common
                 try
                 {
                     info.RamlContents = File.ReadAllText(ramlSource);
+                    tempPath = ramlSource;
                 }
                 catch (Exception ex)
                 {
@@ -91,7 +96,7 @@ namespace Raml.Common
                 }
             }
 
-            var task = new RamlParser().LoadRamlAsync(info.RamlContents, ramlSource);
+            var task = new RamlParser().LoadAsync(tempPath);
             task.WaitWithPumping();
             info.RamlDocument = task.Result;
 

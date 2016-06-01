@@ -7,7 +7,7 @@ schemas:
     - Group: |
             { "$schema": "http://json-schema.org/draft-03/schema",
               "type": "object",
-              "description": "user",
+              "description": "group",
               "properties": 
                {
                     "id": { "type": "integer" },
@@ -38,14 +38,14 @@ schemas:
     responses:
       200:
         body: 
-          schema: group
+          schema: Group
   post:
     description: adds a movie to the catalogue
     body:
-        schema: user
+        schema: User
   /{id}:
     get:
       responses:
         200:
           body: 
-            schema: user
+            schema: User

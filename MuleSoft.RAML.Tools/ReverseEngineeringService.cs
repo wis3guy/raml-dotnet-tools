@@ -22,9 +22,14 @@ namespace MuleSoft.RAML.Tools
         private readonly string ramlParserPackageVersion = Settings.Default.RAMLParserPackageVersion;
         private readonly string ramlApiCorePackageId = Settings.Default.RAMLApiCorePackageId;
         private readonly string ramlApiCorePackageVersion = Settings.Default.RAMLApiCorePackageVersion;
-
+        private readonly string newtonsoftJsonPackageId = Settings.Default.NewtonsoftJsonPackageId;
+        private readonly string newtonsoftJsonPackageVersion = Settings.Default.NewtonsoftJsonPackageVersion;
+        private readonly string edgePackageId = Settings.Default.EdgePackageId;
+        private readonly string edgePackageVersion = Settings.Default.EdgePackageVersion;
 
         private readonly IServiceProvider serviceProvider;
+        
+
         public ReverseEngineeringService(IServiceProvider serviceProvider)
         {
             this.serviceProvider = serviceProvider;
@@ -124,6 +129,11 @@ namespace MuleSoft.RAML.Tools
             var componentModel = (IComponentModel)serviceProvider.GetService(typeof(SComponentModel));
             var installerServices = componentModel.GetService<IVsPackageInstallerServices>();
             var installer = componentModel.GetService<IVsPackageInstaller>();
+
+            var packs = installerServices.GetInstalledPackages(proj).ToArray();
+            NugetInstallerHelper.InstallPackageIfNeeded(proj, packs, installer, newtonsoftJsonPackageId, newtonsoftJsonPackageVersion, Settings.Default.NugetExternalPackagesSource);
+            NugetInstallerHelper.InstallPackageIfNeeded(proj, packs, installer, edgePackageId, edgePackageVersion, Settings.Default.NugetExternalPackagesSource);
+            NugetInstallerHelper.InstallPackageIfNeeded(proj, packs, installer, "System.ComponentModel.Annotations", "4.0.0", Settings.Default.NugetExternalPackagesSource);
 
             // RAML.Parser
             if (!installerServices.IsPackageInstalled(proj, ramlParserPackageId))
