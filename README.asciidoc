@@ -16,7 +16,7 @@ A single installation package provides support for both client and service code-
 
 You can generate API client code from a RAML definition, which lets client applications consume existing APIs from a RAML definition.
 
-In Visual Studio .NET, you can add a reference to a RAML definitio, and a strongly-typed client proxy is generated in the project. A local copy of the RAML definition stores as a file within the Visual Studio project, which is kept in sync with the original RAML definition.
+In Visual Studio .NET, you can add a reference to a RAML definition, and a strongly-typed client proxy is generated in the project. A local copy of the RAML definition stores as a file within the Visual Studio project, which is kept in sync with the original RAML definition.
 
 If the remote API does not provide a RAML definition, you can use a self-managed local definition to allow rapid generation of the client code in a declarative manner.
 
@@ -28,7 +28,7 @@ From within Visual Studio .NET, you can add a RAML definition from which the too
 
 In code, the controllers definition and implementation are logically separated. The generated code representing the definition is driven by the RAML definition allowing you to focus exclusively on the implementation classes. This separation of concerns allows iterative evolution of the API with non-destructive forward engineering of the code-based definition.
 
-As a convenience, a local endpoint is registered to provides a browser-accessible API Console for the RAML-enabled implementation. This gives an easily navigable view of the API, including full documentation of routes, resource schema, and includes examples.
+As a convenience, a local endpoint is registered to provide a browser-accessible API Console for the RAML-enabled implementation. This gives an easily navigable view of the API, including full documentation of routes, resource schema, and includes examples.
 
 
 == Prerequisites
