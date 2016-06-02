@@ -205,7 +205,7 @@ namespace MuleSoft.RAML.Tools.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1.2.0")]
+        [global::System.Configuration.DefaultSettingValueAttribute("1.2.1")]
         public string RAMLWebApiExplorerPackageVersion {
             get {
                 return ((string)(this["RAMLWebApiExplorerPackageVersion"]));
@@ -223,7 +223,7 @@ namespace MuleSoft.RAML.Tools.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1.0.0")]
+        [global::System.Configuration.DefaultSettingValueAttribute("1.0.1")]
         public string RAMLParserPackageVersion {
             get {
                 return ((string)(this["RAMLParserPackageVersion"]));
