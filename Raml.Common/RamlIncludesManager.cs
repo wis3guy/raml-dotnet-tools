@@ -105,8 +105,17 @@ namespace Raml.Common
                 ManageInclude(lines, destinationFolder, includedFiles, path, relativePath, confirmOvewrite, i, scopeIncludedFiles, rootRamlPath, isRootFile);
             }
 
-            File.WriteAllText(writeToFilePath, string.Join(Environment.NewLine, lines).Trim());
+            try
+            {
+                if (File.Exists(writeToFilePath))
+                    new FileInfo(writeToFilePath).IsReadOnly = false;
 
+                File.WriteAllText(writeToFilePath, string.Join(Environment.NewLine, lines).Trim());
+            }
+            catch (Exception ex)
+            {
+                
+            }
             ManageIncludedFiles(destinationFolder, includedFiles, path, relativePath, confirmOvewrite, scopeIncludedFiles, rootRamlPath);
         }
 
@@ -184,6 +193,9 @@ namespace Raml.Common
                 if (!relativePaths.ContainsKey(destinationFilePath))
                     relativePaths.Add(destinationFilePath, Path.GetDirectoryName(fullPathIncludeSource));
             }
+
+            if(destinationFilePath == fullPathIncludeSource)
+                return;
 
             // copy file to dest folder
             if (File.Exists(destinationFilePath) && confirmOvewrite)
