@@ -91,7 +91,15 @@ namespace MuleSoft.RAML.Tools
 
             var destFolderItem = VisualStudioAutomationHelper.AddFolderIfNotExists(apiRefsFolderItem, destFolderName, destFolderPath);
 
-            var ramlProjItem = InstallerServices.AddOrUpdateRamlFile(ramlSourceFile, destFolderPath, destFolderItem, targetFileName);
+            var includesManager = new RamlIncludesManager();
+            var result = includesManager.Manage(ramlOriginalSource, destFolderPath, ramlSourceFile);
+
+            var ramlDestFile = Path.Combine(destFolderPath, targetFileName);
+            if (File.Exists(ramlDestFile))
+                new FileInfo(ramlDestFile).IsReadOnly = false;
+            File.WriteAllText(ramlDestFile, result.ModifiedContents);
+
+            var ramlProjItem = InstallerServices.AddOrUpdateRamlFile(ramlDestFile, destFolderPath, destFolderItem, targetFileName);
             var refFilePath = InstallerServices.AddRefFile(ramlSourceFile, targetNamespace, ramlOriginalSource, destFolderPath, targetFileName, null, clientRootClassName);
             ramlProjItem.ProjectItems.AddFromFile(refFilePath);
 

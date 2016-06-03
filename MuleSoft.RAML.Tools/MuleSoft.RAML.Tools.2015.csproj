@@ -8930,10 +8930,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="node_modules\raml-1-0-parser\node_modules\raml-definition-system\tsconfig.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
     <Content Include="node_modules\raml-1-0-parser\node_modules\raml-definition-system\typings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -9287,10 +9283,6 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="node_modules\raml-1-0-parser\node_modules\raml-typesystem\tests\content\jsonschemetest\test1\scheme.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="node_modules\raml-1-0-parser\node_modules\raml-typesystem\tsconfig.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -10078,10 +10070,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="node_modules\raml-1-0-parser\node_modules\ts-model\tsconfig.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
     <Content Include="node_modules\raml-1-0-parser\node_modules\ts-model\typings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -10119,10 +10107,6 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="node_modules\raml-1-0-parser\node_modules\ts-structure-parser\README.md">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="node_modules\raml-1-0-parser\node_modules\ts-structure-parser\tsconfig.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -11355,10 +11339,6 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="node_modules\raml-1-0-parser\node_modules\yaml-ast-parser\README.md">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="node_modules\raml-1-0-parser\node_modules\yaml-ast-parser\tsconfig.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>

@@ -166,7 +166,7 @@ namespace MuleSoft.RAML.Tools
         {
             var includesFolderItem = destFolderItem.ProjectItems.Cast<ProjectItem>().FirstOrDefault(i => i.Name == InstallerServices.IncludesFolderName);
 
-            InstallerServices.RemoveSubItemsAndAssociatedFiles(includesFolderItem);
+            //InstallerServices.RemoveSubItemsAndAssociatedFiles(includesFolderItem);
 
             var includeManager = new RamlIncludesManager();
             var result = includeManager.Manage(ramlSource, containingFolder + Path.DirectorySeparatorChar + InstallerServices.IncludesFolderName, containingFolder + Path.DirectorySeparatorChar);
