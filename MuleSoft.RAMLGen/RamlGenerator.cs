@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
 using Raml.Common;
@@ -27,6 +28,8 @@ namespace MuleSoft.RAMLGen
         private static async Task<RamlDocument> GetRamlDocument(Options opts, string destinationFolder, string targetFileName)
         {
             var result = new RamlIncludesManager().Manage(opts.Source, destinationFolder, targetFileName, opts.Overwrite);
+            if(!result.IsSuccess && result.StatusCode != HttpStatusCode.OK)
+                throw new HttpSourceErrorException("Error trying to get " + opts.Source + " - status code: " + result.StatusCode);
 
             if (!Directory.Exists(destinationFolder))
                 Directory.CreateDirectory(destinationFolder);

@@ -99,6 +99,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HttpSourceErrorException.cs" />
     <Compile Include="ServerOptions.cs" />
     <Compile Include="CustomCmdLineHost.cs" />
     <Compile Include="GenerationResult.cs" />
