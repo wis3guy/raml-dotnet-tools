@@ -107,6 +107,23 @@ namespace Raml.Tools
                     return CreateGeneratorParameter(apiObjectByKey);
             }
 
+            if (mimeType != null)
+            {
+                string type;
+                if(!string.IsNullOrWhiteSpace(mimeType.Type))
+                    type = mimeType.Type;
+                else
+                    type = mimeType.Schema;
+
+                if (!string.IsNullOrWhiteSpace(type))
+                {
+                    var raml1Type = DecodeRequestRaml1Type(type);
+
+                    if (!string.IsNullOrWhiteSpace(raml1Type))
+                        return new GeneratorParameter {Name = "content", Type = raml1Type};
+                }
+            }
+
             return new GeneratorParameter { Name = "content", Type = "string" };
         }
 
@@ -140,6 +157,8 @@ namespace Raml.Tools
                 var subtype = type.Substring(0, type.Length - 4);
                 if (NetTypeMapper.Map(subtype) == null)
                     subtype = NetNamingMapper.GetObjectName(subtype);
+                else
+                    subtype = NetTypeMapper.Map(subtype);
 
                 return CollectionTypeHelper.GetCollectionType(CollectionTypeHelper.GetCollectionType(subtype));
             }
@@ -147,9 +166,13 @@ namespace Raml.Tools
             if (type.EndsWith("[]")) // array
             {
                 var subtype = type.Substring(0, type.Length - 2);
+
                 if (NetTypeMapper.Map(subtype) == null)
                     subtype = NetNamingMapper.GetObjectName(subtype);
-
+                else
+                    subtype = NetTypeMapper.Map(subtype);
+                    
+                
                 return CollectionTypeHelper.GetCollectionType(subtype);
             }
 
@@ -166,6 +189,9 @@ namespace Raml.Tools
 
                 return "IDictionary<string, object>";
             }
+
+            if (NetTypeMapper.Map(type) != null)
+                return NetTypeMapper.Map(type);
 
             if (CollectionTypeHelper.IsCollection(type))
                 return type;

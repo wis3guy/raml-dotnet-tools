@@ -85,7 +85,19 @@ namespace Raml.Tools
                     "object"
                 },
                 {
-                    "date",
+                    "datetime",
+                    "DateTime"
+                },
+                {
+                    "date-only",
+                    "DateTime"
+                },
+                {
+                    "time-only",
+                    "DateTime"
+                },
+                {
+                    "datetime-only",
                     "DateTime"
                 },
                 {

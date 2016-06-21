@@ -76,7 +76,9 @@ namespace Raml.Tools
                 var subtype = type.Substring(0, type.Length - 4);
                 if (NetTypeMapper.Map(subtype) == null)
                     subtype = NetNamingMapper.GetObjectName(subtype);
-
+                else
+                    subtype = NetTypeMapper.Map(subtype);
+                    
                 return CollectionTypeHelper.GetCollectionType(CollectionTypeHelper.GetCollectionType(subtype));
             }
 
@@ -85,7 +87,9 @@ namespace Raml.Tools
                 var subtype = type.Substring(0, type.Length - 2);
                 if (NetTypeMapper.Map(subtype) == null)
                     subtype = NetNamingMapper.GetObjectName(subtype);
-
+                else
+                    subtype = NetTypeMapper.Map(subtype);
+                
                 return CollectionTypeHelper.GetCollectionType(subtype);
             }
 
@@ -102,6 +106,9 @@ namespace Raml.Tools
 
                 return "IDictionary<string, object>";
             }
+
+            if (NetTypeMapper.Map(type) != null)
+                return NetTypeMapper.Map(type);
 
             return type;
         }
