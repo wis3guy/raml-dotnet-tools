@@ -10,6 +10,8 @@ The tools are provided as a Visual Studio extension, allowing simple and natural
 
 A single installation package provides support for both client and service code-generation scenarios.
 
+*New*: Command Line Tool available https://github.com/mulesoft-labs/raml-dotnet-tools/tree/master/command-line[here]
+
 == Supported Scenarios
 
 === API Client Code from a RAML Definition
