@@ -238,6 +238,13 @@ namespace Raml.Tools.Tests
             Assert.AreEqual(CollectionTypeHelper.GetCollectionType("DateTime"), model.Controllers.First(x => x.Name == "Persons").Methods.First(x => x.Name == "Put").Parameter.Type);
         }
 
+        [Test]
+        public async Task ShouldHandle_SalesOrdersCase()
+        {
+            var model = await BuildModel("files/raml1/salesOrders.raml");
+            Assert.AreEqual(18, model.Objects.Count());
+        }
+
         private static async Task<WebApiGeneratorModel> GetAnnotationTargetsModel()
         {
             return await BuildModel("files/raml1/annotations-targets.raml");
