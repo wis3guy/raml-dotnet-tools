@@ -14,6 +14,7 @@ namespace Raml.Common
     {
         private readonly char[] includeDirectiveTrimChars = { ' ', '"', '}', ']', ',' };
         private const string IncludeDirective = "!include";
+        private const string UsesDirective = "uses:";
         private readonly IDictionary<string, Task<string>> downloadFileTasks = new Dictionary<string, Task<string>>();
         private readonly IDictionary<string, string> relativePaths = new Dictionary<string, string>();
 
@@ -58,12 +59,17 @@ namespace Raml.Common
             var includedFiles = new Collection<string>();
 
             // if there are any includes and the folder does not exists, create it
-            if (lines.Any(l => l.Contains(IncludeDirective)) && !Directory.Exists(destinationFolder))
+            if (HasIncludedFiles(lines) && !Directory.Exists(destinationFolder))
                 Directory.CreateDirectory(destinationFolder);
 
             ManageNestedFiles(lines, destinationFolder, includedFiles, path, path, destinationFilePath, confirmOverrite, rootRamlPath, true);
 
             return new RamlIncludesManagerResult(string.Join(Environment.NewLine, lines), includedFiles);
+        }
+
+        private static bool HasIncludedFiles(string[] lines)
+        {
+            return (lines.Any(l => l.Contains(IncludeDirective)) || lines.Any(l => l.Contains(UsesDirective)));
         }
 
         private static string GetPath(string ramlSource, Uri uri)
@@ -100,9 +106,16 @@ namespace Raml.Common
         private void ManageNestedFiles(IList<string> lines, string destinationFolder, ICollection<string> includedFiles, string path, string relativePath, string writeToFilePath, bool confirmOvewrite, string rootRamlPath, bool isRootFile)
         {
             var scopeIncludedFiles = new Collection<string>();
+            var useLine = false;
             for (var i = 0; i < lines.Count; i++)
             {
-                ManageInclude(lines, destinationFolder, includedFiles, path, relativePath, confirmOvewrite, i, scopeIncludedFiles, rootRamlPath, isRootFile);
+                if (useLine && (!lines[i].StartsWith("  ") || !lines[i].Contains(":"))) 
+                    useLine = false;
+
+                ManageInclude(lines, destinationFolder, includedFiles, path, relativePath, confirmOvewrite, i, scopeIncludedFiles, rootRamlPath, isRootFile, useLine);
+
+                if (lines[i].Contains("uses:") || lines[i].Contains("uses :"))
+                    useLine = true;
             }
 
             try
@@ -120,13 +133,14 @@ namespace Raml.Common
         }
 
         private void ManageInclude(IList<string> lines, string destinationFolder, ICollection<string> includedFiles, string path,
-            string relativePath, bool confirmOvewrite, int i, Collection<string> scopeIncludedFiles, string rootRamlPath, bool isRootFile)
+            string relativePath, bool confirmOvewrite, int i, Collection<string> scopeIncludedFiles, string rootRamlPath, bool isRootFile,
+            bool isUseLine = false)
         {
             var line = lines[i];
-            if (!line.Contains(IncludeDirective))
+            if (!line.Contains(IncludeDirective) && !isUseLine)
                 return;
 
-            var includeSource = GetIncludePath(line);
+            var includeSource = isUseLine ? GetUsePath(line) : GetIncludePath(line);
 
             var destinationFilePath = GetDestinationFilePath(destinationFolder, includeSource);
 
@@ -261,6 +275,18 @@ namespace Raml.Common
             includeSource = includeSource.Replace("\r", string.Empty);
             return includeSource;
         }
+
+        private string GetUsePath(string line)
+        {
+            var index = line.IndexOf(":", StringComparison.Ordinal);
+            var includeSource = line.Substring(index + 1).Trim(includeDirectiveTrimChars);
+            includeSource = includeSource.Replace(Environment.NewLine, string.Empty);
+            includeSource = includeSource.Replace("\r\n", string.Empty);
+            includeSource = includeSource.Replace("\n", string.Empty);
+            includeSource = includeSource.Replace("\r", string.Empty);
+            return includeSource;
+        }
+
 
         private static string ResolveFullPath(string path, string relativePath, string includeSource)
         {

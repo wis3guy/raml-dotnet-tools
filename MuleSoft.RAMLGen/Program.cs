@@ -20,8 +20,6 @@ namespace MuleSoft.RAMLGen
                     (ClientOptions opts) => RunReferenceAndReturnExitCode(opts),
                     (ServerOptions opts) => RunContractAndReturnExitCode(opts),
                     errors => HandleError(errors, args));
-
-            Console.WriteLine("The code was generated successfully");
             return 0;
         }
 
@@ -46,16 +44,40 @@ namespace MuleSoft.RAMLGen
 
         private static int RunContractAndReturnExitCode(ServerOptions opts)
         {
-            var generator = new RamlGenerator();
-            generator.HandleContract(opts).ConfigureAwait(false).GetAwaiter().GetResult();
+            try
+            {
+                var generator = new RamlGenerator();
+                generator.HandleContract(opts).ConfigureAwait(false).GetAwaiter().GetResult();
+                Console.WriteLine("The code was generated successfully");
+            }
+            catch (Exception ex)
+            {
+                InformError(ex);
+            }
             return 0;
         }
 
+        private static void InformError(Exception ex)
+        {
+            Console.WriteLine("Error: " + ex.Message);
+            //Console.WriteLine(ex.Source);
+            //Console.WriteLine(ex.StackTrace);
+            if(ex.InnerException != null)
+                InformError(ex.InnerException);
+        }
 
         private static int RunReferenceAndReturnExitCode(ClientOptions opts)
         {
-            var generator = new RamlGenerator();
-            generator.HandleReference(opts).ConfigureAwait(false).GetAwaiter().GetResult(); ;
+            try
+            {
+                var generator = new RamlGenerator();
+                generator.HandleReference(opts).ConfigureAwait(false).GetAwaiter().GetResult(); ;
+                Console.WriteLine("The code was generated successfully");
+            }
+            catch (Exception ex)
+            {
+                InformError(ex);
+            }
             return 0;
         }
 

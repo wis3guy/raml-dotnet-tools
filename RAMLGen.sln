@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Raml.Tools", "Raml.Tools\Ra
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Raml.Tools.Tests", "Raml.Tools.Tests\Raml.Tools.Tests.csproj", "{506E0987-5F2D-409B-80DE-0B0D3EDE275B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Raml.CodeGen.Tests", "Raml.CodeGen.Tests\Raml.CodeGen.Tests.csproj", "{AB9722BA-FDC7-44B4-BFAC-9D6FF9227D4A}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Raml.Common", "Raml.Common\Raml.Common.csproj", "{05A60B40-E199-435D-99A4-0DD7637F5690}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{DD39147D-2814-4B26-81D7-76A354193023}"
@@ -39,10 +37,6 @@ Global
 		{506E0987-5F2D-409B-80DE-0B0D3EDE275B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{506E0987-5F2D-409B-80DE-0B0D3EDE275B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{506E0987-5F2D-409B-80DE-0B0D3EDE275B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AB9722BA-FDC7-44B4-BFAC-9D6FF9227D4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AB9722BA-FDC7-44B4-BFAC-9D6FF9227D4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AB9722BA-FDC7-44B4-BFAC-9D6FF9227D4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AB9722BA-FDC7-44B4-BFAC-9D6FF9227D4A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{05A60B40-E199-435D-99A4-0DD7637F5690}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{05A60B40-E199-435D-99A4-0DD7637F5690}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{05A60B40-E199-435D-99A4-0DD7637F5690}.Release|Any CPU.ActiveCfg = Release|Any CPU

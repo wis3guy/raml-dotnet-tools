@@ -8,7 +8,7 @@
 				 x:Name="RamlPreviewWindow"
                  Background="Gainsboro"
                  Title="Import RAML"
-				 Width="540"
+				 Width="545"
 				 ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <Style x:Key="TextBlockStyle"
@@ -19,7 +19,7 @@
 					Value="Black" />
             <Setter Property="BorderThickness"
 					Value="1" />
-            <Setter Property="Height" Value="280"></Setter>
+            <Setter Property="Height" Value="230"></Setter>
             <Setter Property="IsReadOnly"
 					Value="True" />
             <Setter Property="IsTabStop"
@@ -43,7 +43,7 @@
         <Style x:Key="Button"
 			   TargetType="{x:Type Button}">
             <Setter Property="Margin"
-					Value="0,0,0,10" />
+					Value="0,4,0,10" />
             <Setter Property="Height"
 					Value="50" />
             <Setter Property="FontSize"
@@ -57,7 +57,7 @@
         <Style x:Key="DefaultButton"
 			   TargetType="{x:Type Button}">
             <Setter Property="Margin"
-					Value="0,0,0,10" />
+					Value="0,4,0,10" />
             <Setter Property="Height"
 					Value="25" />
             <Setter Property="Width"

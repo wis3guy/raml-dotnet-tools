@@ -63,6 +63,7 @@ namespace Raml.Common
 
         public RamlPreview(IServiceProvider serviceProvider, Action<RamlChooserActionParams> action, string ramlTitle)
         {
+            btnOk.IsEnabled = false;
             ServiceProvider = serviceProvider;
             RamlTitle = ramlTitle;
             IsContractUseCase = true;
@@ -82,8 +83,8 @@ namespace Raml.Common
                     
                     ResourcesLabel.Text = GetResourcesPreview(document);
                     StopProgress();
-                    btnOk.IsEnabled = true;
                     SetNamespace(RamlTempFilePath);
+                    btnOk.IsEnabled = true;
 
                     if (NetNamingMapper.HasIndalidChars(txtFileName.Text))
                     {
@@ -184,7 +185,7 @@ namespace Raml.Common
 
                 SetPreview(ramlDocument);
 
-                btnOk.IsEnabled = true;
+                //btnOk.IsEnabled = true;
                 //StopProgress();
             }
             catch (UriFormatException uex)
@@ -240,6 +241,13 @@ namespace Raml.Common
         {
             StartProgress();
             DoEvents();
+
+            if (string.IsNullOrWhiteSpace(txtNamespace.Text))
+            {
+                ShowErrorStopProgressAndDisableOk("Error: you must specify a namespace.");
+                DialogResult = false;
+                return;                
+            }
 
             if (!txtFileName.Text.ToLowerInvariant().EndsWith(RamlFileExtension))
             {

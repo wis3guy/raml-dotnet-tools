@@ -28,7 +28,7 @@ namespace Raml.Tools.Tests
 
             var securitySchemes = new object[] { oauth };
             dynamicRaml.Add("securitySchemes", securitySchemes);
-            var ramlDocument = new RamlBuilder().Build(dynamicRaml);
+            var ramlDocument = new RamlBuilder().Build(dynamicRaml).ConfigureAwait(false).GetAwaiter().GetResult();
 
             var security = SecurityParser.GetSecurity(ramlDocument);
 
@@ -54,7 +54,7 @@ namespace Raml.Tools.Tests
             oauth.Add("oauth_1_0", settings);
             var securitySchemes = new object[] { oauth };
             dynamicRaml.Add("securitySchemes", securitySchemes);
-            var ramlDocument = new RamlBuilder().Build(dynamicRaml);
+            var ramlDocument = new RamlBuilder().Build(dynamicRaml).ConfigureAwait(false).GetAwaiter().GetResult();
 
             var security = SecurityParser.GetSecurity(ramlDocument);
 
