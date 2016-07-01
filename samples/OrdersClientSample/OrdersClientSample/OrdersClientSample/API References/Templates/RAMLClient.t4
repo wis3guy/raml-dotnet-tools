@@ -1,18 +1,20 @@
 <#
 // title: Client Proxy T4 Template
-// hash: f76f742897e51af142fefeb323172b28
-// version: 3.0
+// hash: 7c164ea3971102a6b60f36c7fa82d75c
+// version: 5.0
 #>
 <#@ template debug="false" hostspecific="false" language="C#" #>
 <#@ assembly name="$(binDir)RAML.Parser.dll" #>
 <#@ assembly name="$(binDir)EdgeJs.dll" #>
 <#@ assembly name="$(binDir)Raml.Tools.dll" #>
 <#@ assembly name="$(binDir)RAML.Api.Core.dll" #>
+<#@ assembly name="System.Runtime" #>
 <#@ assembly name="System.Core" #>
 <#@ import namespace="Raml.Common" #>
 <#@ import namespace="Raml.Tools" #>
 <#@ import namespace="Raml.Tools.ClientGenerator" #>
 <#@ import namespace="System.Linq" #>
+<#@ import namespace="System" #>
 <#@ parameter name="model" type="Raml.Tools.ClientGenerator.ClientGeneratorModel" #>
 <#@ output extension=".cs" #>
 
@@ -32,6 +34,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using RAML.Api.Core;
 using Raml.Common;
+using $(namespace).Models;
 
 namespace $(namespace)
 {
@@ -116,6 +119,9 @@ namespace $(namespace)
 <#
 	            }
 #>
+
+            url = url.Replace("?&", "?");
+
             var req = new HttpRequestMessage(<#= method.NetHttpMethod #>, url);
 <#
 
@@ -136,7 +142,7 @@ namespace $(namespace)
 			        else
 			        {
 #>
-            req.RequestUri = new Uri(url + (url.Contains("?") ? "&" : "?") + "access_token=" + proxy.OAuthAccessToken, UriKind.Relative);
+            req.RequestUri = new Uri(url + (url.EndsWith("?") || url.EndsWith("&") ? "" : (url.Contains("?") ? "&" : "?")) + "access_token=" + proxy.OAuthAccessToken, UriKind.Relative);
 <#
 			        }
 		        }
@@ -160,7 +166,7 @@ namespace $(namespace)
 <#
                         } else {
 #>
-            req.Content = new ObjectContent(typeof(Models.<#= method.Parameter.Type #>), <#= method.Parameter.Name #>, new JsonMediaTypeFormatter());                           
+            req.Content = new ObjectContent(typeof(<#= method.QualifiedParameterType #>), <#= method.Parameter.Name #>, new JsonMediaTypeFormatter());                           
 <#                        
                         }
         	        }
@@ -171,7 +177,7 @@ namespace $(namespace)
             string validationCall = "new Lazy<SchemaValidationResults>(() => new SchemaValidationResults(true), true)";
             string validationWithException = "";
 
-            if (method.ResponseType != "ApiResponse" && method.ReturnTypeObject != null)
+            if (method.ResponseType != "ApiResponse" && method.ReturnTypeObject != null && !string.IsNullOrWhiteSpace(method.ReturnTypeObject.JSONSchema))
 			{
                 var jsonSchema = !method.ReturnTypeObject.IsMultiple ? 
 					String.Format("\"{0}\"", method.ReturnTypeObject.JSONSchema) : 
@@ -189,6 +195,7 @@ namespace $(namespace)
 				}
 					
 			}
+
 <#
 			}
 #>
@@ -282,6 +289,9 @@ namespace $(namespace)
 <#
 	            }
 #>
+
+            url = url.Replace("?&", "?");
+
             var req = new HttpRequestMessage(<#= method.NetHttpMethod #>, url);
 
 <#
@@ -302,7 +312,7 @@ namespace $(namespace)
 			        else
 			        {
 #>
-            req.RequestUri = new Uri(url + (url.Contains("?") ? "&" : "?") + "access_token=" + proxy.OAuthAccessToken, UriKind.Relative);
+            req.RequestUri = new Uri(url + (url.EndsWith("?") || url.EndsWith("&") ? "" : (url.Contains("?") ? "&" : "?")) + "access_token=" + proxy.OAuthAccessToken, UriKind.Relative);
 <#
 			        }
 		        }
@@ -359,7 +369,7 @@ namespace $(namespace)
 #>
 	        var response = await proxy.Client.SendAsync(req);
 <#
-            if (method.ResponseType != "ApiResponse")
+            if (method.ResponseType != "ApiResponse" && method.ReturnTypeObject != null && !string.IsNullOrWhiteSpace(method.ReturnTypeObject.JSONSchema))
 			{
 #>
 			if (proxy.SchemaValidation.Enabled && proxy.SchemaValidation.RaiseExceptions)
@@ -548,6 +558,12 @@ foreach (var apiObject in model.Objects.Where(o => string.IsNullOrWhiteSpace(o.G
     if(hasXmlSchemas && !apiObject.Properties.Any())
         continue;
 
+    if(apiObject.IsArray && apiObject.Type != null)
+        continue;
+
+    if(apiObject.IsScalar)
+        continue;
+
 	if (!string.IsNullOrWhiteSpace(apiObject.Description))
 	{
 #>
@@ -557,7 +573,7 @@ foreach (var apiObject in model.Objects.Where(o => string.IsNullOrWhiteSpace(o.G
 <#
 	}	
 	
-	if(!apiObject.IsMultiple && apiObject.BaseClass != null) 
+	if(!apiObject.IsMultiple && !string.IsNullOrWhiteSpace(apiObject.BaseClass)) 
 	{
 #>
     public partial class <#= apiObject.Name #> <#= " : " +  apiObject.BaseClass #>
@@ -606,6 +622,8 @@ foreach (var apiObject in model.Objects.Where(o => string.IsNullOrWhiteSpace(o.G
         }
 <#
 	}
+
+
 
 	foreach (var property in apiObject.Properties.Where(p => p != null && p.Type != null && p.Name != null).ToArray())
 	{
@@ -973,13 +991,62 @@ foreach (var apiObject in model.ApiResponseObjects)
                 }
                 else
                 {
+<#
+        if(apiObject.IsUnionType)
+        {
+#>
+                    typedContent = new <#= body.Type.StartsWith("IList") ? body.Type.Substring(1) : body.Type #>();
+
+                    try
+                    {
+                        var task = Formatters != null && Formatters.Any()
+                                    ? RawContent.ReadAsAsync<<#= body.Type.StartsWith("IList") ? body.Type.Substring(1) : body.Type #>>(Formatters).ConfigureAwait(false)
+                                    : RawContent.ReadAsAsync<<#= body.Type.StartsWith("IList") ? body.Type.Substring(1) : body.Type #>>().ConfigureAwait(false);
+
+                        typedContent = task.GetAwaiter().GetResult();
+                        return typedContent;
+                    }
+                    catch (JsonSerializationException) { }
+
+                    var type = typedContent.GetType().IsGenericType
+                        ? typedContent.GetType().GetGenericArguments()[0]
+                        : typedContent.GetType();
+
+                    foreach (var prop in type.GetProperties())
+                    {
+                        try
+                        {
+                            var propertyType = prop.PropertyType;
+                            if (propertyType.IsInterface) // get List concrete type instead of interface
+                            {
+                                var typeName = "System.Collections.Generic.List`1[[" + propertyType.GetGenericArguments()[0] + "," + this.GetType().Assembly.FullName + "]]";
+                                propertyType = Type.GetType(typeName);
+                            }
+                            var task = Formatters != null && Formatters.Any()
+                                        ? RawContent.ReadAsAsync(propertyType, Formatters).ConfigureAwait(false)
+                                        : RawContent.ReadAsAsync(propertyType).ConfigureAwait(false);
+
+                            var content = task.GetAwaiter().GetResult();
+                            if(content == null)
+                                continue;
+
+                            prop.SetValue(typedContent, content);
+                            return typedContent;
+                        }
+                        catch (JsonSerializationException) { }
+                    }
+<#
+        } else {
+#>
                     var task =  Formatters != null && Formatters.Any() 
                                 ? RawContent.ReadAsAsync<<#= body.Type #>>(Formatters).ConfigureAwait(false)
                                 : RawContent.ReadAsAsync<<#= body.Type #>>().ConfigureAwait(false);
 		        
 		            typedContent = task.GetAwaiter().GetResult();
+<#      
+        } 
+#>
                 }
-
 		        return typedContent;
 	        }
 	    }
