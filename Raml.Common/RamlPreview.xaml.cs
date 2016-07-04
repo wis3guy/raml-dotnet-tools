@@ -273,9 +273,12 @@ namespace Raml.Common
                 var parameters = new RamlChooserActionParams(RamlOriginalSource, RamlTempFilePath, RamlTitle, path,
                     txtFileName.Text, txtNamespace.Text, doNotScaffold: isNewContract);
 
-                if(isContractUseCase)
+                if (isContractUseCase)
+                {
                     parameters.UseAsyncMethods = CheckBoxUseAsync.IsChecked.HasValue && CheckBoxUseAsync.IsChecked.Value;
-                
+                    parameters.IncludeApiVersionInRoutePrefix = CheckBoxIncludeApiVersionInRoutePrefix.IsChecked.HasValue && CheckBoxUseAsync.IsChecked.Value;
+                }
+
                 if(!isContractUseCase)
                     parameters.ClientRootClassName = txtClientName.Text;
 
