@@ -25,8 +25,9 @@ namespace Raml.Common
         private readonly RamlIncludesManager includesManager = new RamlIncludesManager();
         // action to execute when clicking Ok button (add RAML Reference, Scaffold Web Api, etc.)
         private readonly Action<RamlChooserActionParams> action;
-        private readonly bool isNewContract = false;
+        private readonly bool isNewContract;
         private bool isContractUseCase;
+        private bool useApiVersion;
 
         public string RamlTempFilePath { get; private set; }
         public string RamlOriginalSource { get; private set; }
@@ -50,6 +51,22 @@ namespace Raml.Common
 
         public Visibility NewContractVisibility { get { return isNewContract ? Visibility.Collapsed : Visibility.Visible; } }
 
+
+        public bool UseApiVersion
+        {
+            get { return useApiVersion; }
+            set
+            {
+                useApiVersion = value;
+
+                // Set a default value if version not specified
+                if (useApiVersion && string.IsNullOrWhiteSpace(txtApiVersion.Text))
+                    txtApiVersion.Text = "v1";
+
+                txtApiVersion.IsEnabled = useApiVersion;
+            }
+        }
+
         public RamlPreview(IServiceProvider serviceProvider, Action<RamlChooserActionParams> action, string ramlTempFilePath, string ramlOriginalSource, string ramlTitle, bool isContractUseCase)
         {
             ServiceProvider = serviceProvider;
@@ -59,6 +76,12 @@ namespace Raml.Common
             IsContractUseCase = isContractUseCase;
             this.action = action;
             InitializeComponent();
+        }
+
+        protected override void OnInitialized(EventArgs e)
+        {
+            base.OnInitialized(e);
+            StartProgress();
         }
 
         public RamlPreview(IServiceProvider serviceProvider, Action<RamlChooserActionParams> action, string ramlTitle)
@@ -84,17 +107,18 @@ namespace Raml.Common
                     ResourcesLabel.Text = GetResourcesPreview(document);
                     StopProgress();
                     SetNamespace(RamlTempFilePath);
+                    txtApiVersion.Text = NetNamingMapper.GetVersionName(document.Version);
                     btnOk.IsEnabled = true;
 
                     if (NetNamingMapper.HasIndalidChars(txtFileName.Text))
                     {
-                        ShowErrorStopProgressAndDisableOk("The specied file name has invalid chars");
+                        ShowErrorAndStopProgress("The specied file name has invalid chars");
                         txtFileName.Focus();
                     }
                 }
                 catch (Exception ex)
                 {
-                    ShowErrorStopProgressAndDisableOk("Error while parsing raml file. " + ex.Message);
+                    ShowErrorAndStopProgress("Error while parsing raml file. " + ex.Message);
                     ActivityLog.LogError(VisualStudioAutomationHelper.RamlVsToolsActivityLogSource, VisualStudioAutomationHelper.GetExceptionInfo(ex));
                 }
             });
@@ -137,13 +161,7 @@ namespace Raml.Common
         {
             progressBar.Visibility = Visibility.Visible;
             btnOk.IsEnabled = false;
-            Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
-        }
-
-        private void ShowErrorStopProgressAndDisableOk(string errorMessage)
-        {
-            ShowErrorAndStopProgress(errorMessage);
-            btnOk.IsEnabled = false;
+            Mouse.OverrideCursor = Cursors.Wait;
         }
 
         private void ShowErrorAndStopProgress(string errorMessage)
@@ -244,22 +262,25 @@ namespace Raml.Common
 
             if (string.IsNullOrWhiteSpace(txtNamespace.Text))
             {
-                ShowErrorStopProgressAndDisableOk("Error: you must specify a namespace.");
-                DialogResult = false;
+                ShowErrorAndStopProgress("Error: you must specify a namespace.");
                 return;                
             }
 
             if (!txtFileName.Text.ToLowerInvariant().EndsWith(RamlFileExtension))
             {
-                ShowErrorStopProgressAndDisableOk("Error: the file must have the .raml extension.");
-                DialogResult = false;
+                ShowErrorAndStopProgress("Error: the file must have the .raml extension.");
                 return;
             }
 
             if (!IsContractUseCase && !File.Exists(RamlTempFilePath))
             {
-                ShowErrorStopProgressAndDisableOk("Error: the specified file does not exist.");
-                DialogResult = false;
+                ShowErrorAndStopProgress("Error: the specified file does not exist.");
+                return;
+            }
+
+            if (IsContractUseCase && UseApiVersion && string.IsNullOrWhiteSpace(txtApiVersion.Text))
+            {
+                ShowErrorAndStopProgress("Error: you need to specify a version.");
                 return;
             }
 
@@ -276,7 +297,7 @@ namespace Raml.Common
                 if (isContractUseCase)
                 {
                     parameters.UseAsyncMethods = CheckBoxUseAsync.IsChecked.HasValue && CheckBoxUseAsync.IsChecked.Value;
-                    parameters.IncludeApiVersionInRoutePrefix = CheckBoxIncludeApiVersionInRoutePrefix.IsChecked.HasValue && CheckBoxUseAsync.IsChecked.Value;
+                    parameters.IncludeApiVersionInRoutePrefix = CheckBoxIncludeApiVersionInRoutePrefix.IsChecked.HasValue && CheckBoxIncludeApiVersionInRoutePrefix.IsChecked.Value;
                 }
 
                 if(!isContractUseCase)
@@ -292,7 +313,7 @@ namespace Raml.Common
             }
             catch (Exception ex)
             {
-                ShowErrorStopProgressAndDisableOk("Error: " + ex.Message);
+                ShowErrorAndStopProgress("Error: " + ex.Message);
 
                 ActivityLog.LogError(VisualStudioAutomationHelper.RamlVsToolsActivityLogSource, VisualStudioAutomationHelper.GetExceptionInfo(ex));
             }
@@ -347,7 +368,6 @@ namespace Raml.Common
 
         public async Task FromFile()
         {
-            //TODO: check
             try
             {
                 txtFileName.Text = Path.GetFileName(RamlTempFilePath);
@@ -366,7 +386,7 @@ namespace Raml.Common
             }
             catch (Exception ex)
             {
-                ShowErrorStopProgressAndDisableOk("Error while parsing raml file. " + ex.Message);
+                ShowErrorAndStopProgress("Error while parsing raml file. " + ex.Message);
                 ActivityLog.LogError(VisualStudioAutomationHelper.RamlVsToolsActivityLogSource,
                     VisualStudioAutomationHelper.GetExceptionInfo(ex));
             }

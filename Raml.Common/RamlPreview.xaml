@@ -19,7 +19,7 @@
 					Value="Black" />
             <Setter Property="BorderThickness"
 					Value="1" />
-            <Setter Property="Height" Value="230"></Setter>
+            <Setter Property="Height" Value="200"></Setter>
             <Setter Property="IsReadOnly"
 					Value="True" />
             <Setter Property="IsTabStop"
@@ -43,7 +43,7 @@
         <Style x:Key="Button"
 			   TargetType="{x:Type Button}">
             <Setter Property="Margin"
-					Value="0,4,0,10" />
+					Value="0,8,0,10" />
             <Setter Property="Height"
 					Value="50" />
             <Setter Property="FontSize"
@@ -57,7 +57,7 @@
         <Style x:Key="DefaultButton"
 			   TargetType="{x:Type Button}">
             <Setter Property="Margin"
-					Value="0,4,0,10" />
+					Value="0,8,0,10" />
             <Setter Property="Height"
 					Value="25" />
             <Setter Property="Width"
@@ -153,33 +153,50 @@
 								 Grid.Row="2"
 								 Width="220" />
 
-            <Label x:Name="lblAsync"
-							   Content="Use Async method signatures"
-							   Style="{StaticResource DefaultLabel}"
-                               Visibility="{Binding ElementName=RamlPreviewWindow, Path=ContractUseCaseVisibility}"
-							   Grid.Column="2"
-							   Grid.Row="3"
-                               Margin="13,10,28,0" />
-            <CheckBox Grid.Row="3"
-                      Grid.Column="2"
-                      Margin="0,12,0,18"
-                      Name="CheckBoxUseAsync"
-                      Visibility="{Binding ElementName=RamlPreviewWindow, Path=ContractUseCaseVisibility}"
-                      VerticalAlignment="Center" ToolTip="Select to generate async method signatures for calling the client"/>
 
             <Label x:Name="lblIncludeApiVersionInRoutePrefix"
-							   Content="Include api version in route prefix"
+							   Content="Use api version"
 							   Style="{StaticResource DefaultLabel}"
                                Visibility="{Binding ElementName=RamlPreviewWindow, Path=ContractUseCaseVisibility}"
-							   Grid.Column="2"
+							   Grid.Column="1"
+							   Grid.Row="3"
+                               ToolTip="Select to include the version of the RAML contract as a prefix in routes and controllers names"
+                               Margin="5"  />
+            <CheckBox Grid.Row="3"
+                      Grid.Column="2"
+                      Margin="0,10,0,10"
+                      Name="CheckBoxIncludeApiVersionInRoutePrefix"
+                      IsChecked="{Binding ElementName=RamlPreviewWindow, Path=UseApiVersion}"
+                      Visibility="{Binding ElementName=RamlPreviewWindow, Path=ContractUseCaseVisibility}"
+                      VerticalAlignment="Center" 
+                      ToolTip="Select to include the version of the RAML contract as a prefix in routes and controllers names"/>
+            <TextBox x:Name="txtApiVersion"
+								 Style="{StaticResource DefaultTextBox}"
+                                 Visibility="{Binding ElementName=RamlPreviewWindow, Path=ContractUseCaseVisibility}"
+								 Grid.Column="2"
+                                 IsEnabled="False"
+                                 ToolTip="Select to include the version of the RAML contract as a prefix in routes and controllers names"
+								 Grid.Row="3"
+                                 HorizontalAlignment="Right"
+								 Width="190" />
+
+            <Label x:Name="lblAsync"
+							   Content="Use async methods"
+                               ToolTip="Use async method signatures for the actions in the controllers"
+							   Style="{StaticResource DefaultLabel}"
+                               Visibility="{Binding ElementName=RamlPreviewWindow, Path=ContractUseCaseVisibility}"
+							   Grid.Column="1"
 							   Grid.Row="4"
-                               Margin="13,10,0,0" />
+                               Margin="5" />
             <CheckBox Grid.Row="4"
                       Grid.Column="2"
-                      Margin="0,12,0,18"
-                      Name="CheckBoxIncludeApiVersionInRoutePrefix"
+                      Margin="0,10,0,10"
+                      Name="CheckBoxUseAsync"
+                      ToolTip="Use async method signatures for the actions in the controllers"
                       Visibility="{Binding ElementName=RamlPreviewWindow, Path=ContractUseCaseVisibility}"
-                      VerticalAlignment="Center" ToolTip="Select to include the version of the RAML contract as part of each route prefix"/>
+                      VerticalAlignment="Center" 
+                      />
+
         </Grid>
 
 
@@ -200,7 +217,7 @@
             <Label Content="Preview RAML"
                            Visibility="{Binding ElementName=RamlPreviewWindow, Path=NewContractVisibility}"
                            FontSize="13"
-						   Margin="0,15,0,0"
+						   Margin="0,5,0,0"
 						   Grid.Row="0"
                    Grid.Column="1"/>
 
@@ -234,7 +251,8 @@
                   Grid.Column="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="78"></ColumnDefinition>
-                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="77*"></ColumnDefinition>
+                    <ColumnDefinition Width="278*"/>
                     <ColumnDefinition Width="78"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
 
@@ -244,15 +262,15 @@
                                     Height="35"
 									x:Name="btnCancel"
 									Style="{StaticResource Button}"
-									Click="btnCancel_Click" />
+									Click="btnCancel_Click" Margin="5,8,5,10" />
 
                 <Button Content="Import"
-                    Grid.Column="2"
+                    Grid.Column="3"
                     Width="68"
-                                    Height="35"
-									Style="{StaticResource DefaultButton}"
-									x:Name="btnOk"
-									Click="btnOk_Click" />
+                    Height="35"
+					Style="{StaticResource DefaultButton}"
+					x:Name="btnOk"
+					Click="btnOk_Click" Margin="5,8,5,10" />
 
             </Grid>
         </Grid>

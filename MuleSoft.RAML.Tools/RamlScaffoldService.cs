@@ -281,7 +281,7 @@ namespace MuleSoft.RAML.Tools
             var controllerImplementationTemplateParams =
                 new TemplateParams<ControllerObject>(Path.Combine(templatesFolder, ControllerImplementationTemplateName),
                     controllersFolderItem, "controllerObject", model.Controllers, controllersFolderPath, folderItem,
-                    extensionPath, targetNamespace, "Controller", false);
+                    extensionPath, targetNamespace, "Controller", false, GetVersionPrefix(includeApiVersionInRoutePrefix, model.ApiVersion));
             controllerImplementationTemplateParams.Title = Settings.Default.ControllerImplementationTemplateTitle;
             controllerImplementationTemplateParams.IncludeHasModels = true;
             controllerImplementationTemplateParams.HasModels = model.Objects.Any(o => o.IsScalar == false) || model.Enums.Any();
@@ -289,6 +289,11 @@ namespace MuleSoft.RAML.Tools
             controllerImplementationTemplateParams.IncludeApiVersionInRoutePrefix = includeApiVersionInRoutePrefix;
             controllerImplementationTemplateParams.ApiVersion = model.ApiVersion;
             GenerateCodeFromTemplate(controllerImplementationTemplateParams);
+        }
+
+        private static string GetVersionPrefix(bool includeApiVersionInRoutePrefix, string apiVersion)
+        {
+            return includeApiVersionInRoutePrefix ? NetNamingMapper.GetVersionName(apiVersion) : string.Empty;
         }
 
         private void AddOrUpdateControllerInterfaces(string targetNamespace, string generatedFolderPath, ProjectItem ramlItem,
@@ -303,7 +308,7 @@ namespace MuleSoft.RAML.Tools
             var controllerInterfaceParams =
                 new TemplateParams<ControllerObject>(Path.Combine(templatesFolder, ControllerInterfaceTemplateName),
                     ramlItem, "controllerObject", model.Controllers, targetFolderPath, folderItem, extensionPath,
-                    targetNamespace, "Controller", true, "I");
+                    targetNamespace, "Controller", true, "I" + GetVersionPrefix(includeApiVersionInRoutePrefix, model.ApiVersion));
             controllerInterfaceParams.Title = Settings.Default.ControllerInterfaceTemplateTitle;
             controllerInterfaceParams.IncludeHasModels = true;
             controllerInterfaceParams.HasModels = model.Objects.Any(o => o.IsScalar == false) || model.Enums.Any();
@@ -325,7 +330,7 @@ namespace MuleSoft.RAML.Tools
             var controllerBaseTemplateParams =
                 new TemplateParams<ControllerObject>(Path.Combine(templatesFolder, ControllerBaseTemplateName),
                     ramlItem, "controllerObject", model.Controllers, targetFolderPath, folderItem, extensionPath,
-                    targetNamespace, "Controller");
+                    targetNamespace, "Controller", true, GetVersionPrefix(includeApiVersionInRoutePrefix, model.ApiVersion));
             controllerBaseTemplateParams.Title = Settings.Default.BaseControllerTemplateTitle;
             controllerBaseTemplateParams.IncludeHasModels = true;
             controllerBaseTemplateParams.HasModels = model.Objects.Any(o => o.IsScalar == false) || model.Enums.Any();
