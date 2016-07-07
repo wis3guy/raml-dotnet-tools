@@ -99,10 +99,10 @@ namespace MuleSoft.RAML.Tools
                 return;
 
             var extensionPath = Path.GetDirectoryName(GetType().Assembly.Location) + Path.DirectorySeparatorChar;
-            
-            AddOrUpdateModels(targetNamespace, generatedFolderPath, ramlItem, model, folderItem, extensionPath);
 
-            AddOrUpdateEnums(targetNamespace, generatedFolderPath, ramlItem, model, folderItem, extensionPath);
+            AddOrUpdateModels(targetNamespace, generatedFolderPath, ramlItem, model, folderItem, extensionPath, includeApiVersionInRoutePrefix);
+
+            AddOrUpdateEnums(targetNamespace, generatedFolderPath, ramlItem, model, folderItem, extensionPath, includeApiVersionInRoutePrefix);
 
             AddOrUpdateControllerBase(targetNamespace, generatedFolderPath, ramlItem, model, folderItem, extensionPath, useAsyncMethods, includeApiVersionInRoutePrefix);
 
@@ -340,8 +340,7 @@ namespace MuleSoft.RAML.Tools
             GenerateCodeFromTemplate(controllerBaseTemplateParams);
         }
 
-        private void AddOrUpdateModels(string targetNamespace, string generatedFolderPath, ProjectItem ramlItem,
-            WebApiGeneratorModel model, ProjectItem folderItem, string extensionPath)
+        private void AddOrUpdateModels(string targetNamespace, string generatedFolderPath, ProjectItem ramlItem, WebApiGeneratorModel model, ProjectItem folderItem, string extensionPath, bool includeApiVersionInRoutePrefix)
         {
             templatesManager.CopyServerTemplateToProjectFolder(generatedFolderPath, ModelTemplateName,
                 Settings.Default.ModelsTemplateTitle, templateSubFolder);
@@ -359,13 +358,12 @@ namespace MuleSoft.RAML.Tools
 
             var apiObjectTemplateParams = new TemplateParams<ApiObject>(
                 Path.Combine(templatesFolder, ModelTemplateName), ramlItem, "apiObject", models,
-                targetFolderPath, folderItem, extensionPath, targetNamespace);
+                targetFolderPath, folderItem, extensionPath, targetNamespace, GetVersionPrefix(includeApiVersionInRoutePrefix, model.ApiVersion));
             apiObjectTemplateParams.Title = Settings.Default.ModelsTemplateTitle;
             GenerateCodeFromTemplate(apiObjectTemplateParams);
         }
 
-        private void AddOrUpdateEnums(string targetNamespace, string generatedFolderPath, ProjectItem ramlItem,
-            WebApiGeneratorModel model, ProjectItem folderItem, string extensionPath)
+        private void AddOrUpdateEnums(string targetNamespace, string generatedFolderPath, ProjectItem ramlItem, WebApiGeneratorModel model, ProjectItem folderItem, string extensionPath, bool includeApiVersionInRoutePrefix)
         {
             templatesManager.CopyServerTemplateToProjectFolder(generatedFolderPath, EnumTemplateName,
                 Settings.Default.EnumsTemplateTitle, templateSubFolder);
@@ -375,7 +373,7 @@ namespace MuleSoft.RAML.Tools
 
             var apiEnumTemplateParams = new TemplateParams<ApiEnum>(
                 Path.Combine(templatesFolder, EnumTemplateName), ramlItem, "apiEnum", model.Enums,
-                targetFolderPath, folderItem, extensionPath, targetNamespace);
+                targetFolderPath, folderItem, extensionPath, targetNamespace, GetVersionPrefix(includeApiVersionInRoutePrefix, model.ApiVersion));
             apiEnumTemplateParams.Title = Settings.Default.ModelsTemplateTitle;
             GenerateCodeFromTemplate(apiEnumTemplateParams);
         }
