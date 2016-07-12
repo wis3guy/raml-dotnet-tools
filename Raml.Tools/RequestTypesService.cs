@@ -294,7 +294,7 @@ namespace Raml.Tools
                 return body.First(b => b.Value != null && !string.IsNullOrWhiteSpace(b.Value.Schema)).Value;
 
             if (body.Any(b => b.Value != null && !string.IsNullOrWhiteSpace(b.Value.Type)))
-                return body.First(b => b.Value != null && !string.IsNullOrWhiteSpace(b.Value.Schema)).Value;
+                return body.First(b => b.Value != null && !string.IsNullOrWhiteSpace(b.Value.Type)).Value;
 
             return null;
         }
