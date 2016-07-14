@@ -411,7 +411,7 @@ namespace MuleSoft.RAML.Tools
             var result = includesManager.Manage(ramlSource, includesFolderPath, confirmOverrite: true, rootRamlPath: folderPath + Path.DirectorySeparatorChar);
 
             var includesFolderItem = folderItem.ProjectItems.Cast<ProjectItem>().FirstOrDefault(i => i.Name == InstallerServices.IncludesFolderName);
-            if (includesFolderItem == null)
+            if (includesFolderItem == null && !VisualStudioAutomationHelper.IsAVisualStudio2015Project(folderItem.ContainingProject))
                 includesFolderItem = folderItem.ProjectItems.AddFolder(InstallerServices.IncludesFolderName);
 
             foreach (var file in result.IncludedFiles)
