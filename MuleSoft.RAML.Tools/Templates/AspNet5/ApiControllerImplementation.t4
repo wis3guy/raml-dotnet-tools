@@ -7,6 +7,7 @@
 <#@ parameter name="controllerObject" type="Raml.Tools.WebApiGenerator.ControllerObject" #>
 <#@ parameter name="hasModels" type="System.Boolean" #>
 <#@ parameter name="useAsyncMethods" type="System.Boolean" #>
+<#@ parameter name="apiVersion" type="System.String" #>
 <#@ output extension=".cs" #>
 
 using System;
@@ -19,7 +20,11 @@ using $(namespace).Models;
 
 namespace $(namespace)
 {
+<# if(System.String.IsNullOrWhiteSpace(apiVersion)) { #>
     public partial class <#= controllerObject.Name #>Controller : I<#= controllerObject.Name #>Controller
+<# } else { #>
+    public partial class <#= apiVersion #><#= controllerObject.Name #>Controller : I<#= apiVersion #><#= controllerObject.Name #>Controller
+<# } #>
     {
 
 <#

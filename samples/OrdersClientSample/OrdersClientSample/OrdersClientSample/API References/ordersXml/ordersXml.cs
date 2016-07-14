@@ -1,4 +1,4 @@
-// Template: Client Proxy T4 Template (RAMLClient.t4) version 3.0
+// Template: Client Proxy T4 Template (RAMLClient.t4) version 5.0
 
 using System;
 using System.Collections.Generic;
@@ -16,6 +16,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using RAML.Api.Core;
 using Raml.Common;
+using OrdersClientSample.OrdersXml.Models;
 
 namespace OrdersClientSample.OrdersXml
 {
@@ -30,23 +31,17 @@ namespace OrdersClientSample.OrdersXml
 
 
         /// <summary>
-		/// gets already shipped orders
+		/// gets already shipped orders - /shipped
 		/// </summary>
         public virtual async Task<Models.ShippedGetResponse> Get()
         {
 
             var url = "orders/shipped";
+
+            url = url.Replace("?&", "?");
+
             var req = new HttpRequestMessage(HttpMethod.Get, url);
 	        var response = await proxy.Client.SendAsync(req);
-			
-			if (proxy.SchemaValidation.Enabled)
-		    {
-				if(proxy.SchemaValidation.RaiseExceptions) 
-				{
-					await SchemaValidator.ValidateWithExceptionAsync("", response.Content);
-				}
-					
-			}
 
             return new Models.ShippedGetResponse  
                                             {
@@ -54,20 +49,23 @@ namespace OrdersClientSample.OrdersXml
                                                 RawHeaders = response.Headers, 
                                                 StatusCode = response.StatusCode,
                                                 ReasonPhrase = response.ReasonPhrase,
-												SchemaValidation = new Lazy<SchemaValidationResults>(() => SchemaValidator.IsValid("", response.Content), true)
+												SchemaValidation = new Lazy<SchemaValidationResults>(() => new SchemaValidationResults(true), true)
                                             };
 
         }
 
         /// <summary>
-		/// gets already shipped orders
+		/// gets already shipped orders - /shipped
 		/// </summary>
 		/// <param name="request">ApiRequest</param>
-		/// <param name="responseFormatters">response formmaters</param>
+		/// <param name="responseFormatters">response formatters</param>
         public virtual async Task<Models.ShippedGetResponse> Get(ApiRequest request, IEnumerable<MediaTypeFormatter> responseFormatters = null)
         {
 
             var url = "orders/shipped";
+
+            url = url.Replace("?&", "?");
+
             var req = new HttpRequestMessage(HttpMethod.Get, url);
 
             if(request.RawHeaders != null)
@@ -78,14 +76,6 @@ namespace OrdersClientSample.OrdersXml
                 }
             }
 	        var response = await proxy.Client.SendAsync(req);
-			if (proxy.SchemaValidation.Enabled && proxy.SchemaValidation.RaiseExceptions)
-            {
-				if(proxy.SchemaValidation.RaiseExceptions)
-				{
-					await SchemaValidator.ValidateWithExceptionAsync("", response.Content);
-				}
-				
-            }
             return new Models.ShippedGetResponse  
                                             {
                                                 RawContent = response.Content,
@@ -93,7 +83,7 @@ namespace OrdersClientSample.OrdersXml
 	                                            Formatters = responseFormatters,
                                                 StatusCode = response.StatusCode,
                                                 ReasonPhrase = response.ReasonPhrase,
-												SchemaValidation = new Lazy<SchemaValidationResults>(() => SchemaValidator.IsValid("", response.Content), true)
+												SchemaValidation = new Lazy<SchemaValidationResults>(() => new SchemaValidationResults(true), true)
                                             };
         }
 
@@ -110,23 +100,17 @@ namespace OrdersClientSample.OrdersXml
 
 
         /// <summary>
-		/// gets not shipped orders
+		/// gets not shipped orders - /notshipped
 		/// </summary>
         public virtual async Task<Models.NotshippedGetResponse> Get()
         {
 
             var url = "orders/notshipped";
+
+            url = url.Replace("?&", "?");
+
             var req = new HttpRequestMessage(HttpMethod.Get, url);
 	        var response = await proxy.Client.SendAsync(req);
-			
-			if (proxy.SchemaValidation.Enabled)
-		    {
-				if(proxy.SchemaValidation.RaiseExceptions) 
-				{
-					await SchemaValidator.ValidateWithExceptionAsync("", response.Content);
-				}
-					
-			}
 
             return new Models.NotshippedGetResponse  
                                             {
@@ -134,20 +118,23 @@ namespace OrdersClientSample.OrdersXml
                                                 RawHeaders = response.Headers, 
                                                 StatusCode = response.StatusCode,
                                                 ReasonPhrase = response.ReasonPhrase,
-												SchemaValidation = new Lazy<SchemaValidationResults>(() => SchemaValidator.IsValid("", response.Content), true)
+												SchemaValidation = new Lazy<SchemaValidationResults>(() => new SchemaValidationResults(true), true)
                                             };
 
         }
 
         /// <summary>
-		/// gets not shipped orders
+		/// gets not shipped orders - /notshipped
 		/// </summary>
 		/// <param name="request">ApiRequest</param>
-		/// <param name="responseFormatters">response formmaters</param>
+		/// <param name="responseFormatters">response formatters</param>
         public virtual async Task<Models.NotshippedGetResponse> Get(ApiRequest request, IEnumerable<MediaTypeFormatter> responseFormatters = null)
         {
 
             var url = "orders/notshipped";
+
+            url = url.Replace("?&", "?");
+
             var req = new HttpRequestMessage(HttpMethod.Get, url);
 
             if(request.RawHeaders != null)
@@ -158,14 +145,6 @@ namespace OrdersClientSample.OrdersXml
                 }
             }
 	        var response = await proxy.Client.SendAsync(req);
-			if (proxy.SchemaValidation.Enabled && proxy.SchemaValidation.RaiseExceptions)
-            {
-				if(proxy.SchemaValidation.RaiseExceptions)
-				{
-					await SchemaValidator.ValidateWithExceptionAsync("", response.Content);
-				}
-				
-            }
             return new Models.NotshippedGetResponse  
                                             {
                                                 RawContent = response.Content,
@@ -173,7 +152,7 @@ namespace OrdersClientSample.OrdersXml
 	                                            Formatters = responseFormatters,
                                                 StatusCode = response.StatusCode,
                                                 ReasonPhrase = response.ReasonPhrase,
-												SchemaValidation = new Lazy<SchemaValidationResults>(() => SchemaValidator.IsValid("", response.Content), true)
+												SchemaValidation = new Lazy<SchemaValidationResults>(() => new SchemaValidationResults(true), true)
                                             };
         }
 
@@ -190,7 +169,7 @@ namespace OrdersClientSample.OrdersXml
 
 
         /// <summary>
-		/// marks order as shipped
+		/// marks order as shipped - /ship
 		/// </summary>
 		/// <param name="content"></param>
 		/// <param name="id"></param>
@@ -199,6 +178,9 @@ namespace OrdersClientSample.OrdersXml
 
             var url = "orders/{id}/ship";
             url = url.Replace("{id}", id.ToString());
+
+            url = url.Replace("?&", "?");
+
             var req = new HttpRequestMessage(HttpMethod.Post, url);
             req.Content = new StringContent(content);
 	        var response = await proxy.Client.SendAsync(req);
@@ -215,7 +197,7 @@ namespace OrdersClientSample.OrdersXml
         }
 
         /// <summary>
-		/// marks order as shipped
+		/// marks order as shipped - /ship
 		/// </summary>
 		/// <param name="request">Models.ShipPostRequest</param>
         public virtual async Task<ApiResponse> Post(Models.ShipPostRequest request)
@@ -229,6 +211,9 @@ namespace OrdersClientSample.OrdersXml
 				throw new InvalidOperationException("Uri Parameter Id cannot be null");
 
             url = url.Replace("{id}", request.UriParameters.Id.ToString());
+
+            url = url.Replace("?&", "?");
+
             var req = new HttpRequestMessage(HttpMethod.Post, url);
 
             if(request.RawHeaders != null)
@@ -278,13 +263,16 @@ namespace OrdersClientSample.OrdersXml
 
 
         /// <summary>
-		/// Create a new purchase order
+		/// Create a new purchase order - /orders
 		/// </summary>
 		/// <param name="purchaseordertype"></param>
         public virtual async Task<ApiResponse> Post(Models.PurchaseOrderType purchaseordertype)
         {
 
             var url = "orders";
+
+            url = url.Replace("?&", "?");
+
             var req = new HttpRequestMessage(HttpMethod.Post, url);
 
             var stringWriter = new StringWriter();
@@ -304,13 +292,16 @@ namespace OrdersClientSample.OrdersXml
         }
 
         /// <summary>
-		/// Create a new purchase order
+		/// Create a new purchase order - /orders
 		/// </summary>
 		/// <param name="request">Models.OrdersPostRequest</param>
         public virtual async Task<ApiResponse> Post(Models.OrdersPostRequest request)
         {
 
             var url = "orders";
+
+            url = url.Replace("?&", "?");
+
             var req = new HttpRequestMessage(HttpMethod.Post, url);
 
             if(request.RawHeaders != null)
@@ -336,7 +327,7 @@ namespace OrdersClientSample.OrdersXml
 
 
         /// <summary>
-		/// gets an order by id
+		/// gets an order by id - /{id}
 		/// </summary>
 		/// <param name="id"></param>
         public virtual async Task<Models.OrdersGetResponse> Get(string id)
@@ -344,17 +335,11 @@ namespace OrdersClientSample.OrdersXml
 
             var url = "orders/{id}";
             url = url.Replace("{id}", id.ToString());
+
+            url = url.Replace("?&", "?");
+
             var req = new HttpRequestMessage(HttpMethod.Get, url);
 	        var response = await proxy.Client.SendAsync(req);
-			
-			if (proxy.SchemaValidation.Enabled)
-		    {
-				if(proxy.SchemaValidation.RaiseExceptions) 
-				{
-					await SchemaValidator.ValidateWithExceptionAsync("", response.Content);
-				}
-					
-			}
 
             return new Models.OrdersGetResponse  
                                             {
@@ -362,16 +347,16 @@ namespace OrdersClientSample.OrdersXml
                                                 RawHeaders = response.Headers, 
                                                 StatusCode = response.StatusCode,
                                                 ReasonPhrase = response.ReasonPhrase,
-												SchemaValidation = new Lazy<SchemaValidationResults>(() => SchemaValidator.IsValid("", response.Content), true)
+												SchemaValidation = new Lazy<SchemaValidationResults>(() => new SchemaValidationResults(true), true)
                                             };
 
         }
 
         /// <summary>
-		/// gets an order by id
+		/// gets an order by id - /{id}
 		/// </summary>
 		/// <param name="request">Models.OrdersGetRequest</param>
-		/// <param name="responseFormatters">response formmaters</param>
+		/// <param name="responseFormatters">response formatters</param>
         public virtual async Task<Models.OrdersGetResponse> Get(Models.OrdersGetRequest request, IEnumerable<MediaTypeFormatter> responseFormatters = null)
         {
 
@@ -383,6 +368,9 @@ namespace OrdersClientSample.OrdersXml
 				throw new InvalidOperationException("Uri Parameter Id cannot be null");
 
             url = url.Replace("{id}", request.UriParameters.Id.ToString());
+
+            url = url.Replace("?&", "?");
+
             var req = new HttpRequestMessage(HttpMethod.Get, url);
 
             if(request.RawHeaders != null)
@@ -393,14 +381,6 @@ namespace OrdersClientSample.OrdersXml
                 }
             }
 	        var response = await proxy.Client.SendAsync(req);
-			if (proxy.SchemaValidation.Enabled && proxy.SchemaValidation.RaiseExceptions)
-            {
-				if(proxy.SchemaValidation.RaiseExceptions)
-				{
-					await SchemaValidator.ValidateWithExceptionAsync("", response.Content);
-				}
-				
-            }
             return new Models.OrdersGetResponse  
                                             {
                                                 RawContent = response.Content,
@@ -408,13 +388,13 @@ namespace OrdersClientSample.OrdersXml
 	                                            Formatters = responseFormatters,
                                                 StatusCode = response.StatusCode,
                                                 ReasonPhrase = response.ReasonPhrase,
-												SchemaValidation = new Lazy<SchemaValidationResults>(() => SchemaValidator.IsValid("", response.Content), true)
+												SchemaValidation = new Lazy<SchemaValidationResults>(() => new SchemaValidationResults(true), true)
                                             };
         }
 
 
         /// <summary>
-		/// updates an order
+		/// updates an order - /{id}
 		/// </summary>
 		/// <param name="purchaseordertype"></param>
 		/// <param name="id"></param>
@@ -423,6 +403,9 @@ namespace OrdersClientSample.OrdersXml
 
             var url = "orders/{id}";
             url = url.Replace("{id}", id.ToString());
+
+            url = url.Replace("?&", "?");
+
             var req = new HttpRequestMessage(HttpMethod.Put, url);
 
             var stringWriter = new StringWriter();
@@ -442,7 +425,7 @@ namespace OrdersClientSample.OrdersXml
         }
 
         /// <summary>
-		/// updates an order
+		/// updates an order - /{id}
 		/// </summary>
 		/// <param name="request">Models.OrdersPutRequest</param>
         public virtual async Task<ApiResponse> Put(Models.OrdersPutRequest request)
@@ -456,6 +439,9 @@ namespace OrdersClientSample.OrdersXml
 				throw new InvalidOperationException("Uri Parameter Id cannot be null");
 
             url = url.Replace("{id}", request.UriParameters.Id.ToString());
+
+            url = url.Replace("?&", "?");
+
             var req = new HttpRequestMessage(HttpMethod.Put, url);
 
             if(request.RawHeaders != null)
@@ -568,7 +554,7 @@ namespace OrdersClientSample.OrdersXml.Models {
     
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.34230")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -717,7 +703,7 @@ namespace OrdersClientSample.OrdersXml.Models {
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(UKAddress))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(USAddress))]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.34230")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -765,7 +751,7 @@ namespace OrdersClientSample.OrdersXml.Models {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.34230")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -800,7 +786,7 @@ namespace OrdersClientSample.OrdersXml.Models {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.34230")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -969,7 +955,7 @@ namespace OrdersClientSample.OrdersXml.Models {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.34230")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://www.example.com/IPO", IncludeInSchema=false)]
     public enum ItemsChoiceType1 {
@@ -985,7 +971,7 @@ namespace OrdersClientSample.OrdersXml.Models {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.34230")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://www.example.com/IPO")]
     public enum ItemsTypeItemShipBy {
@@ -1001,7 +987,7 @@ namespace OrdersClientSample.OrdersXml.Models {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.34230")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -1040,7 +1026,7 @@ namespace OrdersClientSample.OrdersXml.Models {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.34230")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -1075,7 +1061,7 @@ namespace OrdersClientSample.OrdersXml.Models {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.34230")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://www.example.com/IPO")]
     public enum USState {
@@ -1097,7 +1083,7 @@ namespace OrdersClientSample.OrdersXml.Models {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.34230")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://www.example.com/IPO", IncludeInSchema=false)]
     public enum ItemsChoiceType {
@@ -1116,7 +1102,7 @@ namespace OrdersClientSample.OrdersXml.Models {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.34230")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://www.example.com/IPO", IncludeInSchema=false)]
     public enum ItemChoiceType {
@@ -1132,7 +1118,7 @@ namespace OrdersClientSample.OrdersXml.Models {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.34230")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -1329,7 +1315,6 @@ namespace OrdersClientSample.OrdersXml.Models
 		        
 		            typedContent = task.GetAwaiter().GetResult();
                 }
-
 		        return typedContent;
 	        }
 	    }
@@ -1378,7 +1363,6 @@ namespace OrdersClientSample.OrdersXml.Models
 		        
 		            typedContent = task.GetAwaiter().GetResult();
                 }
-
 		        return typedContent;
 	        }
 	    }
@@ -1427,7 +1411,6 @@ namespace OrdersClientSample.OrdersXml.Models
 		        
 		            typedContent = task.GetAwaiter().GetResult();
                 }
-
 		        return typedContent;
 	        }
 	    }

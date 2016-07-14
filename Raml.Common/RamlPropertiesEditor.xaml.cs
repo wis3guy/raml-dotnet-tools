@@ -18,6 +18,7 @@ namespace Raml.Common
         private string source;
         private string clientName;
         private bool useAsyncMethods;
+        private bool includeApiVersionInRoutePrefix;
 
         public string Namespace
         {
@@ -59,6 +60,16 @@ namespace Raml.Common
             }
         }
 
+        public bool IncludeApiVersionInRoutePrefix
+        {
+            get { return includeApiVersionInRoutePrefix; }
+            set
+            {
+                includeApiVersionInRoutePrefix = value;
+                OnPropertyChanged();
+            }
+        }
+
         public Visibility ServerVisibility
         {
             get { return isServerUseCase ? Visibility.Visible : Visibility.Collapsed; }
@@ -84,7 +95,10 @@ namespace Raml.Common
             Namespace = ramlProperties.Namespace;
             Source = ramlProperties.Source;
             if (isServerUseCase)
+            {
                 UseAsyncMethods = ramlProperties.UseAsyncMethods;
+                IncludeApiVersionInRoutePrefix = ramlProperties.IncludeApiVersionInRoutePrefix;
+            }
             else
                 ClientName = ramlProperties.ClientName;
 
@@ -99,7 +113,8 @@ namespace Raml.Common
                 Namespace = Namespace,
                 Source = Source,
                 ClientName = ClientName,
-                UseAsyncMethods = UseAsyncMethods
+                UseAsyncMethods = UseAsyncMethods,
+                IncludeApiVersionInRoutePrefix = IncludeApiVersionInRoutePrefix
             };
             
             RamlPropertiesManager.Save(ramlProperties, ramlPath);

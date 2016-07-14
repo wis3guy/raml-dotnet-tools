@@ -8,7 +8,7 @@
                  Background="Gainsboro"
                  Title="Edit RAML Properties"
                  Width="500"
-                 Height="220"
+                 Height="240"
                  x:Name="RamlPropertiesEditorWindow"
 				 WindowStartupLocation="CenterScreen">
     <Window.Resources>
@@ -81,6 +81,7 @@
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -124,7 +125,6 @@
 								 Grid.Column="2"
 								 Grid.Row="3" />
 
-
         <CheckBox IsChecked="{Binding ElementName=RamlPropertiesEditorWindow, Path=UseAsyncMethods}"
                                  Content="Use async method signatures"
                                  Style="{StaticResource DefaultCheckBox}"
@@ -132,7 +132,14 @@
                                  Visibility="{Binding ElementName=RamlPropertiesEditorWindow, Path=ServerVisibility}"
 								 Grid.Row="3" />
 
-        <Grid Grid.Row="5" Grid.ColumnSpan="4">
+        <CheckBox IsChecked="{Binding ElementName=RamlPropertiesEditorWindow, Path=IncludeApiVersionInRoutePrefix}"
+                                 Content="Include api version in route prefix"
+                                 Style="{StaticResource DefaultCheckBox}"
+								 Grid.Column="2"
+                                 Visibility="{Binding ElementName=RamlPropertiesEditorWindow, Path=ServerVisibility}"
+								 Grid.Row="4" />
+
+        <Grid Grid.Row="6" Grid.ColumnSpan="4">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="40"></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>

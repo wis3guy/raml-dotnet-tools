@@ -56,6 +56,7 @@ namespace Raml.Tools.WebApiGenerator
         }
 
         public IEnumerable<ApiEnum> Enums { get; set; }
-        
+
+        public string ApiVersion { get; set; }
     }
 }

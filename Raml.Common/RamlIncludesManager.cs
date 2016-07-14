@@ -268,18 +268,24 @@ namespace Raml.Common
         private string GetIncludePath(string line)
         {
             var indexOfInclude = line.IndexOf(IncludeDirective, StringComparison.Ordinal);
-            var includeSource = line.Substring(indexOfInclude + IncludeDirective.Length).Trim(includeDirectiveTrimChars);
-            includeSource = includeSource.Replace(Environment.NewLine, string.Empty);
-            includeSource = includeSource.Replace("\r\n", string.Empty);
-            includeSource = includeSource.Replace("\n", string.Empty);
-            includeSource = includeSource.Replace("\r", string.Empty);
+            var includeSource = line.Substring(indexOfInclude + IncludeDirective.Length);
+            includeSource = RemoveComments(includeSource);
+            includeSource = RemoveInvalidChars(includeSource);
             return includeSource;
         }
 
         private string GetUsePath(string line)
         {
             var index = line.IndexOf(":", StringComparison.Ordinal);
-            var includeSource = line.Substring(index + 1).Trim(includeDirectiveTrimChars);
+            var includeSource = line.Substring(index + 1);
+            includeSource = RemoveComments(includeSource);
+            includeSource = RemoveInvalidChars(includeSource);
+            return includeSource;
+        }
+
+        private string RemoveInvalidChars(string includeSource)
+        {
+            includeSource = includeSource.Trim(includeDirectiveTrimChars);
             includeSource = includeSource.Replace(Environment.NewLine, string.Empty);
             includeSource = includeSource.Replace("\r\n", string.Empty);
             includeSource = includeSource.Replace("\n", string.Empty);
@@ -287,6 +293,14 @@ namespace Raml.Common
             return includeSource;
         }
 
+        private string RemoveComments(string includeSource)
+        {
+            var index = includeSource.IndexOf('#');
+            if (index == -1)
+                return includeSource;
+
+            return includeSource.Substring(index);
+        }
 
         private static string ResolveFullPath(string path, string relativePath, string includeSource)
         {

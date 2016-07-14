@@ -10,5 +10,7 @@ namespace Raml.Common
         public bool UseAsyncMethods { get; set; }
 
         public string ClientName { get; set; }
+
+        public bool IncludeApiVersionInRoutePrefix { get; set; }
     }
 }

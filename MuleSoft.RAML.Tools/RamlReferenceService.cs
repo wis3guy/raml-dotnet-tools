@@ -62,6 +62,7 @@ namespace MuleSoft.RAML.Tools
             var installer = componentModel.GetService<IVsPackageInstaller>();
 
             var packs = installerServices.GetInstalledPackages(proj).ToArray();
+
             NugetInstallerHelper.InstallPackageIfNeeded(proj, packs, installer, newtonsoftJsonPackageId, newtonsoftJsonPackageVersion, Settings.Default.NugetExternalPackagesSource);
             NugetInstallerHelper.InstallPackageIfNeeded(proj, packs, installer, microsoftNetHttpPackageId, microsoftNetHttpPackageVersion, Settings.Default.NugetExternalPackagesSource);
 
@@ -100,7 +101,7 @@ namespace MuleSoft.RAML.Tools
             File.WriteAllText(ramlDestFile, result.ModifiedContents);
 
             var ramlProjItem = InstallerServices.AddOrUpdateRamlFile(ramlDestFile, destFolderPath, destFolderItem, targetFileName);
-            var refFilePath = InstallerServices.AddRefFile(ramlSourceFile, targetNamespace, ramlOriginalSource, destFolderPath, targetFileName, null, clientRootClassName);
+            var refFilePath = InstallerServices.AddRefFile(ramlSourceFile, targetNamespace, ramlOriginalSource, destFolderPath, targetFileName, null, null, clientRootClassName);
             ramlProjItem.ProjectItems.AddFromFile(refFilePath);
 
             ramlProjItem.Properties.Item("CustomTool").Value = string.Empty; // to cause a refresh when file already exists

@@ -64,17 +64,17 @@ namespace MuleSoft.RAML.Tools
             if (string.IsNullOrWhiteSpace(parameters.RamlSource) && !string.IsNullOrWhiteSpace(parameters.RamlTitle))
             {
                 AddEmptyContract(parameters.TargetFileName, parameters.RamlTitle, folderItem, generatedFolderPath,
-                    parameters.TargetNamespace, parameters.TargetFileName, parameters.UseAsyncMethods);
+                    parameters.TargetNamespace, parameters.TargetFileName, parameters.UseAsyncMethods, parameters.IncludeApiVersionInRoutePrefix);
             }
             else
             {
                 AddContractFromFile(parameters.RamlFilePath, parameters.TargetNamespace, parameters.RamlSource, folderItem,
-                    generatedFolderPath, parameters.TargetFileName, parameters.UseAsyncMethods);
+                    generatedFolderPath, parameters.TargetFileName, parameters.UseAsyncMethods, parameters.IncludeApiVersionInRoutePrefix);
             }
         }
 
 
-        public void Scaffold(string ramlSource, string targetNamespace, string ramlFileName, bool useAsyncMethods)
+        public void Scaffold(string ramlSource, string targetNamespace, string ramlFileName, bool useAsyncMethods, bool includeApiVersionInRoutePrefix)
         {
             var data = RamlScaffolderHelper.GetRamlData(ramlSource, targetNamespace);
             if (data == null || data.Model == null)
@@ -99,16 +99,16 @@ namespace MuleSoft.RAML.Tools
                 return;
 
             var extensionPath = Path.GetDirectoryName(GetType().Assembly.Location) + Path.DirectorySeparatorChar;
-            
-            AddOrUpdateModels(targetNamespace, generatedFolderPath, ramlItem, model, folderItem, extensionPath);
 
-            AddOrUpdateEnums(targetNamespace, generatedFolderPath, ramlItem, model, folderItem, extensionPath);
+            AddOrUpdateModels(targetNamespace, generatedFolderPath, ramlItem, model, folderItem, extensionPath, includeApiVersionInRoutePrefix);
 
-            AddOrUpdateControllerBase(targetNamespace, generatedFolderPath, ramlItem, model, folderItem, extensionPath, useAsyncMethods);
+            AddOrUpdateEnums(targetNamespace, generatedFolderPath, ramlItem, model, folderItem, extensionPath, includeApiVersionInRoutePrefix);
 
-            AddOrUpdateControllerInterfaces(targetNamespace, generatedFolderPath, ramlItem, model, folderItem, extensionPath, useAsyncMethods);
+            AddOrUpdateControllerBase(targetNamespace, generatedFolderPath, ramlItem, model, folderItem, extensionPath, useAsyncMethods, includeApiVersionInRoutePrefix);
 
-            AddOrUpdateControllerImplementations(targetNamespace, generatedFolderPath, proj, model, folderItem, extensionPath, useAsyncMethods);
+            AddOrUpdateControllerInterfaces(targetNamespace, generatedFolderPath, ramlItem, model, folderItem, extensionPath, useAsyncMethods, includeApiVersionInRoutePrefix);
+
+            AddOrUpdateControllerImplementations(targetNamespace, generatedFolderPath, proj, model, folderItem, extensionPath, useAsyncMethods, includeApiVersionInRoutePrefix);
         }
 
         public static void TriggerScaffoldOnRamlChanged(Document document)
@@ -208,7 +208,8 @@ namespace MuleSoft.RAML.Tools
                 var refFilePath = InstallerServices.GetRefFilePath(ramlFile);
                 var useAsyncMethods = RamlReferenceReader.GetRamlUseAsyncMethods(refFilePath);
                 var targetNamespace = RamlReferenceReader.GetRamlNamespace(refFilePath);
-                service.Scaffold(ramlFile, targetNamespace, Path.GetFileName(ramlFile), useAsyncMethods);
+                var includeApiVersionInRoutePrefix = RamlReferenceReader.GetRamlIncludeApiVersionInRoutePrefix(refFilePath);
+                service.Scaffold(ramlFile, targetNamespace, Path.GetFileName(ramlFile), useAsyncMethods, includeApiVersionInRoutePrefix);
             }
         }
 
@@ -269,7 +270,7 @@ namespace MuleSoft.RAML.Tools
         }
 
         private void AddOrUpdateControllerImplementations(string targetNamespace, string generatedFolderPath, Project proj,
-            WebApiGeneratorModel model, ProjectItem folderItem, string extensionPath, bool useAsyncMethods)
+            WebApiGeneratorModel model, ProjectItem folderItem, string extensionPath, bool useAsyncMethods, bool includeApiVersionInRoutePrefix)
         {
             templatesManager.CopyServerTemplateToProjectFolder(generatedFolderPath, ControllerImplementationTemplateName,
                 Settings.Default.ControllerImplementationTemplateTitle, templateSubFolder);
@@ -280,16 +281,23 @@ namespace MuleSoft.RAML.Tools
             var controllerImplementationTemplateParams =
                 new TemplateParams<ControllerObject>(Path.Combine(templatesFolder, ControllerImplementationTemplateName),
                     controllersFolderItem, "controllerObject", model.Controllers, controllersFolderPath, folderItem,
-                    extensionPath, targetNamespace, "Controller", false);
+                    extensionPath, targetNamespace, "Controller", false, GetVersionPrefix(includeApiVersionInRoutePrefix, model.ApiVersion));
             controllerImplementationTemplateParams.Title = Settings.Default.ControllerImplementationTemplateTitle;
             controllerImplementationTemplateParams.IncludeHasModels = true;
             controllerImplementationTemplateParams.HasModels = model.Objects.Any(o => o.IsScalar == false) || model.Enums.Any();
             controllerImplementationTemplateParams.UseAsyncMethods = useAsyncMethods;
+            controllerImplementationTemplateParams.IncludeApiVersionInRoutePrefix = includeApiVersionInRoutePrefix;
+            controllerImplementationTemplateParams.ApiVersion = model.ApiVersion;
             GenerateCodeFromTemplate(controllerImplementationTemplateParams);
         }
 
+        private static string GetVersionPrefix(bool includeApiVersionInRoutePrefix, string apiVersion)
+        {
+            return includeApiVersionInRoutePrefix ? NetNamingMapper.GetVersionName(apiVersion) : string.Empty;
+        }
+
         private void AddOrUpdateControllerInterfaces(string targetNamespace, string generatedFolderPath, ProjectItem ramlItem,
-            WebApiGeneratorModel model, ProjectItem folderItem, string extensionPath, bool useAsyncMethods)
+            WebApiGeneratorModel model, ProjectItem folderItem, string extensionPath, bool useAsyncMethods, bool includeApiVersionInRoutePrefix)
         {
             templatesManager.CopyServerTemplateToProjectFolder(generatedFolderPath, ControllerInterfaceTemplateName,
                 Settings.Default.ControllerInterfaceTemplateTitle, templateSubFolder);
@@ -300,16 +308,18 @@ namespace MuleSoft.RAML.Tools
             var controllerInterfaceParams =
                 new TemplateParams<ControllerObject>(Path.Combine(templatesFolder, ControllerInterfaceTemplateName),
                     ramlItem, "controllerObject", model.Controllers, targetFolderPath, folderItem, extensionPath,
-                    targetNamespace, "Controller", true, "I");
+                    targetNamespace, "Controller", true, "I" + GetVersionPrefix(includeApiVersionInRoutePrefix, model.ApiVersion));
             controllerInterfaceParams.Title = Settings.Default.ControllerInterfaceTemplateTitle;
             controllerInterfaceParams.IncludeHasModels = true;
             controllerInterfaceParams.HasModels = model.Objects.Any(o => o.IsScalar == false) || model.Enums.Any();
             controllerInterfaceParams.UseAsyncMethods = useAsyncMethods;
+            controllerInterfaceParams.IncludeApiVersionInRoutePrefix = includeApiVersionInRoutePrefix;
+            controllerInterfaceParams.ApiVersion = model.ApiVersion;
             GenerateCodeFromTemplate(controllerInterfaceParams);
         }
 
         private void AddOrUpdateControllerBase(string targetNamespace, string generatedFolderPath, ProjectItem ramlItem,
-            WebApiGeneratorModel model, ProjectItem folderItem, string extensionPath, bool useAsyncMethods)
+            WebApiGeneratorModel model, ProjectItem folderItem, string extensionPath, bool useAsyncMethods, bool includeApiVersionInRoutePrefix)
         {
             templatesManager.CopyServerTemplateToProjectFolder(generatedFolderPath, ControllerBaseTemplateName,
                 Settings.Default.BaseControllerTemplateTitle, templateSubFolder);
@@ -320,16 +330,17 @@ namespace MuleSoft.RAML.Tools
             var controllerBaseTemplateParams =
                 new TemplateParams<ControllerObject>(Path.Combine(templatesFolder, ControllerBaseTemplateName),
                     ramlItem, "controllerObject", model.Controllers, targetFolderPath, folderItem, extensionPath,
-                    targetNamespace, "Controller");
+                    targetNamespace, "Controller", true, GetVersionPrefix(includeApiVersionInRoutePrefix, model.ApiVersion));
             controllerBaseTemplateParams.Title = Settings.Default.BaseControllerTemplateTitle;
             controllerBaseTemplateParams.IncludeHasModels = true;
             controllerBaseTemplateParams.HasModels = model.Objects.Any(o => o.IsScalar == false) || model.Enums.Any();
             controllerBaseTemplateParams.UseAsyncMethods = useAsyncMethods;
+            controllerBaseTemplateParams.IncludeApiVersionInRoutePrefix = includeApiVersionInRoutePrefix;
+            controllerBaseTemplateParams.ApiVersion = model.ApiVersion;
             GenerateCodeFromTemplate(controllerBaseTemplateParams);
         }
 
-        private void AddOrUpdateModels(string targetNamespace, string generatedFolderPath, ProjectItem ramlItem,
-            WebApiGeneratorModel model, ProjectItem folderItem, string extensionPath)
+        private void AddOrUpdateModels(string targetNamespace, string generatedFolderPath, ProjectItem ramlItem, WebApiGeneratorModel model, ProjectItem folderItem, string extensionPath, bool includeApiVersionInRoutePrefix)
         {
             templatesManager.CopyServerTemplateToProjectFolder(generatedFolderPath, ModelTemplateName,
                 Settings.Default.ModelsTemplateTitle, templateSubFolder);
@@ -347,13 +358,12 @@ namespace MuleSoft.RAML.Tools
 
             var apiObjectTemplateParams = new TemplateParams<ApiObject>(
                 Path.Combine(templatesFolder, ModelTemplateName), ramlItem, "apiObject", models,
-                targetFolderPath, folderItem, extensionPath, targetNamespace);
+                targetFolderPath, folderItem, extensionPath, targetNamespace, GetVersionPrefix(includeApiVersionInRoutePrefix, model.ApiVersion));
             apiObjectTemplateParams.Title = Settings.Default.ModelsTemplateTitle;
             GenerateCodeFromTemplate(apiObjectTemplateParams);
         }
 
-        private void AddOrUpdateEnums(string targetNamespace, string generatedFolderPath, ProjectItem ramlItem,
-            WebApiGeneratorModel model, ProjectItem folderItem, string extensionPath)
+        private void AddOrUpdateEnums(string targetNamespace, string generatedFolderPath, ProjectItem ramlItem, WebApiGeneratorModel model, ProjectItem folderItem, string extensionPath, bool includeApiVersionInRoutePrefix)
         {
             templatesManager.CopyServerTemplateToProjectFolder(generatedFolderPath, EnumTemplateName,
                 Settings.Default.EnumsTemplateTitle, templateSubFolder);
@@ -363,7 +373,7 @@ namespace MuleSoft.RAML.Tools
 
             var apiEnumTemplateParams = new TemplateParams<ApiEnum>(
                 Path.Combine(templatesFolder, EnumTemplateName), ramlItem, "apiEnum", model.Enums,
-                targetFolderPath, folderItem, extensionPath, targetNamespace);
+                targetFolderPath, folderItem, extensionPath, targetNamespace, GetVersionPrefix(includeApiVersionInRoutePrefix, model.ApiVersion));
             apiEnumTemplateParams.Title = Settings.Default.ModelsTemplateTitle;
             GenerateCodeFromTemplate(apiEnumTemplateParams);
         }
@@ -388,11 +398,12 @@ namespace MuleSoft.RAML.Tools
                 File.WriteAllText(ramlFilePath, result.ModifiedContents);
                 var targetNamespace = RamlReferenceReader.GetRamlNamespace(refFilePath);
                 var useAsyncMethods = RamlReferenceReader.GetRamlUseAsyncMethods(refFilePath);
-                Scaffold(ramlFilePath, targetNamespace, Path.GetFileName(ramlFilePath).ToLowerInvariant(), useAsyncMethods);
+                var includeApiVersionInRoutePrefix = RamlReferenceReader.GetRamlIncludeApiVersionInRoutePrefix(refFilePath);
+                Scaffold(ramlFilePath, targetNamespace, Path.GetFileName(ramlFilePath).ToLowerInvariant(), useAsyncMethods, includeApiVersionInRoutePrefix);
             }
         }
 
-        private void AddContractFromFile(string ramlFilePath, string targetNamespace, string ramlSource, ProjectItem folderItem, string folderPath, string targetFilename, bool useAsyncMethod)
+        private void AddContractFromFile(string ramlFilePath, string targetNamespace, string ramlSource, ProjectItem folderItem, string folderPath, string targetFilename, bool useAsyncMethod, bool includeApiVersionInRoutePrefix)
         {
             var includesFolderPath = folderPath + Path.DirectorySeparatorChar + InstallerServices.IncludesFolderName;
 
@@ -400,7 +411,7 @@ namespace MuleSoft.RAML.Tools
             var result = includesManager.Manage(ramlSource, includesFolderPath, confirmOverrite: true, rootRamlPath: folderPath + Path.DirectorySeparatorChar);
 
             var includesFolderItem = folderItem.ProjectItems.Cast<ProjectItem>().FirstOrDefault(i => i.Name == InstallerServices.IncludesFolderName);
-            if (includesFolderItem == null)
+            if (includesFolderItem == null && !VisualStudioAutomationHelper.IsAVisualStudio2015Project(folderItem.ContainingProject))
                 includesFolderItem = folderItem.ProjectItems.AddFolder(InstallerServices.IncludesFolderName);
 
             foreach (var file in result.IncludedFiles)
@@ -418,10 +429,10 @@ namespace MuleSoft.RAML.Tools
 
             var targetFolderPath = GetTargetFolderPath(folderPath, targetFilename, folderItem.ContainingProject);
 
-            var refFilePath = InstallerServices.AddRefFile(ramlFilePath, targetNamespace, ramlSource, targetFolderPath, targetFilename, useAsyncMethod);
+            var refFilePath = InstallerServices.AddRefFile(ramlFilePath, targetNamespace, ramlSource, targetFolderPath, targetFilename, useAsyncMethod, includeApiVersionInRoutePrefix);
             ramlProjItem.ProjectItems.AddFromFile(refFilePath);
 
-            Scaffold(ramlProjItem.FileNames[0], targetNamespace, targetFilename, useAsyncMethod);
+            Scaffold(ramlProjItem.FileNames[0], targetNamespace, targetFilename, useAsyncMethod, includeApiVersionInRoutePrefix);
         }
 
         private static ProjectItem AddOrUpdateRamlFile(string modifiedContents, ProjectItem folderItem, string folderPath, string ramlFileName)
@@ -453,7 +464,7 @@ namespace MuleSoft.RAML.Tools
             return ramlProjItem;
         }
 
-        private void AddEmptyContract(string filename, string title, ProjectItem folderItem, string folderPath, string targetNamespace, string targetFilename, bool useAsyncMethods)
+        private void AddEmptyContract(string filename, string title, ProjectItem folderItem, string folderPath, string targetNamespace, string targetFilename, bool useAsyncMethods, bool includeApiVersionInRoutePrefix)
         {
             
             var newContractFile = Path.Combine(folderPath, filename);
@@ -483,7 +494,7 @@ namespace MuleSoft.RAML.Tools
 
             var targetFolderPath = GetTargetFolderPath(folderPath, targetFilename, folderItem.ContainingProject);
 
-            var refFilePath = InstallerServices.AddRefFile(newContractFile, targetNamespace, newContractFile, targetFolderPath, targetFilename, useAsyncMethods);
+            var refFilePath = InstallerServices.AddRefFile(newContractFile, targetNamespace, newContractFile, targetFolderPath, targetFilename, useAsyncMethods, includeApiVersionInRoutePrefix);
             ramlProjItem.ProjectItems.AddFromFile(refFilePath);
         }
 
@@ -593,6 +604,8 @@ namespace MuleSoft.RAML.Tools
 
             public bool HasModels { get; set; }
             public bool UseAsyncMethods { get; set; }
+            public bool IncludeApiVersionInRoutePrefix { get; set; }
+            public string ApiVersion { get; set; }
         }
 
         private void GenerateCodeFromTemplate<T>(TemplateParams<T> templateParams) where T : IHasName
@@ -602,7 +615,8 @@ namespace MuleSoft.RAML.Tools
             {
                 var generatedFileName = GetGeneratedFileName(templateParams.Suffix, templateParams.Prefix, parameter);
 
-                var result = t4Service.TransformText(templateParams.TemplatePath, templateParams.ParameterName, parameter, templateParams.BinPath, templateParams.TargetNamespace, templateParams.UseAsyncMethods, templateParams.IncludeHasModels, templateParams.HasModels);
+                var result = t4Service.TransformText(templateParams.TemplatePath, templateParams.ParameterName, parameter, templateParams.BinPath, templateParams.TargetNamespace,
+                    templateParams.UseAsyncMethods, templateParams.IncludeHasModels, templateParams.HasModels, templateParams.IncludeApiVersionInRoutePrefix, templateParams.ApiVersion);
                 var destinationFile = Path.Combine(templateParams.FolderPath, generatedFileName);
                 var contents = templatesManager.AddServerMetadataHeader(result.Content, Path.GetFileNameWithoutExtension(templateParams.TemplatePath), templateParams.Title);
                 

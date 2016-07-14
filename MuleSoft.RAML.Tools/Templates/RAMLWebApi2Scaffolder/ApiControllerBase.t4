@@ -7,6 +7,7 @@
 <#@ parameter name="controllerObject" type="Raml.Tools.WebApiGenerator.ControllerObject" #>
 <#@ parameter name="hasModels" type="System.Boolean" #>
 <#@ parameter name="useAsyncMethods" type="System.Boolean" #>
+<#@ parameter name="apiVersion" type="System.String" #>
 <#@ output extension=".cs" #>
 
 using System;
@@ -22,8 +23,13 @@ using $(namespace).Models;
 
 namespace $(namespace)
 {
-    [RoutePrefix("<#= controllerObject.PrefixUri #>")]
+<# if(System.String.IsNullOrWhiteSpace(apiVersion)) { #>
+    [Route("<#= controllerObject.PrefixUri #>")]
     public partial class <#= controllerObject.Name #>Controller : ApiController
+<# } else { #>
+    [Route("<#= apiVersion #>/<#= controllerObject.PrefixUri #>")]
+    public partial class <#= apiVersion #><#= controllerObject.Name #>Controller : ApiController
+<# } #>
     {
 
 <#
@@ -49,7 +55,11 @@ namespace $(namespace)
 <# } #>
         {
             // Do not modify this code
+            <# if(System.String.IsNullOrWhiteSpace(apiVersion)) { #>
             return <#= useAsyncMethods ? "await" : "" #> ((I<#= controllerObject.Name #>Controller)this).<#= method.Name #>(<#= method.ParametersCallString #>);
+            <# } else { #>
+            return <#= useAsyncMethods ? "await" : "" #> ((I<#= apiVersion #><#= controllerObject.Name #>Controller)this).<#= method.Name #>(<#= method.ParametersCallString #>);
+            <# } #>
         }
 <#
 

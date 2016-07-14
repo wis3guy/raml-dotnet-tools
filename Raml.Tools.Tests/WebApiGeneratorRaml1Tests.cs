@@ -245,6 +245,13 @@ namespace Raml.Tools.Tests
             Assert.AreEqual(18, model.Objects.Count());
         }
 
+        [Test]
+        public async Task ShouldHandle_FileTypes()
+        {
+            var model = await BuildModel("files/raml1/file-type.raml");
+            Assert.AreEqual(1, model.Objects.Count());
+        }
+
         private static async Task<WebApiGeneratorModel> GetAnnotationTargetsModel()
         {
             return await BuildModel("files/raml1/annotations-targets.raml");

@@ -359,6 +359,13 @@ namespace Raml.Tools.Tests
             Assert.AreEqual(2, model.Objects.Count());
         }
 
+        [Test]
+        public async Task ShouldParseTraitWithResponseAndBodyResponse()
+        {
+            var model = await BuildModel("files/trait-multiple-response.raml");
+            Assert.AreEqual(3, model.Objects.Count());
+        }
+
         private static string GetXml(string comment)
         {
             if (string.IsNullOrWhiteSpace(comment))
