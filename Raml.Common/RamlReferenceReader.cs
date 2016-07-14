@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using Raml.Common.Properties;
 
 namespace Raml.Common
 {
@@ -26,7 +27,7 @@ namespace Raml.Common
             var contents = File.ReadAllText(referenceFilePath);
             var lines = contents.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
             
-            if (lines.Count() <= 3)
+            if (lines.Length <= 3)
                 return false;
 
             var useAsync = lines[3].Replace("async:", string.Empty).Trim();
@@ -44,7 +45,7 @@ namespace Raml.Common
             var contents = File.ReadAllText(referenceFilePath);
             var lines = contents.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
 
-            if (lines.Count() <= 4)
+            if (lines.Length <= 4)
                 return false;
 
             var useAsync = lines[4].Replace("includeApiVersionInRoutePrefix:", string.Empty).Trim();
@@ -61,10 +62,21 @@ namespace Raml.Common
         {
             var contents = File.ReadAllText(referenceFilePath);
             var lines = contents.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-            if (lines.Count() <= 3)
+            if (lines.Length <= 3)
                 return "ApiClient";
 
             var clientRootClassName = lines[3].Replace("client:", string.Empty).Trim();
+            return clientRootClassName;
+        }
+
+        public static string GetGeneratedCodeFolderOutput(string referenceFilePath)
+        {
+            var contents = File.ReadAllText(referenceFilePath);
+            var lines = contents.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+            if (lines.Length <= 5)
+                return null;
+
+            var clientRootClassName = lines[5].Replace("generatedCodeFolder:", string.Empty).Trim();
             return clientRootClassName;
         }
     }
