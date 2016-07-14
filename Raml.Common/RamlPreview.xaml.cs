@@ -81,12 +81,12 @@ namespace Raml.Common
         protected override void OnInitialized(EventArgs e)
         {
             base.OnInitialized(e);
-            StartProgress();
+            if(!isNewContract)
+                StartProgress();
         }
 
         public RamlPreview(IServiceProvider serviceProvider, Action<RamlChooserActionParams> action, string ramlTitle)
         {
-            btnOk.IsEnabled = false;
             ServiceProvider = serviceProvider;
             RamlTitle = ramlTitle;
             IsContractUseCase = true;
@@ -166,7 +166,12 @@ namespace Raml.Common
 
         private void ShowErrorAndStopProgress(string errorMessage)
         {
-            ResourcesLabel.Text = errorMessage;
+            if (!isNewContract)
+                ResourcesLabel.Text = errorMessage;
+            else
+                MessageBox.Show(errorMessage);
+                
+            
             StopProgress();
         }
 
