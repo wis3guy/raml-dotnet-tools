@@ -63,13 +63,11 @@ namespace MuleSoft.RAML.Tools
 
             if (string.IsNullOrWhiteSpace(parameters.RamlSource) && !string.IsNullOrWhiteSpace(parameters.RamlTitle))
             {
-                AddEmptyContract(parameters.TargetFileName, parameters.RamlTitle, folderItem, generatedFolderPath,
-                    parameters.TargetNamespace, parameters.TargetFileName, parameters.UseAsyncMethods, parameters.IncludeApiVersionInRoutePrefix);
+                AddEmptyContract(folderItem, generatedFolderPath, parameters);
             }
             else
             {
-                AddContractFromFile(parameters.RamlFilePath, parameters.TargetNamespace, parameters.RamlSource, folderItem,
-                    generatedFolderPath, parameters.TargetFileName, parameters.UseAsyncMethods, parameters.IncludeApiVersionInRoutePrefix);
+                AddContractFromFile(folderItem, generatedFolderPath, parameters);
             }
         }
 
@@ -403,12 +401,12 @@ namespace MuleSoft.RAML.Tools
             }
         }
 
-        private void AddContractFromFile(string ramlFilePath, string targetNamespace, string ramlSource, ProjectItem folderItem, string folderPath, string targetFilename, bool useAsyncMethod, bool includeApiVersionInRoutePrefix)
+        private void AddContractFromFile(ProjectItem folderItem, string folderPath, RamlChooserActionParams parameters)
         {
             var includesFolderPath = folderPath + Path.DirectorySeparatorChar + InstallerServices.IncludesFolderName;
 
             var includesManager = new RamlIncludesManager();
-            var result = includesManager.Manage(ramlSource, includesFolderPath, confirmOverrite: true, rootRamlPath: folderPath + Path.DirectorySeparatorChar);
+            var result = includesManager.Manage(parameters.RamlSource, includesFolderPath, confirmOverrite: true, rootRamlPath: folderPath + Path.DirectorySeparatorChar);
 
             var includesFolderItem = folderItem.ProjectItems.Cast<ProjectItem>().FirstOrDefault(i => i.Name == InstallerServices.IncludesFolderName);
             if (includesFolderItem == null && !VisualStudioAutomationHelper.IsAVisualStudio2015Project(folderItem.ContainingProject))
@@ -424,15 +422,32 @@ namespace MuleSoft.RAML.Tools
             //var oldIncludedFiles = existingIncludeItems.Where(item => !result.IncludedFiles.Contains(item.FileNames[0]));
             //InstallerServices.RemoveSubItemsAndAssociatedFiles(oldIncludedFiles);
 
-            var ramlProjItem = AddOrUpdateRamlFile(result.ModifiedContents, folderItem, folderPath, targetFilename);
+            var ramlProjItem = AddOrUpdateRamlFile(result.ModifiedContents, folderItem, folderPath, parameters.TargetFileName);
             InstallerServices.RemoveSubItemsAndAssociatedFiles(ramlProjItem);
 
-            var targetFolderPath = GetTargetFolderPath(folderPath, targetFilename, folderItem.ContainingProject);
+            var targetFolderPath = GetTargetFolderPath(folderPath, parameters.TargetFileName, folderItem.ContainingProject);
 
-            var refFilePath = InstallerServices.AddRefFile(ramlFilePath, targetNamespace, ramlSource, targetFolderPath, targetFilename, useAsyncMethod, includeApiVersionInRoutePrefix);
+            RamlProperties props = Map(parameters);
+            var refFilePath = InstallerServices.AddRefFile(parameters.RamlFilePath, targetFolderPath, parameters.TargetFileName, props);
             ramlProjItem.ProjectItems.AddFromFile(refFilePath);
 
-            Scaffold(ramlProjItem.FileNames[0], targetNamespace, targetFilename, useAsyncMethod, includeApiVersionInRoutePrefix);
+            Scaffold(ramlProjItem.FileNames[0], parameters.TargetNamespace, parameters.TargetFileName, parameters.UseAsyncMethods,
+                parameters.IncludeApiVersionInRoutePrefix);
+        }
+
+        private RamlProperties Map(RamlChooserActionParams parameters)
+        {
+            return new RamlProperties
+            {
+                IncludeApiVersionInRoutePrefix = parameters.IncludeApiVersionInRoutePrefix,
+                UseAsyncMethods = parameters.UseAsyncMethods,
+                Namespace = parameters.TargetNamespace,
+                Source = parameters.RamlSource,
+                ClientName = parameters.ClientRootClassName,
+                ModelsFolder = parameters.ModelsFolder,
+                BaseControllersFolder = parameters.BaseControllersFolder,
+                ImplementationControllersFolder = parameters.ImplementationControllersFolder
+            };
         }
 
         private static ProjectItem AddOrUpdateRamlFile(string modifiedContents, ProjectItem folderItem, string folderPath, string ramlFileName)
@@ -464,16 +479,16 @@ namespace MuleSoft.RAML.Tools
             return ramlProjItem;
         }
 
-        private void AddEmptyContract(string filename, string title, ProjectItem folderItem, string folderPath, string targetNamespace, string targetFilename, bool useAsyncMethods, bool includeApiVersionInRoutePrefix)
+        private void AddEmptyContract(ProjectItem folderItem, string folderPath, RamlChooserActionParams parameters)
         {
             
-            var newContractFile = Path.Combine(folderPath, filename);
-            var contents = CreateNewRamlContents(title);
+            var newContractFile = Path.Combine(folderPath, parameters.TargetFileName);
+            var contents = CreateNewRamlContents(parameters.RamlTitle);
 
             ProjectItem ramlProjItem;
             if (File.Exists(newContractFile))
             {
-                var dialogResult = InstallerServices.ShowConfirmationDialog(filename);
+                var dialogResult = InstallerServices.ShowConfirmationDialog(parameters.TargetFileName);
                 if (dialogResult == MessageBoxResult.Yes)
                 {
                     File.WriteAllText(newContractFile, contents);
@@ -492,9 +507,9 @@ namespace MuleSoft.RAML.Tools
                 ramlProjItem = folderItem.ProjectItems.AddFromFile(newContractFile);
             }
 
-            var targetFolderPath = GetTargetFolderPath(folderPath, targetFilename, folderItem.ContainingProject);
-
-            var refFilePath = InstallerServices.AddRefFile(newContractFile, targetNamespace, newContractFile, targetFolderPath, targetFilename, useAsyncMethods, includeApiVersionInRoutePrefix);
+            var props = Map(parameters);
+            var targetFolderPath = GetTargetFolderPath(folderPath, parameters.TargetFileName, folderItem.ContainingProject);
+            var refFilePath = InstallerServices.AddRefFile(newContractFile, targetFolderPath, parameters.TargetFileName, props);
             ramlProjItem.ProjectItems.AddFromFile(refFilePath);
         }
 

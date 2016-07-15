@@ -8,7 +8,7 @@
                  Background="Gainsboro"
                  Title="Edit RAML Properties"
                  Width="500"
-                 Height="240"
+                 Height="360"
                  x:Name="RamlPropertiesEditorWindow"
 				 WindowStartupLocation="CenterScreen">
     <Window.Resources>
@@ -82,7 +82,10 @@
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
-            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>            
+            <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="40"></ColumnDefinition>
@@ -139,7 +142,49 @@
                                  Visibility="{Binding ElementName=RamlPropertiesEditorWindow, Path=ServerVisibility}"
 								 Grid.Row="4" />
 
-        <Grid Grid.Row="6" Grid.ColumnSpan="4">
+        <Label Content="Models Folder"
+							   Style="{StaticResource DefaultLabel}"
+							   Grid.Column="1"
+							   Grid.Row="5"
+                               Visibility="{Binding ElementName=RamlPropertiesEditorWindow, Path=ServerVisibility}"
+                               ToolTip="Folder where the generated models will be placed, leave blank for default Contracts folder"
+                               Margin="5" />
+        <TextBox Text="{Binding ElementName=RamlPropertiesEditorWindow, Path=ModelsFolder}"
+								 Style="{StaticResource DefaultTextBox}"
+								 Grid.Column="2"
+                                 ToolTip="Folder where the generated models will be placed, leave blank for default Contracts folder"
+                                 Visibility="{Binding ElementName=RamlPropertiesEditorWindow, Path=ServerVisibility}"
+								 Grid.Row="5" />
+
+        <Label Content="Base And Interface Controllers Folder"
+							   Style="{StaticResource DefaultLabel}"
+							   Grid.Column="1"
+                               ToolTip="Folder where the generated base and interface controllers will be placed, leave blank for default Contracts folder"
+                               Visibility="{Binding ElementName=RamlPropertiesEditorWindow, Path=ServerVisibility}"               
+							   Grid.Row="6"
+                               Margin="5" />
+        <TextBox Text="{Binding ElementName=RamlPropertiesEditorWindow, Path=BaseControllersFolder}"
+								 Style="{StaticResource DefaultTextBox}"
+                                 Visibility="{Binding ElementName=RamlPropertiesEditorWindow, Path=ServerVisibility}"
+                                 ToolTip="Folder where the generated base and interface controllers will be placed, leave blank for default Contracts folder"
+								 Grid.Column="2"
+								 Grid.Row="6" />
+
+        <Label Content="Implementation Controllers Folder"
+							   Style="{StaticResource DefaultLabel}"
+                               Visibility="{Binding ElementName=RamlPropertiesEditorWindow, Path=ServerVisibility}"
+                               ToolTip="Folder where the controllers to be implemented will be placed, leave blank for default Controllers folder"
+							   Grid.Column="1"
+							   Grid.Row="7"
+                               Margin="5" />
+        <TextBox Text="{Binding ElementName=RamlPropertiesEditorWindow, Path=ImplementationControllersFolder}"
+								 Style="{StaticResource DefaultTextBox}"
+                                 Visibility="{Binding ElementName=RamlPropertiesEditorWindow, Path=ServerVisibility}"
+                                 ToolTip="Folder where the controllers to be implemented will be placed, leave blank for default Controllers folder"
+								 Grid.Column="2"
+								 Grid.Row="7" />
+
+        <Grid Grid.Row="9" Grid.ColumnSpan="4">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="40"></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
@@ -154,7 +199,7 @@
                 Click="CancelButton_Click" 
                 Width="55"
                 Height="30"
-                Margin="10,0,0,0"
+                Margin="10,0,0,10"
                 HorizontalAlignment="Left"
                 Style="{StaticResource Button}">
         </Button>
@@ -164,7 +209,7 @@
                 Grid.Column="3" 
                 Width="55"
                 Height="30"
-                Margin="0,0,6,0"
+                Margin="0,0,6,10"
                 Click="SaveButton_Click"
                 HorizontalAlignment="Right"
                 Style="{StaticResource DefaultButton}">

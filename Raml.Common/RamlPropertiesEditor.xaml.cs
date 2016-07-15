@@ -19,6 +19,9 @@ namespace Raml.Common
         private string clientName;
         private bool useAsyncMethods;
         private bool includeApiVersionInRoutePrefix;
+        private string baseControllersFolder;
+        private string implementationControllersFolder;
+        private string modelsFolder;
 
         public string Namespace
         {
@@ -70,6 +73,36 @@ namespace Raml.Common
             }
         }
 
+        public string ModelsFolder
+        {
+            get { return modelsFolder; }
+            set
+            {
+                modelsFolder = value; 
+                OnPropertyChanged();
+            }
+        }
+
+        public string BaseControllersFolder
+        {
+            get { return baseControllersFolder; }
+            set
+            {
+                baseControllersFolder = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string ImplementationControllersFolder
+        {
+            get { return implementationControllersFolder; }
+            set
+            {
+                implementationControllersFolder = value;
+                OnPropertyChanged();
+            }
+        }
+
         public Visibility ServerVisibility
         {
             get { return isServerUseCase ? Visibility.Visible : Visibility.Collapsed; }
@@ -96,8 +129,9 @@ namespace Raml.Common
             Source = ramlProperties.Source;
             if (isServerUseCase)
             {
-                UseAsyncMethods = ramlProperties.UseAsyncMethods;
-                IncludeApiVersionInRoutePrefix = ramlProperties.IncludeApiVersionInRoutePrefix;
+                UseAsyncMethods = ramlProperties.UseAsyncMethods.HasValue && ramlProperties.UseAsyncMethods.Value;
+                IncludeApiVersionInRoutePrefix = ramlProperties.IncludeApiVersionInRoutePrefix.HasValue &&
+                                                 ramlProperties.IncludeApiVersionInRoutePrefix.Value;
             }
             else
                 ClientName = ramlProperties.ClientName;

@@ -101,7 +101,13 @@ namespace MuleSoft.RAML.Tools
             File.WriteAllText(ramlDestFile, result.ModifiedContents);
 
             var ramlProjItem = InstallerServices.AddOrUpdateRamlFile(ramlDestFile, destFolderPath, destFolderItem, targetFileName);
-            var refFilePath = InstallerServices.AddRefFile(ramlSourceFile, targetNamespace, ramlOriginalSource, destFolderPath, targetFileName, null, null, clientRootClassName);
+            var props = new RamlProperties
+            {
+                ClientName = clientRootClassName,
+                Source = ramlOriginalSource,
+                Namespace = targetNamespace
+            };
+            var refFilePath = InstallerServices.AddRefFile(ramlSourceFile, destFolderPath, targetFileName, props);
             ramlProjItem.ProjectItems.AddFromFile(refFilePath);
 
             ramlProjItem.Properties.Item("CustomTool").Value = string.Empty; // to cause a refresh when file already exists

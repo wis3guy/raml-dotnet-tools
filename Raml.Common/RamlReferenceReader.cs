@@ -69,14 +69,36 @@ namespace Raml.Common
             return clientRootClassName;
         }
 
-        public static string GetGeneratedCodeFolderOutput(string referenceFilePath)
+        public static string GetModelsFolder(string referenceFilePath)
         {
             var contents = File.ReadAllText(referenceFilePath);
             var lines = contents.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
             if (lines.Length <= 5)
                 return null;
 
-            var clientRootClassName = lines[5].Replace("generatedCodeFolder:", string.Empty).Trim();
+            var clientRootClassName = lines[5].Replace("modelsFolder:", string.Empty).Trim();
+            return clientRootClassName;
+        }
+
+        public static string GetImplementationControllersFolder(string referenceFilePath)
+        {
+            var contents = File.ReadAllText(referenceFilePath);
+            var lines = contents.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+            if (lines.Length <= 6)
+                return null;
+
+            var clientRootClassName = lines[6].Replace("implementationControllersFolder:", string.Empty).Trim();
+            return clientRootClassName;
+        }
+
+        public static string GetBaseControllersFolder(string referenceFilePath)
+        {
+            var contents = File.ReadAllText(referenceFilePath);
+            var lines = contents.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+            if (lines.Length <= 7)
+                return null;
+
+            var clientRootClassName = lines[7].Replace("baseControllersFolder:", string.Empty).Trim();
             return clientRootClassName;
         }
     }
