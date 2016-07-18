@@ -2041,6 +2041,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PkgCmdID.cs" />
     <Compile Include="ReverseEngineeringService.cs" />
+    <Compile Include="TargetFolderResolver.cs" />
     <Compile Include="TemplatesManager.cs" />
   </ItemGroup>
   <ItemGroup>
