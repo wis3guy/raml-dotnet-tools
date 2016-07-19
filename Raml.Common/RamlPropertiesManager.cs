@@ -23,14 +23,14 @@ namespace Raml.Common
             if (properties.IncludeApiVersionInRoutePrefix != null)
                 content += string.Format("includeApiVersionInRoutePrefix: {0}{1}", properties.IncludeApiVersionInRoutePrefix, Environment.NewLine);
 
-            if (properties.ModelsFolder != null)
-                content += string.Format("modelsFolder: {0}{1}", properties.IncludeApiVersionInRoutePrefix, Environment.NewLine);
+            if (!string.IsNullOrWhiteSpace(properties.ModelsFolder))
+                content += string.Format("modelsFolder: {0}{1}", properties.ModelsFolder, Environment.NewLine);
 
-            if (properties.ImplementationControllersFolder != null)
-                content += string.Format("implementationControllersFolder: {0}{1}", properties.IncludeApiVersionInRoutePrefix, Environment.NewLine);
+            if (!string.IsNullOrWhiteSpace(properties.ImplementationControllersFolder))
+                content += string.Format("implementationControllersFolder: {0}{1}", properties.ImplementationControllersFolder, Environment.NewLine);
 
-            if (properties.BaseControllersFolder != null)
-                content += string.Format("baseControllersFolder: {0}{1}", properties.IncludeApiVersionInRoutePrefix, Environment.NewLine);
+            if (!string.IsNullOrWhiteSpace(properties.BaseControllersFolder))
+                content += string.Format("baseControllersFolder: {0}{1}", properties.BaseControllersFolder, Environment.NewLine);
 
             return content;
         }
@@ -43,7 +43,10 @@ namespace Raml.Common
                 Source = RamlReferenceReader.GetRamlSource(refFilePath),
                 ClientName = RamlReferenceReader.GetClientRootClassName(refFilePath),
                 UseAsyncMethods = RamlReferenceReader.GetRamlUseAsyncMethods(refFilePath),
-                IncludeApiVersionInRoutePrefix = RamlReferenceReader.GetRamlIncludeApiVersionInRoutePrefix(refFilePath)
+                IncludeApiVersionInRoutePrefix = RamlReferenceReader.GetRamlIncludeApiVersionInRoutePrefix(refFilePath),
+                BaseControllersFolder = RamlReferenceReader.GetBaseControllersFolder(refFilePath),
+                ModelsFolder = RamlReferenceReader.GetModelsFolder(refFilePath),
+                ImplementationControllersFolder = RamlReferenceReader.GetImplementationControllersFolder(refFilePath)
             };
         }
 

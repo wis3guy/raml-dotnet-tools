@@ -132,6 +132,10 @@ namespace Raml.Common
                 UseAsyncMethods = ramlProperties.UseAsyncMethods.HasValue && ramlProperties.UseAsyncMethods.Value;
                 IncludeApiVersionInRoutePrefix = ramlProperties.IncludeApiVersionInRoutePrefix.HasValue &&
                                                  ramlProperties.IncludeApiVersionInRoutePrefix.Value;
+                ModelsFolder = ramlProperties.ModelsFolder;
+                BaseControllersFolder = ramlProperties.BaseControllersFolder;
+                ImplementationControllersFolder = ramlProperties.ImplementationControllersFolder;
+
             }
             else
                 ClientName = ramlProperties.ClientName;
@@ -148,7 +152,10 @@ namespace Raml.Common
                 Source = Source,
                 ClientName = ClientName,
                 UseAsyncMethods = UseAsyncMethods,
-                IncludeApiVersionInRoutePrefix = IncludeApiVersionInRoutePrefix
+                IncludeApiVersionInRoutePrefix = IncludeApiVersionInRoutePrefix,
+                ModelsFolder = ModelsFolder,
+                BaseControllersFolder = BaseControllersFolder,
+                ImplementationControllersFolder = ImplementationControllersFolder
             };
             
             RamlPropertiesManager.Save(ramlProperties, ramlPath);
