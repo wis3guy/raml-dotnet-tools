@@ -28,6 +28,8 @@ namespace Raml.Common
         private readonly bool isNewContract;
         private bool isContractUseCase;
         private bool useApiVersion;
+        private bool configFolders;
+        private string modelsFolder;
 
         public string RamlTempFilePath { get; private set; }
         public string RamlOriginalSource { get; private set; }
@@ -66,6 +68,38 @@ namespace Raml.Common
                 txtApiVersion.IsEnabled = useApiVersion;
             }
         }
+
+        public bool ConfigFolders
+        {
+            get { return configFolders; }
+            set
+            {
+                configFolders = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string ModelsFolder
+        {
+            get { return modelsFolder; }
+            set
+            {
+                modelsFolder = value; 
+                OnPropertyChanged();
+            }
+        }
+
+        private string implementationControllersFolder;
+        public string ImplementationControllersFolder
+        {
+            get { return implementationControllersFolder; }
+            set
+            {
+                implementationControllersFolder = value;
+                OnPropertyChanged();
+            }
+        }
+
 
         public RamlPreview(IServiceProvider serviceProvider, Action<RamlChooserActionParams> action, string ramlTempFilePath, string ramlOriginalSource, string ramlTitle, bool isContractUseCase)
         {
