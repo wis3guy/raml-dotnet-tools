@@ -710,6 +710,10 @@ namespace MuleSoft.RAML.Tools
                     var folder = templateParams.TargetFolder.TrimEnd(Path.DirectorySeparatorChar);
                     var folderName = folder.Substring(folder.LastIndexOf(Path.DirectorySeparatorChar) + 1);
                     var folderItem = VisualStudioAutomationHelper.AddFolderIfNotExists(templateParams.ProjItem.ContainingProject, folderName);
+
+                    if (folderItem == null)
+                        continue;
+
                     var fileItem = folderItem.ProjectItems.Cast<ProjectItem>().FirstOrDefault(i => i.Name == generatedFileName);
                     if (fileItem != null) continue;
 

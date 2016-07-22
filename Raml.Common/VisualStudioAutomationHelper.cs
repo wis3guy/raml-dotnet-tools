@@ -48,9 +48,9 @@ namespace Raml.Common
             if (projectItem != null)
                 return projectItem;
 
-            if (Directory.Exists(path))
+            if (!IsAVisualStudio2015Project(proj) && Directory.Exists(path))
                 projectItem = proj.ProjectItems.AddFromDirectory(path);
-            else
+            else if(!Directory.Exists(path))
                 projectItem = proj.ProjectItems.AddFolder(folderName);
 
             return projectItem;

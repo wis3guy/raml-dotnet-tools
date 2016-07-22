@@ -89,6 +89,7 @@
     <Compile Include="RamlReferenceService.cs" />
     <Compile Include="RamlScaffoldService.cs" />
     <Compile Include="ReverseEngineeringService.cs" />
+    <Compile Include="TargetFolderResolver.cs" />
     <Compile Include="TemplatesManager.cs" />
   </ItemGroup>
   <ItemGroup>
