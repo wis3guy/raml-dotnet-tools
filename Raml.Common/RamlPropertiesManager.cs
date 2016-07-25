@@ -29,8 +29,8 @@ namespace Raml.Common
             if (!string.IsNullOrWhiteSpace(properties.ImplementationControllersFolder))
                 content += string.Format("implementationControllersFolder: {0}{1}", properties.ImplementationControllersFolder, Environment.NewLine);
 
-            if (!string.IsNullOrWhiteSpace(properties.BaseControllersFolder))
-                content += string.Format("baseControllersFolder: {0}{1}", properties.BaseControllersFolder, Environment.NewLine);
+            if (properties.AddGeneratedSuffix == null)
+                content += string.Format("addGeneratedSuffix: {0}{1}", properties.AddGeneratedSuffix, Environment.NewLine);
 
             return content;
         }
@@ -44,7 +44,7 @@ namespace Raml.Common
                 ClientName = RamlReferenceReader.GetClientRootClassName(refFilePath),
                 UseAsyncMethods = RamlReferenceReader.GetRamlUseAsyncMethods(refFilePath),
                 IncludeApiVersionInRoutePrefix = RamlReferenceReader.GetRamlIncludeApiVersionInRoutePrefix(refFilePath),
-                BaseControllersFolder = RamlReferenceReader.GetBaseControllersFolder(refFilePath),
+                AddGeneratedSuffix = RamlReferenceReader.GetAddGeneratedSuffix(refFilePath),
                 ModelsFolder = RamlReferenceReader.GetModelsFolder(refFilePath),
                 ImplementationControllersFolder = RamlReferenceReader.GetImplementationControllersFolder(refFilePath)
             };

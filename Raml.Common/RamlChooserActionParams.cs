@@ -29,5 +29,6 @@
         public string BaseControllersFolder { get; set; }
 
         public string ImplementationControllersFolder { get; set; }
+        public bool AddGeneratedSuffixToFiles { get; set; }
     }
 }

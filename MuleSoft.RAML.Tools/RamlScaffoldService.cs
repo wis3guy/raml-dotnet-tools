@@ -222,7 +222,7 @@ namespace MuleSoft.RAML.Tools
                     IncludeApiVersionInRoutePrefix = includeApiVersionInRoutePrefix,
                     ModelsFolder = RamlReferenceReader.GetModelsFolder(refFilePath),
                     ImplementationControllersFolder = RamlReferenceReader.GetImplementationControllersFolder(refFilePath),
-                    BaseControllersFolder = RamlReferenceReader.GetBaseControllersFolder(refFilePath)
+                    AddGeneratedSuffixToFiles = RamlReferenceReader.GetAddGeneratedSuffix(refFilePath)
                 };
                 service.Scaffold(ramlFile, parameters);
             }
@@ -386,7 +386,8 @@ namespace MuleSoft.RAML.Tools
             var apiObjectTemplateParams = new TemplateParams<ApiObject>(
                 Path.Combine(templatesFolder, ModelTemplateName), ramlItem, "apiObject", models,
                 contractsFolderPath, contractsFolderItem, extensionPath, parameters.TargetNamespace,
-                GetVersionPrefix(parameters.IncludeApiVersionInRoutePrefix, model.ApiVersion));
+                GetVersionPrefix(parameters.IncludeApiVersionInRoutePrefix, model.ApiVersion) +
+                (parameters.AddGeneratedSuffixToFiles ? ".generated" : string.Empty));
 
             apiObjectTemplateParams.Title = Settings.Default.ModelsTemplateTitle;
             apiObjectTemplateParams.TargetFolder = TargetFolderResolver.GetModelsTargetFolder(ramlItem.ContainingProject,
@@ -438,7 +439,7 @@ namespace MuleSoft.RAML.Tools
                     IncludeApiVersionInRoutePrefix = RamlReferenceReader.GetRamlIncludeApiVersionInRoutePrefix(refFilePath),
                     ModelsFolder = RamlReferenceReader.GetModelsFolder(refFilePath),
                     ImplementationControllersFolder = RamlReferenceReader.GetImplementationControllersFolder(refFilePath),
-                    BaseControllersFolder = RamlReferenceReader.GetBaseControllersFolder(refFilePath)
+                    AddGeneratedSuffixToFiles = RamlReferenceReader.GetAddGeneratedSuffix(refFilePath)
                 };
                 Scaffold(ramlFilePath, parameters);
             }
@@ -487,8 +488,9 @@ namespace MuleSoft.RAML.Tools
                 Source = parameters.RamlSource,
                 ClientName = parameters.ClientRootClassName,
                 ModelsFolder = parameters.ModelsFolder,
-                BaseControllersFolder = parameters.BaseControllersFolder,
-                ImplementationControllersFolder = parameters.ImplementationControllersFolder
+                ImplementationControllersFolder = parameters.ImplementationControllersFolder,
+                AddGeneratedSuffix = parameters.AddGeneratedSuffixToFiles,
+                BaseControllersFolder = parameters.BaseControllersFolder
             };
         }
 

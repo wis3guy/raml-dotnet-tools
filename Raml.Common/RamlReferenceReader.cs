@@ -1,7 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
-using Raml.Common.Properties;
 
 namespace Raml.Common
 {
@@ -36,7 +34,7 @@ namespace Raml.Common
                 return false;
 
             bool result;
-            Boolean.TryParse(useAsync, out result);
+            bool.TryParse(useAsync, out result);
             return result;
         }
 
@@ -91,15 +89,22 @@ namespace Raml.Common
             return clientRootClassName;
         }
 
-        public static string GetBaseControllersFolder(string referenceFilePath)
+        public static bool GetAddGeneratedSuffix(string referenceFilePath)
         {
             var contents = File.ReadAllText(referenceFilePath);
             var lines = contents.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
             if (lines.Length <= 7)
-                return null;
+                return false;
 
-            var clientRootClassName = lines[7].Replace("baseControllersFolder:", string.Empty).Trim();
-            return clientRootClassName;
+            var addGeneratedSuffix = lines[7].Replace("addGeneratedSuffix:", string.Empty).Trim();
+
+            if (string.IsNullOrWhiteSpace(addGeneratedSuffix))
+                return false;
+
+            bool result;
+            bool.TryParse(addGeneratedSuffix, out result);
+            return result;
+
         }
     }
 }

@@ -100,22 +100,10 @@ namespace Raml.Common
             }
         }
 
-
-        public RamlPreview(IServiceProvider serviceProvider, Action<RamlChooserActionParams> action, string ramlTempFilePath, string ramlOriginalSource, string ramlTitle, bool isContractUseCase)
-        {
-            ServiceProvider = serviceProvider;
-            RamlTempFilePath = ramlTempFilePath;
-            RamlOriginalSource = ramlOriginalSource;
-            RamlTitle = ramlTitle;
-            IsContractUseCase = isContractUseCase;
-            this.action = action;
-            InitializeComponent();
-        }
-
         protected override void OnInitialized(EventArgs e)
         {
             base.OnInitialized(e);
-            if(!isNewContract)
+            if (!isNewContract)
                 StartProgress();
         }
 
@@ -126,8 +114,20 @@ namespace Raml.Common
             IsContractUseCase = true;
             this.action = action;
             isNewContract = true;
-            Height = 250;
+            Height = 420;
             OnPropertyChanged("NewContractVisibility");
+            InitializeComponent();
+        }
+
+        public RamlPreview(IServiceProvider serviceProvider, Action<RamlChooserActionParams> action, string ramlTempFilePath, string ramlOriginalSource, string ramlTitle, bool isContractUseCase)
+        {
+            ServiceProvider = serviceProvider;
+            RamlTempFilePath = ramlTempFilePath;
+            RamlOriginalSource = ramlOriginalSource;
+            RamlTitle = ramlTitle;
+            IsContractUseCase = isContractUseCase;
+            this.action = action;
+            Height = isContractUseCase ? 660 : 480;
             InitializeComponent();
         }
 
@@ -337,6 +337,9 @@ namespace Raml.Common
                 {
                     parameters.UseAsyncMethods = CheckBoxUseAsync.IsChecked.HasValue && CheckBoxUseAsync.IsChecked.Value;
                     parameters.IncludeApiVersionInRoutePrefix = CheckBoxIncludeApiVersionInRoutePrefix.IsChecked.HasValue && CheckBoxIncludeApiVersionInRoutePrefix.IsChecked.Value;
+                    parameters.ImplementationControllersFolder = ImplementationControllersFolder;
+                    parameters.ModelsFolder = ModelsFolder;
+                    parameters.AddGeneratedSuffixToFiles = chkAddSuffixToGeneratedFiles.IsChecked != null && chkAddSuffixToGeneratedFiles.IsChecked.Value;
                 }
 
                 if(!isContractUseCase)

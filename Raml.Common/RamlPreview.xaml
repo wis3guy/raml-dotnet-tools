@@ -9,7 +9,8 @@
                  Background="Gainsboro"
                  Title="Import RAML"
 				 Width="545"
-				 ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen">
+				 ResizeMode="CanMinimize" 
+                 WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <Style x:Key="TextBlockStyle"
 			   TargetType="{x:Type TextBox}">
@@ -110,8 +111,8 @@
                 <RowDefinition Height="Auto"></RowDefinition>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="60"></ColumnDefinition>
-                <ColumnDefinition Width="163"></ColumnDefinition>
+                <ColumnDefinition Width="55"></ColumnDefinition>
+                <ColumnDefinition Width="168"></ColumnDefinition>
                 <ColumnDefinition Width="225"></ColumnDefinition>
                 <ColumnDefinition Width="90"></ColumnDefinition>
             </Grid.ColumnDefinitions>
@@ -200,8 +201,8 @@
                       />
 
             <Label x:Name="lblConfigFolder"
-							   Content="Customize output folder"
-                               ToolTip="Customize the folder for generated code"
+							   Content="Customize output folders"
+                               ToolTip="Customize the folders for generated code"
 							   Style="{StaticResource DefaultLabel}"
                                Visibility="{Binding ElementName=RamlPreviewWindow, Path=ContractUseCaseVisibility}"
 							   Grid.Column="1"
@@ -217,11 +218,13 @@
                       VerticalAlignment="Center" />
 
             <Grid Grid.Row="6" 
-                    Grid.ColumnSpan="4">
+                  Visibility="{Binding ElementName=RamlPreviewWindow, Path=ContractUseCaseVisibility}"
+                  Grid.ColumnSpan="4">
 
 
                 <Border Margin="5"
                     BorderBrush="Black"
+                    Visibility="{Binding ElementName=RamlPreviewWindow, Path=ContractUseCaseVisibility}"
                     BorderThickness="1">
                     <Grid >
                         <Grid.RowDefinitions>
@@ -230,8 +233,8 @@
                             <RowDefinition Height="Auto"></RowDefinition>
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="60"></ColumnDefinition>
-                            <ColumnDefinition Width="163"></ColumnDefinition>
+                            <ColumnDefinition Width="55"></ColumnDefinition>
+                            <ColumnDefinition Width="168"></ColumnDefinition>
                             <ColumnDefinition Width="225"></ColumnDefinition>
                             <ColumnDefinition Width="90"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
