@@ -142,10 +142,24 @@
                                  Visibility="{Binding ElementName=RamlPropertiesEditorWindow, Path=ServerVisibility}"
 								 Grid.Row="4" />
 
+        <Label Content="Controllers Folder"
+							   Style="{StaticResource DefaultLabel}"
+                               Visibility="{Binding ElementName=RamlPropertiesEditorWindow, Path=ServerVisibility}"
+                               ToolTip="Folder where the controllers to be implemented will be placed, leave blank for default Controllers folder"
+							   Grid.Column="1"
+							   Grid.Row="5"
+                               Margin="5" />
+        <TextBox Text="{Binding ElementName=RamlPropertiesEditorWindow, Path=ImplementationControllersFolder}"
+								 Style="{StaticResource DefaultTextBox}"
+                                 Visibility="{Binding ElementName=RamlPropertiesEditorWindow, Path=ServerVisibility}"
+                                 ToolTip="Folder where the controllers to be implemented will be placed, leave blank for default Controllers folder"
+								 Grid.Column="2"
+								 Grid.Row="5" />
+        
         <Label Content="Models Folder"
 							   Style="{StaticResource DefaultLabel}"
 							   Grid.Column="1"
-							   Grid.Row="5"
+							   Grid.Row="6"
                                Visibility="{Binding ElementName=RamlPropertiesEditorWindow, Path=ServerVisibility}"
                                ToolTip="Folder where the generated models will be placed, leave blank for default Contracts folder"
                                Margin="5" />
@@ -154,33 +168,19 @@
 								 Grid.Column="2"
                                  ToolTip="Folder where the generated models will be placed, leave blank for default Contracts folder"
                                  Visibility="{Binding ElementName=RamlPropertiesEditorWindow, Path=ServerVisibility}"
-								 Grid.Row="5" />
-
-        <Label Content="Base And Interface Controllers Folder"
-							   Style="{StaticResource DefaultLabel}"
-							   Grid.Column="1"
-                               ToolTip="Folder where the generated base and interface controllers will be placed, leave blank for default Contracts folder"
-                               Visibility="{Binding ElementName=RamlPropertiesEditorWindow, Path=ServerVisibility}"               
-							   Grid.Row="6"
-                               Margin="5" />
-        <TextBox Text="{Binding ElementName=RamlPropertiesEditorWindow, Path=BaseControllersFolder}"
-								 Style="{StaticResource DefaultTextBox}"
-                                 Visibility="{Binding ElementName=RamlPropertiesEditorWindow, Path=ServerVisibility}"
-                                 ToolTip="Folder where the generated base and interface controllers will be placed, leave blank for default Contracts folder"
-								 Grid.Column="2"
 								 Grid.Row="6" />
 
-        <Label Content="Implementation Controllers Folder"
+        <Label Content="Add 'generated.cs' suffix"
 							   Style="{StaticResource DefaultLabel}"
-                               Visibility="{Binding ElementName=RamlPropertiesEditorWindow, Path=ServerVisibility}"
-                               ToolTip="Folder where the controllers to be implemented will be placed, leave blank for default Controllers folder"
 							   Grid.Column="1"
+                               ToolTip="Add 'generated.cs' suffix to generated Model files"
+                               Visibility="{Binding ElementName=RamlPropertiesEditorWindow, Path=ServerVisibility}"               
 							   Grid.Row="7"
                                Margin="5" />
-        <TextBox Text="{Binding ElementName=RamlPropertiesEditorWindow, Path=ImplementationControllersFolder}"
-								 Style="{StaticResource DefaultTextBox}"
+        <CheckBox IsChecked="{Binding ElementName=RamlPropertiesEditorWindow, Path=AddGeneratedSuffixToFiles}"
+								 Style="{StaticResource DefaultCheckBox}"
                                  Visibility="{Binding ElementName=RamlPropertiesEditorWindow, Path=ServerVisibility}"
-                                 ToolTip="Folder where the controllers to be implemented will be placed, leave blank for default Controllers folder"
+                                 ToolTip="Add 'generated.cs' suffix to generated Model files"
 								 Grid.Column="2"
 								 Grid.Row="7" />
 

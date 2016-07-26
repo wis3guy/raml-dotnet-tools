@@ -222,7 +222,7 @@
                   Grid.ColumnSpan="4">
 
 
-                <Border Margin="5"
+                <Border Margin="16,0,22,0"
                     BorderBrush="Black"
                     Visibility="{Binding ElementName=RamlPreviewWindow, Path=ContractUseCaseVisibility}"
                     BorderThickness="1">
@@ -233,36 +233,19 @@
                             <RowDefinition Height="Auto"></RowDefinition>
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="55"></ColumnDefinition>
+                            <ColumnDefinition Width="39"></ColumnDefinition>
                             <ColumnDefinition Width="168"></ColumnDefinition>
                             <ColumnDefinition Width="225"></ColumnDefinition>
                             <ColumnDefinition Width="90"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
 
-                        <Label x:Name="lblModels"
-							   Content="Models Folder"
-							   Style="{StaticResource DefaultLabel}"
-                               Visibility="{Binding ElementName=RamlPreviewWindow, Path=ContractUseCaseVisibility}"
-							   Grid.Column="1"
-							   Grid.Row="0"
-                               Margin="5" 
-                               ToolTip="Place to put the generated model classes" />
-                        <TextBox x:Name="txtModels"
-								 Style="{StaticResource DefaultTextBox}"
-                                 Visibility="{Binding ElementName=RamlPreviewWindow, Path=ContractUseCaseVisibility}"
-                                 IsEnabled="{Binding ElementName=RamlPreviewWindow, Path=ConfigFolders}"
-                                 Text="{Binding ElementName=RamlPreviewWindow, Path=ModelsFolder}"
-								 Grid.Column="2"
-								 Grid.Row="0"
-                                 ToolTip="Folder to place the generated model classes"
-								 Width="220" />
 
                         <Label x:Name="lblImplementationControllers"
 							   Content="Controllers Folder"
 							   Style="{StaticResource DefaultLabel}"
                                Visibility="{Binding ElementName=RamlPreviewWindow, Path=ContractUseCaseVisibility}"
 							   Grid.Column="1"
-							   Grid.Row="1"
+							   Grid.Row="0"
                                Margin="5" 
                                ToolTip="Folder to place the controllers to be implemented" />
                         <TextBox x:Name="txtImplementationControllers"
@@ -271,8 +254,26 @@
                                  IsEnabled="{Binding ElementName=RamlPreviewWindow, Path=ConfigFolders}"
                                  Text="{Binding ElementName=RamlPreviewWindow, Path=ImplementationControllersFolder}"
 								 Grid.Column="2"
-								 Grid.Row="1"
+								 Grid.Row="0"
                                  ToolTip="Folder to place the controllers to be implemented"
+								 Width="220" />
+                        
+                        <Label x:Name="lblModels"
+							   Content="Models Folder"
+							   Style="{StaticResource DefaultLabel}"
+                               Visibility="{Binding ElementName=RamlPreviewWindow, Path=ContractUseCaseVisibility}"
+							   Grid.Column="1"
+							   Grid.Row="1"
+                               Margin="5" 
+                               ToolTip="Place to put the generated model classes" />
+                        <TextBox x:Name="txtModels"
+								 Style="{StaticResource DefaultTextBox}"
+                                 Visibility="{Binding ElementName=RamlPreviewWindow, Path=ContractUseCaseVisibility}"
+                                 IsEnabled="{Binding ElementName=RamlPreviewWindow, Path=ConfigFolders}"
+                                 Text="{Binding ElementName=RamlPreviewWindow, Path=ModelsFolder}"
+								 Grid.Column="2"
+								 Grid.Row="1"
+                                 ToolTip="Folder to place the generated model classes"
 								 Width="220" />
 
                         <Label x:Name="lblSuffix"

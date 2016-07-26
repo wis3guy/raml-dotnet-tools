@@ -22,6 +22,7 @@ namespace Raml.Common
         private string baseControllersFolder;
         private string implementationControllersFolder;
         private string modelsFolder;
+        private bool addGeneratedSuffixToFiles;
 
         public string Namespace
         {
@@ -113,6 +114,16 @@ namespace Raml.Common
             get { return isServerUseCase ? Visibility.Collapsed : Visibility.Visible; }
         }
 
+        public bool AddGeneratedSuffixToFiles
+        {
+            get { return addGeneratedSuffixToFiles; }
+            set
+            {
+                addGeneratedSuffixToFiles = value; 
+                OnPropertyChanged();
+            }
+        }
+
         public RamlPropertiesEditor()
         {
             InitializeComponent();
@@ -133,9 +144,8 @@ namespace Raml.Common
                 IncludeApiVersionInRoutePrefix = ramlProperties.IncludeApiVersionInRoutePrefix.HasValue &&
                                                  ramlProperties.IncludeApiVersionInRoutePrefix.Value;
                 ModelsFolder = ramlProperties.ModelsFolder;
-                BaseControllersFolder = ramlProperties.BaseControllersFolder;
+                AddGeneratedSuffixToFiles = ramlProperties.AddGeneratedSuffix != null && ramlProperties.AddGeneratedSuffix.Value;
                 ImplementationControllersFolder = ramlProperties.ImplementationControllersFolder;
-
             }
             else
                 ClientName = ramlProperties.ClientName;
@@ -154,7 +164,7 @@ namespace Raml.Common
                 UseAsyncMethods = UseAsyncMethods,
                 IncludeApiVersionInRoutePrefix = IncludeApiVersionInRoutePrefix,
                 ModelsFolder = ModelsFolder,
-                BaseControllersFolder = BaseControllersFolder,
+                AddGeneratedSuffix = AddGeneratedSuffixToFiles,
                 ImplementationControllersFolder = ImplementationControllersFolder
             };
             
