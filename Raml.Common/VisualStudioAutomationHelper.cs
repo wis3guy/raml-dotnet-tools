@@ -56,6 +56,22 @@ namespace Raml.Common
             return projectItem;
         }
 
+        public static ProjectItem AddFolderIfNotExists(ProjectItem projItem, string folderName)
+        {
+            var path = Path.GetDirectoryName(projItem.FileNames[0]) + "\\" + folderName + "\\";
+            var projectItem = projItem.ProjectItems.Cast<ProjectItem>().FirstOrDefault(i => i.Name == folderName);
+            if (projectItem != null)
+                return projectItem;
+
+            if (!IsAVisualStudio2015Project(projItem.ContainingProject) && Directory.Exists(path))
+                projectItem = projItem.ProjectItems.AddFromDirectory(path);
+            else if (!Directory.Exists(path))
+                projectItem = projItem.ProjectItems.AddFolder(folderName);
+
+            return projectItem;
+        }
+
+
         public static ProjectItem AddFolderIfNotExists(ProjectItem projItem, string folderName, string folderPath)
         {
             

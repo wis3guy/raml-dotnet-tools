@@ -184,6 +184,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActivityLogger.cs" />
+    <Compile Include="CodeGenerator.cs" />
     <Compile Include="CodeGeneratorRegistrationAttribute.cs" />
     <Compile Include="ILogger.cs" />
     <Compile Include="NugetInstallerHelper.cs" />
@@ -2042,6 +2043,7 @@
     <Compile Include="PkgCmdID.cs" />
     <Compile Include="ReverseEngineeringService.cs" />
     <Compile Include="TargetFolderResolver.cs" />
+    <Compile Include="TemplateParams.cs" />
     <Compile Include="TemplatesManager.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -15,8 +15,6 @@ namespace Raml.Common
 
         public string ModelsFolder { get; set; }
 
-        public string BaseControllersFolder { get; set; }
-
         public string ImplementationControllersFolder { get; set; }
 
         public bool? AddGeneratedSuffix { get; set; }
