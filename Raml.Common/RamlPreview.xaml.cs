@@ -323,6 +323,20 @@ namespace Raml.Common
                 return;
             }
 
+            if (IsContractUseCase && HasFolderCustomized() && HasInvalidPath(ModelsFolder))
+            {
+                ShowErrorAndStopProgress("Error: invalid path specified for models. Path must be relative.");
+                txtModels.Focus();
+                return;
+            }
+
+            if (IsContractUseCase && HasFolderCustomized() && HasInvalidPath(ImplementationControllersFolder))
+            {
+                ShowErrorAndStopProgress("Error: invalid path specified for controllers. Path must be relative.");
+                txtImplementationControllers.Focus();
+                return;
+            }
+
             var path = Path.GetDirectoryName(GetType().Assembly.Location) + Path.DirectorySeparatorChar;
 
             try
@@ -361,6 +375,19 @@ namespace Raml.Common
             }
         }
 
+        private bool HasFolderCustomized()
+        {
+            return chkBoxConfigFolders.IsChecked != null && chkBoxConfigFolders.IsChecked.Value;
+        }
+
+        private readonly char[] invalidPathChars = Path.GetInvalidPathChars().Union((new[] {':'}).ToList()).ToArray();
+        private bool HasInvalidPath(string folder)
+        {
+            if (folder == null)
+                return false;
+
+            return invalidPathChars.Any(c => folder.Contains(c));
+        }
 
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)

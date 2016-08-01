@@ -1,7 +1,9 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows;
-using Microsoft.Internal.VisualStudio.PlatformUI;
+using System.Linq;
 using Raml.Common.Annotations;
 
 namespace Raml.Common
@@ -156,6 +158,34 @@ namespace Raml.Common
 
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
+            if (NetNamingMapper.HasIndalidChars(Namespace))
+            {
+                MessageBox.Show("Error: invalid namespace.");
+                return;                
+            }
+            if (NetNamingMapper.HasIndalidChars(ClientName))
+            {
+                MessageBox.Show("Error: invalid client name.");
+                return;
+            }
+            if (NetNamingMapper.HasIndalidChars(source))
+            {
+                MessageBox.Show("Error: invalid source.");
+                return;
+            }
+            if (HasInvalidPath(ModelsFolder))
+            {
+                MessageBox.Show("Error: invalid path specified for models. Path must be relative.");
+                return;
+            }
+
+            if (HasInvalidPath(ImplementationControllersFolder))
+            {
+                MessageBox.Show("Error: invalid path specified for controllers. Path must be relative.");
+                return;
+            }
+
+
             var ramlProperties = new RamlProperties
             {
                 Namespace = Namespace,
@@ -171,6 +201,15 @@ namespace Raml.Common
             RamlPropertiesManager.Save(ramlProperties, ramlPath);
             DialogResult = true;
             Close();
+        }
+
+        private readonly char[] invalidPathChars = Path.GetInvalidPathChars().Union((new[] { ':' }).ToList()).ToArray();
+        private bool HasInvalidPath(string folder)
+        {
+            if (folder == null)
+                return false;
+
+            return invalidPathChars.Any(c => folder.Contains(c));
         }
 
         private void CancelButton_Click(object sender, System.Windows.RoutedEventArgs e)

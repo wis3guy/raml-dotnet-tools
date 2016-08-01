@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using EnvDTE;
+using MuleSoft.RAML.Tools.Properties;
 using Raml.Common;
 using Raml.Tools.WebApiGenerator;
 
@@ -39,23 +40,16 @@ namespace MuleSoft.RAML.Tools
                     File.WriteAllText(destinationFile, contents);
                 }
 
-                if (templateParams.TargetFolder == templateParams.FolderPath)
+                if (templateParams.ParameterName == "controllerObject" || templateParams.TargetFolder == templateParams.FolderPath)
                 {
                     // add file if it does not exist
                     var fileItem = templateParams.ProjItem.ProjectItems.Cast<ProjectItem>()
                         .FirstOrDefault(i => i.Name == generatedFileName);
                     if (fileItem != null) continue;
 
-                    if (templateParams.ProjItem.Name.EndsWith(".raml"))
-                    {
-                        var alreadyIncludedInProj = IsAlreadyIncludedInProject(templateParams.FolderPath, templateParams.FolderItem, generatedFileName, templateParams.ProjItem);
-                        if (!alreadyIncludedInProj)
-                            templateParams.ProjItem.ProjectItems.AddFromFile(destinationFile);
-                    }
-                    else
-                    {
+                    var alreadyIncludedInProj = IsAlreadyIncludedInProject(templateParams.FolderPath, templateParams.FolderItem, generatedFileName, templateParams.ProjItem);
+                    if (!alreadyIncludedInProj)
                         templateParams.ProjItem.ProjectItems.AddFromFile(destinationFile);
-                    }
                 }
                 else
                 {
@@ -88,6 +82,9 @@ namespace MuleSoft.RAML.Tools
                 return CreateFolderItem(folderItem, folders, 1);
             }
 
+            if (VisualStudioAutomationHelper.IsAVisualStudio2015Project(proj))
+                return null;
+
             var folderName = path.Substring(path.LastIndexOf(Path.DirectorySeparatorChar) + 1);
             return VisualStudioAutomationHelper.AddFolderIfNotExists(proj, folderName);
         }
@@ -104,6 +101,8 @@ namespace MuleSoft.RAML.Tools
 
         private static bool ContainsSubFolders(string folder)
         {
+            if (folder == null)
+                return false;
             return PossibleDirectorySeparatorChars.Any(folder.Contains);
         }
 
