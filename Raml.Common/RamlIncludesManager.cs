@@ -254,11 +254,11 @@ namespace Raml.Common
 
         private string GetUniqueName(string destinationFilePath, ICollection<string> includedFiles)
         {
-            var fileName = Path.GetFileName(destinationFilePath);
+            var fileName = Path.GetFileNameWithoutExtension(destinationFilePath);
             var path = Path.GetDirectoryName(destinationFilePath);
             for (var i = 0; i < 100; i++)
             {
-                var newPath = Path.Combine(path, fileName + i);
+                var newPath = Path.Combine(path, fileName + i + Path.GetExtension(destinationFilePath));
                 if (!includedFiles.Contains(newPath))
                     return newPath;
             }
