@@ -24,10 +24,10 @@ using $(namespace).Models;
 namespace $(namespace)
 {
 <# if(System.String.IsNullOrWhiteSpace(apiVersion)) { #>
-    [Route("<#= controllerObject.PrefixUri #>")]
+    [RoutePrefix("<#= controllerObject.PrefixUri #>")]
     public partial class <#= controllerObject.Name #>Controller : ApiController
 <# } else { #>
-    [Route("<#= apiVersion #>/<#= controllerObject.PrefixUri #>")]
+    [RoutePrefix("<#= apiVersion #>/<#= controllerObject.PrefixUri #>")]
     public partial class <#= apiVersion #><#= controllerObject.Name #>Controller : ApiController
 <# } #>
     {
