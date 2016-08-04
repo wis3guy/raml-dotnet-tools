@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 
 namespace Raml.Common
 {
@@ -26,7 +25,7 @@ namespace Raml.Common
             var contents = File.ReadAllText(referenceFilePath);
             var lines = contents.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
             
-            if (lines.Count() <= 3)
+            if (lines.Length <= 3)
                 return false;
 
             var useAsync = lines[3].Replace("async:", string.Empty).Trim();
@@ -35,7 +34,7 @@ namespace Raml.Common
                 return false;
 
             bool result;
-            Boolean.TryParse(useAsync, out result);
+            bool.TryParse(useAsync, out result);
             return result;
         }
 
@@ -44,7 +43,7 @@ namespace Raml.Common
             var contents = File.ReadAllText(referenceFilePath);
             var lines = contents.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
 
-            if (lines.Count() <= 4)
+            if (lines.Length <= 4)
                 return false;
 
             var useAsync = lines[4].Replace("includeApiVersionInRoutePrefix:", string.Empty).Trim();
@@ -61,11 +60,51 @@ namespace Raml.Common
         {
             var contents = File.ReadAllText(referenceFilePath);
             var lines = contents.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-            if (lines.Count() <= 3)
+            if (lines.Length <= 3)
                 return "ApiClient";
 
             var clientRootClassName = lines[3].Replace("client:", string.Empty).Trim();
             return clientRootClassName;
+        }
+
+        public static string GetModelsFolder(string referenceFilePath)
+        {
+            var contents = File.ReadAllText(referenceFilePath);
+            var lines = contents.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+            if (lines.Length <= 5)
+                return null;
+
+            var clientRootClassName = lines[5].Replace("modelsFolder:", string.Empty).Trim();
+            return clientRootClassName;
+        }
+
+        public static string GetImplementationControllersFolder(string referenceFilePath)
+        {
+            var contents = File.ReadAllText(referenceFilePath);
+            var lines = contents.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+            if (lines.Length <= 6)
+                return null;
+
+            var clientRootClassName = lines[6].Replace("implementationControllersFolder:", string.Empty).Trim();
+            return clientRootClassName;
+        }
+
+        public static bool GetAddGeneratedSuffix(string referenceFilePath)
+        {
+            var contents = File.ReadAllText(referenceFilePath);
+            var lines = contents.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+            if (lines.Length <= 7)
+                return false;
+
+            var addGeneratedSuffix = lines[7].Replace("addGeneratedSuffix:", string.Empty).Trim();
+
+            if (string.IsNullOrWhiteSpace(addGeneratedSuffix))
+                return false;
+
+            bool result;
+            bool.TryParse(addGeneratedSuffix, out result);
+            return result;
+
         }
     }
 }

@@ -9,7 +9,8 @@
                  Background="Gainsboro"
                  Title="Import RAML"
 				 Width="545"
-				 ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen">
+				 ResizeMode="CanMinimize" 
+                 WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <Style x:Key="TextBlockStyle"
 			   TargetType="{x:Type TextBox}">
@@ -106,10 +107,12 @@
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="90"></ColumnDefinition>
-                <ColumnDefinition Width="133"></ColumnDefinition>
+                <ColumnDefinition Width="55"></ColumnDefinition>
+                <ColumnDefinition Width="168"></ColumnDefinition>
                 <ColumnDefinition Width="225"></ColumnDefinition>
                 <ColumnDefinition Width="90"></ColumnDefinition>
             </Grid.ColumnDefinitions>
@@ -145,7 +148,7 @@
                                Visibility="{Binding ElementName=RamlPreviewWindow, Path=ClientUseCaseVisibility}"
 							   Grid.Column="1"
 							   Grid.Row="2"
-                               Margin="5" ToolTip="The class name of the API client to be generatoedd" />
+                               Margin="5" ToolTip="The class name of the API client to be generated" />
             <TextBox x:Name="txtClientName"
 								 Style="{StaticResource DefaultTextBox}"
                                  Visibility="{Binding ElementName=RamlPreviewWindow, Path=ClientUseCaseVisibility}"
@@ -196,6 +199,108 @@
                       Visibility="{Binding ElementName=RamlPreviewWindow, Path=ContractUseCaseVisibility}"
                       VerticalAlignment="Center" 
                       />
+
+            <Label x:Name="lblConfigFolder"
+							   Content="Customize output folders"
+                               ToolTip="Customize the folders for generated code"
+							   Style="{StaticResource DefaultLabel}"
+                               Visibility="{Binding ElementName=RamlPreviewWindow, Path=ContractUseCaseVisibility}"
+							   Grid.Column="1"
+							   Grid.Row="5"
+                               Margin="5" />
+            <CheckBox Grid.Row="5"
+                      Grid.Column="2"
+                      Margin="0,10,0,10"
+                      Name="chkBoxConfigFolders"
+                      IsChecked="{Binding ElementName=RamlPreviewWindow, Path=ConfigFolders}"
+                      ToolTip="Use async method signatures for the actions in the controllers"
+                      Visibility="{Binding ElementName=RamlPreviewWindow, Path=ContractUseCaseVisibility}"
+                      VerticalAlignment="Center" />
+
+            <Grid Grid.Row="6" 
+                  Visibility="{Binding ElementName=RamlPreviewWindow, Path=ContractUseCaseVisibility}"
+                  Grid.ColumnSpan="4">
+
+
+                <Border Margin="16,0,22,0"
+                    BorderBrush="Black"
+                    Visibility="{Binding ElementName=RamlPreviewWindow, Path=ContractUseCaseVisibility}"
+                    BorderThickness="1">
+                    <Grid >
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="39"></ColumnDefinition>
+                            <ColumnDefinition Width="168"></ColumnDefinition>
+                            <ColumnDefinition Width="225"></ColumnDefinition>
+                            <ColumnDefinition Width="90"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+
+                        <Label x:Name="lblImplementationControllers"
+							   Content="Controllers Folder"
+							   Style="{StaticResource DefaultLabel}"
+                               Visibility="{Binding ElementName=RamlPreviewWindow, Path=ContractUseCaseVisibility}"
+							   Grid.Column="1"
+							   Grid.Row="0"
+                               Margin="5" 
+                               ToolTip="Folder to place the controllers to be implemented (relative to project root). Leave empty for default." />
+                        <TextBox x:Name="txtImplementationControllers"
+								 Style="{StaticResource DefaultTextBox}"
+                                 Visibility="{Binding ElementName=RamlPreviewWindow, Path=ContractUseCaseVisibility}"
+                                 IsEnabled="{Binding ElementName=RamlPreviewWindow, Path=ConfigFolders}"
+                                 Text="{Binding ElementName=RamlPreviewWindow, Path=ImplementationControllersFolder}"
+								 Grid.Column="2"
+								 Grid.Row="0"
+                                 ToolTip="Folder to place the controllers to be implemented (relative to project root). Leave empty for default."
+								 Width="220" />
+                        
+                        <Label x:Name="lblModels"
+							   Content="Models Folder"
+							   Style="{StaticResource DefaultLabel}"
+                               Visibility="{Binding ElementName=RamlPreviewWindow, Path=ContractUseCaseVisibility}"
+							   Grid.Column="1"
+							   Grid.Row="1"
+                               Margin="5" 
+                               ToolTip="Place to put the generated model classes (relative to project root). Leave empty for default." />
+                        <TextBox x:Name="txtModels"
+								 Style="{StaticResource DefaultTextBox}"
+                                 Visibility="{Binding ElementName=RamlPreviewWindow, Path=ContractUseCaseVisibility}"
+                                 IsEnabled="{Binding ElementName=RamlPreviewWindow, Path=ConfigFolders}"
+                                 Text="{Binding ElementName=RamlPreviewWindow, Path=ModelsFolder}"
+								 Grid.Column="2"
+								 Grid.Row="1"
+                                 ToolTip="Folder to place the generated model classes (relative to project root). Leave empty for default."
+								 Width="220" />
+
+                        <Label x:Name="lblSuffix"
+							   Content="Add '.generated.cs' suffix"
+							   Style="{StaticResource DefaultLabel}"
+                               Visibility="{Binding ElementName=RamlPreviewWindow, Path=ContractUseCaseVisibility}"
+							   Grid.Column="1"
+							   Grid.Row="2"
+                               Margin="5" 
+                               ToolTip="Add '.generated' suffix to generated file names (e.g. 'User.generated.cs')" />
+                        <CheckBox
+                              Margin="0,10,0,10"
+                              Name="chkAddSuffixToGeneratedFiles"
+                                 Visibility="{Binding ElementName=RamlPreviewWindow, Path=ContractUseCaseVisibility}"
+                                 IsEnabled="{Binding ElementName=RamlPreviewWindow, Path=ConfigFolders}"
+                                 IsChecked="{Binding ElementName=RamlPreviewWindow, Path=AddSuffixToGeneratedCode}"
+								 Grid.Column="2"
+								 Grid.Row="2"
+                                 ToolTip="Add '.generated' suffix to generated file names (e.g. 'User.generated.cs')"
+                                 VerticalAlignment="Center" 
+                              />
+
+
+                    </Grid>
+                </Border>
+
+
+            </Grid>
 
         </Grid>
 

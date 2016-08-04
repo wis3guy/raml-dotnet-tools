@@ -28,6 +28,8 @@ namespace Raml.Common
         private readonly bool isNewContract;
         private bool isContractUseCase;
         private bool useApiVersion;
+        private bool configFolders;
+        private string modelsFolder;
 
         public string RamlTempFilePath { get; private set; }
         public string RamlOriginalSource { get; private set; }
@@ -67,21 +69,41 @@ namespace Raml.Common
             }
         }
 
-        public RamlPreview(IServiceProvider serviceProvider, Action<RamlChooserActionParams> action, string ramlTempFilePath, string ramlOriginalSource, string ramlTitle, bool isContractUseCase)
+        public bool ConfigFolders
         {
-            ServiceProvider = serviceProvider;
-            RamlTempFilePath = ramlTempFilePath;
-            RamlOriginalSource = ramlOriginalSource;
-            RamlTitle = ramlTitle;
-            IsContractUseCase = isContractUseCase;
-            this.action = action;
-            InitializeComponent();
+            get { return configFolders; }
+            set
+            {
+                configFolders = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string ModelsFolder
+        {
+            get { return modelsFolder; }
+            set
+            {
+                modelsFolder = value; 
+                OnPropertyChanged();
+            }
+        }
+
+        private string implementationControllersFolder;
+        public string ImplementationControllersFolder
+        {
+            get { return implementationControllersFolder; }
+            set
+            {
+                implementationControllersFolder = value;
+                OnPropertyChanged();
+            }
         }
 
         protected override void OnInitialized(EventArgs e)
         {
             base.OnInitialized(e);
-            if(!isNewContract)
+            if (!isNewContract)
                 StartProgress();
         }
 
@@ -92,8 +114,20 @@ namespace Raml.Common
             IsContractUseCase = true;
             this.action = action;
             isNewContract = true;
-            Height = 250;
+            Height = 420;
             OnPropertyChanged("NewContractVisibility");
+            InitializeComponent();
+        }
+
+        public RamlPreview(IServiceProvider serviceProvider, Action<RamlChooserActionParams> action, string ramlTempFilePath, string ramlOriginalSource, string ramlTitle, bool isContractUseCase)
+        {
+            ServiceProvider = serviceProvider;
+            RamlTempFilePath = ramlTempFilePath;
+            RamlOriginalSource = ramlOriginalSource;
+            RamlTitle = ramlTitle;
+            IsContractUseCase = isContractUseCase;
+            this.action = action;
+            Height = isContractUseCase ? 660 : 480;
             InitializeComponent();
         }
 
@@ -289,6 +323,20 @@ namespace Raml.Common
                 return;
             }
 
+            if (IsContractUseCase && HasFolderCustomized() && HasInvalidPath(ModelsFolder))
+            {
+                ShowErrorAndStopProgress("Error: invalid path specified for models. Path must be relative.");
+                txtModels.Focus();
+                return;
+            }
+
+            if (IsContractUseCase && HasFolderCustomized() && HasInvalidPath(ImplementationControllersFolder))
+            {
+                ShowErrorAndStopProgress("Error: invalid path specified for controllers. Path must be relative.");
+                txtImplementationControllers.Focus();
+                return;
+            }
+
             var path = Path.GetDirectoryName(GetType().Assembly.Location) + Path.DirectorySeparatorChar;
 
             try
@@ -303,6 +351,9 @@ namespace Raml.Common
                 {
                     parameters.UseAsyncMethods = CheckBoxUseAsync.IsChecked.HasValue && CheckBoxUseAsync.IsChecked.Value;
                     parameters.IncludeApiVersionInRoutePrefix = CheckBoxIncludeApiVersionInRoutePrefix.IsChecked.HasValue && CheckBoxIncludeApiVersionInRoutePrefix.IsChecked.Value;
+                    parameters.ImplementationControllersFolder = ImplementationControllersFolder;
+                    parameters.ModelsFolder = ModelsFolder;
+                    parameters.AddGeneratedSuffixToFiles = chkAddSuffixToGeneratedFiles.IsChecked != null && chkAddSuffixToGeneratedFiles.IsChecked.Value;
                 }
 
                 if(!isContractUseCase)
@@ -324,6 +375,19 @@ namespace Raml.Common
             }
         }
 
+        private bool HasFolderCustomized()
+        {
+            return chkBoxConfigFolders.IsChecked != null && chkBoxConfigFolders.IsChecked.Value;
+        }
+
+        private readonly char[] invalidPathChars = Path.GetInvalidPathChars().Union((new[] {':'}).ToList()).ToArray();
+        private bool HasInvalidPath(string folder)
+        {
+            if (folder == null)
+                return false;
+
+            return invalidPathChars.Any(c => folder.Contains(c));
+        }
 
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)

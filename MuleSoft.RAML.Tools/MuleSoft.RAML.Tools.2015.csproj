@@ -71,6 +71,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="ActivityLogger.cs" />
+    <Compile Include="CodeGenerator.cs" />
     <Compile Include="CodeGeneratorRegistrationAttribute.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Guids.cs" />
@@ -89,6 +90,8 @@
     <Compile Include="RamlReferenceService.cs" />
     <Compile Include="RamlScaffoldService.cs" />
     <Compile Include="ReverseEngineeringService.cs" />
+    <Compile Include="TargetFolderResolver.cs" />
+    <Compile Include="TemplateParams.cs" />
     <Compile Include="TemplatesManager.cs" />
   </ItemGroup>
   <ItemGroup>
