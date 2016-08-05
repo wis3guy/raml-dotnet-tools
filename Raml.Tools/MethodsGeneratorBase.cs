@@ -90,7 +90,7 @@ namespace Raml.Tools
             if (string.IsNullOrWhiteSpace(type))
                 return;
 
-            var name = CollectionTypeHelper.GetBaseType(type);
+            var name = NetNamingMapper.GetPropertyName(CollectionTypeHelper.GetBaseType(type));
             if (properties.Any(p => p.Name == name))
                 name = name + response.Code;
 

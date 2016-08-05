@@ -158,17 +158,17 @@ namespace Raml.Common
 
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
-            if (NetNamingMapper.HasIndalidChars(Namespace))
+            if (Namespace == null || NetNamingMapper.HasIndalidChars(Namespace))
             {
                 MessageBox.Show("Error: invalid namespace.");
                 return;                
             }
-            if (NetNamingMapper.HasIndalidChars(ClientName))
+            if (clientName != null && NetNamingMapper.HasIndalidChars(ClientName))
             {
                 MessageBox.Show("Error: invalid client name.");
                 return;
             }
-            if (NetNamingMapper.HasIndalidChars(source))
+            if (source != null && NetNamingMapper.HasIndalidChars(source))
             {
                 MessageBox.Show("Error: invalid source.");
                 return;

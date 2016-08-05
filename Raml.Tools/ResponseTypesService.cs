@@ -199,6 +199,7 @@ namespace Raml.Tools
         private string GetReturnTypeFromName(string type)
         {
             var toLower = type.ToLowerInvariant();
+            toLower = toLower.Replace(".", string.Empty);
 
             if (schemaObjects.Values.Any(o => o.Name.ToLowerInvariant() == toLower))
             {
