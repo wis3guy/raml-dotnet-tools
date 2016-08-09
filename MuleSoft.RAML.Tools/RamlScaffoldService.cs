@@ -35,11 +35,14 @@ namespace MuleSoft.RAML.Tools
         private readonly string ramlApiCorePackageVersion = Settings.Default.RAMLApiCorePackageVersion;
         private readonly string newtonsoftJsonPackageId = Settings.Default.NewtonsoftJsonPackageId;
         private readonly string newtonsoftJsonPackageVersion = Settings.Default.NewtonsoftJsonPackageVersion;
+        private readonly string newtonsoftJsonForCorePackageVersion = Settings.Default.NewtonsoftJsonForCorePackageVersion;
         private readonly string microsoftNetHttpPackageId = Settings.Default.MicrosoftNetHttpPackageId;
         private readonly string microsoftNetHttpPackageVersion = Settings.Default.MicrosoftNetHttpPackageVersion;
+
         private string templateSubFolder;
 
         private readonly CodeGenerator codeGenerator;
+
         public RamlScaffoldService(IT4Service t4Service, IServiceProvider serviceProvider)
         {
             this.serviceProvider = serviceProvider;
@@ -52,7 +55,8 @@ namespace MuleSoft.RAML.Tools
             var proj = VisualStudioAutomationHelper.GetActiveProject(dte);
 
             InstallNugetDependencies(proj);
-            AddXmlFormatterInWebApiConfig(proj);
+            if(VisualStudioAutomationHelper.IsAVisualStudio2015Project(proj))
+                AddXmlFormatterInWebApiConfig(proj);
 
             var folderItem = VisualStudioAutomationHelper.AddFolderIfNotExists(proj, contractsFolderName);
             var contractsFolderPath = Path.GetDirectoryName(proj.FullName) + Path.DirectorySeparatorChar + contractsFolderName + Path.DirectorySeparatorChar;
@@ -129,13 +133,16 @@ namespace MuleSoft.RAML.Tools
 
         private void InstallNugetDependencies(Project proj)
         {
-            // RAML.Api.Core
+            var packageVersion = VisualStudioAutomationHelper.IsAVisualStudio2015Project(proj) ? newtonsoftJsonForCorePackageVersion : newtonsoftJsonPackageVersion;
+
             var componentModel = (IComponentModel)serviceProvider.GetService(typeof(SComponentModel));
             var installerServices = componentModel.GetService<IVsPackageInstallerServices>();
             var installer = componentModel.GetService<IVsPackageInstaller>();
 
             var packs = installerServices.GetInstalledPackages(proj).ToArray();
-            NugetInstallerHelper.InstallPackageIfNeeded(proj, packs, installer, newtonsoftJsonPackageId, newtonsoftJsonPackageVersion, Settings.Default.NugetExternalPackagesSource);
+
+            // RAML.Api.Core dependencies
+            NugetInstallerHelper.InstallPackageIfNeeded(proj, packs, installer, newtonsoftJsonPackageId, packageVersion, Settings.Default.NugetExternalPackagesSource);
             NugetInstallerHelper.InstallPackageIfNeeded(proj, packs, installer, microsoftNetHttpPackageId, microsoftNetHttpPackageVersion, Settings.Default.NugetExternalPackagesSource);
 
             // System.Xml.XmlSerializer 4.0.11-beta-23516

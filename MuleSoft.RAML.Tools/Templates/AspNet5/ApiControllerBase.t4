@@ -13,7 +13,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Mvc;
 <# if(hasModels){ #>
 using $(namespace).Models;
 <# } #>
@@ -37,8 +37,7 @@ namespace $(namespace)
 #>
 
 <#= method.XmlComment ?? string.Empty #>
-        [Http<#= method.Verb #>]
-        [Route("<#= method.Url #>")]
+        [Http<#= method.Verb #><#= string.IsNullOrWhiteSpace(method.Url) ? "" : "(\"" + method.Url + "\")" #>]
 <# if(useAsyncMethods) { #>
         public virtual async Task<IActionResult> <#= method.Name #>Base(<#= method.ParametersStringForAspNet5 #>)
 <# } else { #>

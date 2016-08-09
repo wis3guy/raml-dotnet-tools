@@ -248,39 +248,39 @@ namespace MuleSoft.RAML.Tools.Properties {
             }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("https://www.nuget.org/api/v2/")]
         public string NugetExternalPackagesSource {
             get {
                 return ((string)(this["NugetExternalPackagesSource"]));
             }
-            set {
-                this["NugetExternalPackagesSource"] = value;
-            }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("Edge.js")]
         public string EdgePackageId {
             get {
                 return ((string)(this["EdgePackageId"]));
             }
-            set {
-                this["EdgePackageId"] = value;
-            }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("4.0.0")]
         public string EdgePackageVersion {
             get {
                 return ((string)(this["EdgePackageVersion"]));
             }
-            set {
-                this["EdgePackageVersion"] = value;
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("9.0.1")]
+        public string NewtonsoftJsonForCorePackageVersion {
+            get {
+                return ((string)(this["NewtonsoftJsonForCorePackageVersion"]));
             }
         }
     }
