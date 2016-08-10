@@ -1,5 +1,4 @@
 = RAML Tools for .NET
-:toc:
 
 :source-highlighter: prettify
 
@@ -12,6 +11,14 @@ The tools are provided as a Visual Studio extension, allowing simple and natural
 A single installation package provides support for both client and service code-generation scenarios.
 
 *New*: Command Line Tool available https://github.com/mulesoft-labs/raml-dotnet-tools/tree/master/command-line[here]
+
+Supported Scenarios [[#supported-scenarios]]
+- API Client Code from a RAML Definition [[#api-client-code-from-a-raml-definition]]
+- ASP .NET Implementation from a RAML Definition [[#asp-net-implementation-from-a-raml-definition]]
+
+Prerequisites [[#prerequisites]]
+Installation [[#installation]]
+
 
 == Supported Scenarios
 
@@ -197,7 +204,6 @@ If you leave these fields empty it will place the generated controllers in the "
 
 If you plan to host several versions of the API in the same solution you can check the "Use api version" option. 
 This will add the version as a prefix to routes, controllers and models, preventing collision between different versions of the API.
-
 +
 image::./docimages/RAML_NETAddRAMLContractScreen.png[align="center", width="550"]
 +
@@ -216,11 +222,23 @@ image::./docimages/RAML_NET_NewASPProject.png[align="center", width="550"]
 +
 image::./docimages/RAML_NETAddRAMLContract.png[align="center", width="550"]
 +
-. The dialog lets you create a RAML definition or import an existing one. If you import an existing one, click  the *Go* button to download the RAML definition from an URL, or browse to use a local copy from your file system. Optionally change the filename, namespace or choose asynchronous methods.
+. The dialog lets you create a RAML definition or import an existing one. If you import an existing one, click  the *Go* button to download the RAML definition from an URL, or browse to use a local copy from your file system. 
+
+. On the preview screen you have several options to customize the generated code. You can change the filename, namespace or choose asynchronous methods.
+
+Also you can customize the location of the generated classes. Check the "Customize output folders" and enter the path for the controllers and/or the models. 
+Also select the check box if you want to add "generated.cs" to the model filenames.
+
+A Contracts folder is added to the project containing the generated assets. These assets include a local copy of the RAML definition, the generated model classes (inferred from the RAML types or JSON schemas in the RAML definition), and .NET interfaces representing the contracts for the ASP.NET Controllers.
+
+If you want to customize the location of the generated classes select the "Customize output folders", specify the paths and choose if you want to add ".generated.cs" suffix to the Models. **Specified paths will be relative to the project's root folder**.
+If you leave these fields empty it will place the generated controllers in the "Controllers" folder and the rest of the assets under the Contracts folder.
+
+If you plan to host several versions of the API in the same solution you can check the "Use api version" option. 
+This will add the version as a prefix to routes, controllers and models, preventing collision between different versions of the API.
 +
 image::./docimages/RAML_NETAddRAMLContractScreen.png[align="center", width="550"]
 +
-. A Contracts folder is added to the project containing the generated assets. These assets include a local copy of the RAML definition, the generated model classes (inferred from the JSON schemas in the RAML definition), and .NET interfaces representing the contracts for the ASP.NET Web API Controllers. The controllers are generated in the Controllers folder, and implement the contract interfaces.
 
 
 == Updating your RAML specification
