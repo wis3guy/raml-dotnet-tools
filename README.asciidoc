@@ -1,4 +1,5 @@
 = RAML Tools for .NET
+:toc:
 
 :source-highlighter: prettify
 
@@ -11,8 +12,6 @@ The tools are provided as a Visual Studio extension, allowing simple and natural
 A single installation package provides support for both client and service code-generation scenarios.
 
 *New*: Command Line Tool available https://github.com/mulesoft-labs/raml-dotnet-tools/tree/master/command-line[here]
-
-:toc:
 
 == Supported Scenarios
 
@@ -192,6 +191,7 @@ Also you can customize the location of the generated classes. Check the "Customi
 Also select the check box if you want to add "generated.cs" to the model filenames.
 
 A Contracts folder is added to the project containing the generated assets. These assets include a local copy of the RAML definition, the generated model classes (inferred from the RAML types or JSON schemas in the RAML definition), and .NET interfaces representing the contracts for the ASP.NET Controllers.
+
 If you want to customize the location of the generated classes select the "Customize output folders", specify the paths and choose if you want to add ".generated.cs" suffix to the Models. **Specified paths will be relative to the project's root folder**.
 If you leave these fields empty it will place the generated controllers in the "Controllers" folder and the rest of the assets under the Contracts folder.
 
