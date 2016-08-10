@@ -12,6 +12,8 @@ A single installation package provides support for both client and service code-
 
 *New*: Command Line Tool available https://github.com/mulesoft-labs/raml-dotnet-tools/tree/master/command-line[here]
 
+:toc:
+
 == Supported Scenarios
 
 === API Client Code from a RAML Definition
@@ -56,7 +58,7 @@ image::./docimages/RAML_NET_VSIXInstaller.png[align="center"]
 +
 image::./docimages/RAML_NET_SolutionExplorer.png[align="center"]
 +
-. Specify the URL of the RAML definition and click the *Go* button, or use the *Browse* button to select the file from the local filesystem.
+. Specify the URL of the RAML definition and click the *Go* button, use the *Upload* button to select the file from the local filesystem or choose an existing RAML definition from the *Exchange* library.
 +
 image::./docimages/RAML_NET_AddRAMLReference.png[align="center"]
 +
