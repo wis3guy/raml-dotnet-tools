@@ -47,8 +47,9 @@ namespace MuleSoft.RAML.Tools
                         .FirstOrDefault(i => i.Name == generatedFileName);
                     if (fileItem != null) continue;
 
-                    var alreadyIncludedInProj = IsAlreadyIncludedInProject(templateParams.FolderPath, templateParams.FolderItem, generatedFileName, templateParams.ProjItem);
-                    if (!alreadyIncludedInProj)
+                    // var alreadyIncludedInProj = IsAlreadyIncludedInProject(templateParams.FolderPath, templateParams.FolderItem, generatedFileName, templateParams.ProjItem);
+                    //if (!alreadyIncludedInProj)
+                    if(!VisualStudioAutomationHelper.IsAVisualStudio2015Project(templateParams.FolderItem.ContainingProject))
                         templateParams.ProjItem.ProjectItems.AddFromFile(destinationFile);
                 }
                 else

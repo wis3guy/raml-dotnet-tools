@@ -17,7 +17,7 @@ namespace MuleSoft.RAML.Tools
 {
     public partial class RamlScaffoldService
     {
-        private const string RamlSpecVersion = "0.8";
+        private const string RamlSpecVersion = "1.0";
         private const string ControllerBaseTemplateName = "ApiControllerBase.t4";
         private const string ControllerInterfaceTemplateName = "ApiControllerInterface.t4";
         private const string ControllerImplementationTemplateName = "ApiControllerImplementation.t4";
