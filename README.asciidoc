@@ -12,13 +12,35 @@ A single installation package provides support for both client and service code-
 
 *New*: Command Line Tool available https://github.com/mulesoft-labs/raml-dotnet-tools/tree/master/command-line[here]
 
-<Supported Scenarios>Supported Scenarios
-- <<API Client Code from a RAML Definition>>API Client Code from a RAML Definition
-- <<ASP .NET Implementation from a RAML Definition>>ASP .NET Implementation from a RAML Definition
+Contents:
 
-<<Prerequisites>>Prerequisites
-<<Installation>>Installation
-
+* <<Supported Scenarios>>
+** <<API Client Code from a RAML Definition>>
+** <<ASP.NET Implementation from a RAML Definition>>
+** <<Extract a RAML definition from a Web API>>
+* <<Prerequisites>>
+* <<Installation>>
+* <<Generating an API Client>>
+* <<Updating the API Reference>>
+* <<Using the API Client with the Movies Sample>>
+** <<C#: Consuming an API>>
+** <<C#: Calling an Authenticated API with OAuth>>
+** <<C#: Consuming the HTTP Response>>
+* <<Implementing an ASP.NET 5 (MVC 6)>>
+* <<Implementing an ASP.NET Web API>>
+* <<Updating your RAML specification>>
+* <<Implementing a Controller in ASP.NET Web API>>
+* <<Customizing the Generated Code>>
+** <<Compatibility With New Versions of the Templates>>
+** <<Customizing the Generated Code for the Client>>
+** <<Customizing the Generated cCode for the Asp.Net Web API>>
+* <<Metadata - Extract a RAML definition from your Web API>>
+** <<Api Console>>
+** <<Viewing the Raw RAML>>
+** <<Downloading the RAML>>
+** <<Customizing the Generated RAML>>
+* <<XML Schemas>>
+* <<FAQ>>
 
 == Supported Scenarios
 
@@ -30,7 +52,7 @@ In Visual Studio .NET, you can add a reference to a RAML definition, and a stron
 
 If the remote API does not provide a RAML definition, you can use a self-managed local definition to allow rapid generation of the client code in a declarative manner.
 
-=== ASP .NET Implementation from a RAML Definition
+=== ASP.NET Implementation from a RAML Definition
 
 You can generate an ASP .NET MVC 6 or Web API 2 implementation from a new or existing RAML definition.
 
@@ -38,7 +60,11 @@ From within Visual Studio .NET, you can add a RAML definition from which the too
 
 In code, the controllers definition and implementation are logically separated. The generated code representing the definition is driven by the RAML definition allowing you to focus exclusively on the implementation classes. This separation of concerns allows iterative evolution of the API with non-destructive forward engineering of the code-based definition.
 
-As a convenience, a local endpoint is registered to provide a browser-accessible API Console for the RAML-enabled implementation. This gives an easily navigable view of the API, including full documentation of routes, resource schema, and includes examples.
+=== Extract a RAML definition from a Web API
+
+You can generate a RAML 1 or 0.8 definition from your ASP .NET Web API 2 implementation.
+
+When enabling metadata a local endpoint is registered to provide a browser-accessible API Console for the RAML-enabled implementation. This gives an easily navigable view of the API, including full documentation of routes, resource schema, and includes examples.
 
 
 == Prerequisites
@@ -204,9 +230,9 @@ If you leave these fields empty it will place the generated controllers in the "
 
 If you plan to host several versions of the API in the same solution you can check the "Use api version" option. 
 This will add the version as a prefix to routes, controllers and models, preventing collision between different versions of the API.
-+
+
 image::docimages/RAML_NETAddRAMLContractScreen.png[align="center", width=550]
-+
+
 
 
 == Implementing an ASP.NET Web API
@@ -436,7 +462,7 @@ For the Web API there are a several templates under "Contracts/Templates":
 - *ApiModel.t4*: Template for the request and response content models.
 
 
-== Metadata
+== Metadata - Extract a RAML definition from your Web API
 
 RAML metadata output lets you extract a RAML definition for your Web API app. To enable metadata output, right-click your project and choose *Enable RAML metadata output* command.
 This adds a `RamlController`, start up configurations, a razor view and other required files (css, js, etc.).
