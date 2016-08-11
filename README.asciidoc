@@ -263,9 +263,8 @@ If you leave these fields empty it will place the generated controllers in the "
 If you plan to host several versions of the API in the same solution you can check the "Use api version" option. 
 This will add the version as a prefix to routes, controllers and models, preventing collision between different versions of the API.
 
-+
-image::./docimages/RAML_NETAddRAMLContractScreen.png[align="center", width=550]
-+
+image::docimages/RAML_NETAddRAMLContractScreen.png[align="center", width=550]
+
 
 
 == Updating your RAML specification
