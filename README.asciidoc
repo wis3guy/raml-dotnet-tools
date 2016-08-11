@@ -23,9 +23,9 @@ Contents:
 * <<Generating an API Client>>
 * <<Updating the API Reference>>
 * <<Using the API Client with the Movies Sample>>
-** <<C%23: Consuming an API>>
-** <<C%23: Calling an Authenticated API with OAuth>>
-** <<C%23: Consuming the HTTP Response>>
+** <<C\\u0023: Consuming an API>>
+** <<C\\u0023: Calling an Authenticated API with OAuth>>
+** <<C\\u0023: Consuming the HTTP Response>>
 * <<Implementing an ASP.NET 5 (MVC 6)>>
 * <<Implementing an ASP.NET Web API>>
 * <<Updating your RAML specification>>
@@ -72,7 +72,7 @@ When enabling metadata a local endpoint is registered to provide a browser-acces
 * Visual Studio 2013 Update 3 or Visual Studio 2015
 * .NET Framework 4.5 or higher
 * RAML 1.0 or 0.8 compatible endpoint
-* Supported languages: C%23 (other languages indirectly)
+* Supported languages: C\\u0023 (other languages indirectly)
 
 == Installation
 
@@ -102,7 +102,7 @@ image::./docimages/RAML_NET_APIRef.png[align="center"]
 +
 The RAML.Api.Core, Newtonsoft.Json and Microsoft.AspNet.WebApi.Client NuGet packages are installed and referenced by the project.
 +
-. The C%23 classes nested beneath the parent RAML file contain the generated code to consume the Web API. At this point, the generated code is ready to be used.
+. The C\\u0023 classes nested beneath the parent RAML file contain the generated code to consume the Web API. At this point, the generated code is ready to be used.
 
 == Updating the API Reference
 
@@ -118,9 +118,9 @@ which is a fictitious video library service where users browse a movie catalog, 
 
 The main constructor of the project's MoviesClient client uses an endpoint URI. The overload for the constructor allows a custom HttpClient implementation to be injected, such as an HttpClient instance configured with a MessageHandler. You can use this instance for unit testing.
 
-=== C%23: Consuming an API
+=== C\\u0023: Consuming an API
 
-The MoviesClient model object replicates the same structure as the RAML definition through available resources and actions. The methods in this object model are asynchronous and based on the Task Parallel Library (TPL), so they can executed with the new async  and await syntax in C%23 version 5.
+The MoviesClient model object replicates the same structure as the RAML definition through available resources and actions. The methods in this object model are asynchronous and based on the Task Parallel Library (TPL), so they can executed with the new async  and await syntax in C\\u0023 version 5.
 
 
 [source, c#]
@@ -137,7 +137,7 @@ var availableMoviesResponse = await api.Movies.Available.Get();
 
 If your API requires authentication, you can specify the access token as per this example of an authenticated Post.
 
-=== C%23: Calling an Authenticated API with OAuth
+=== C\\u0023: Calling an Authenticated API with OAuth
 
 If your API is secured with OAuth, you can specify the access token before making a call as it is shown in this example:
 
@@ -162,7 +162,7 @@ var response = await moviesApi.Movies.Post(postMovie);
 
 Replace the <OAuth_Token> with your  OAuth token received from your OAuth authorization service.
 
-=== C%23: Consuming the HTTP Response
+=== C\\u0023: Consuming the HTTP Response
 
 All methods in the generated class return an instance of ApiResponse or of a subclass of it. This class provides access to the HTTP status codes, raw headers, and content. The following code fragment illustrates how to use those:
 
@@ -674,7 +674,7 @@ The RAML Parser takes a text based RAML definition and returns an Abstract Synta
 
 *Which languages can the tools generate code for?*
 
-Currently, C%23 is the only output language supported. This generated code can however simply be contained within a separate assembly, and the types exposed then consumed from any CLR language.
+Currently, C\\u0023 is the only output language supported. This generated code can however simply be contained within a separate assembly, and the types exposed then consumed from any CLR language.
 
 *Can I customize the code-generation templates?*
 
