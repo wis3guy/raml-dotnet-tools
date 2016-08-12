@@ -141,7 +141,8 @@ namespace Raml.Common
                     ResourcesLabel.Text = GetResourcesPreview(document);
                     StopProgress();
                     SetNamespace(RamlTempFilePath);
-                    txtApiVersion.Text = NetNamingMapper.GetVersionName(document.Version);
+                    if (document.Version != null)
+                        txtApiVersion.Text = NetNamingMapper.GetVersionName(document.Version);
                     btnOk.IsEnabled = true;
 
                     if (NetNamingMapper.HasIndalidChars(txtFileName.Text))
