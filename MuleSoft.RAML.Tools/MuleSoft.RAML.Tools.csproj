@@ -93,8 +93,8 @@
       <HintPath>..\packages\RAML.Api.Core.0.9.9\lib\net45\Raml.Api.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Raml.Parser, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Raml.Parser.1.0.2.0\lib\net45\Raml.Parser.dll</HintPath>
+    <Reference Include="Raml.Parser, Version=1.0.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Raml.Parser.1.0.3.0\lib\net45\Raml.Parser.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -184,6 +184,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActivityLogger.cs" />
+    <Compile Include="CodeGenerator.cs" />
     <Compile Include="CodeGeneratorRegistrationAttribute.cs" />
     <Compile Include="ILogger.cs" />
     <Compile Include="NugetInstallerHelper.cs" />
@@ -2041,6 +2042,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PkgCmdID.cs" />
     <Compile Include="ReverseEngineeringService.cs" />
+    <Compile Include="TargetFolderResolver.cs" />
+    <Compile Include="TemplateParams.cs" />
     <Compile Include="TemplatesManager.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -12,6 +12,36 @@ A single installation package provides support for both client and service code-
 
 *New*: Command Line Tool available https://github.com/mulesoft-labs/raml-dotnet-tools/tree/master/command-line[here]
 
+Contents:
+
+* <<Supported Scenarios>>
+** <<API Client Code from a RAML Definition>>
+** <<ASP.NET Implementation from a RAML Definition>>
+** <<Extract a RAML definition from a Web API>>
+* <<Prerequisites>>
+* <<Installation>>
+* <<Generating an API Client>>
+* <<Updating the API Reference>>
+* <<Using the API Client with the Movies Sample>>
+** <<Consuming an API>>
+** <<Calling an Authenticated API with OAuth>>
+** <<Consuming the HTTP Response>>
+* <<Implementing an ASP.NET 5 (MVC 6)>>
+* <<Implementing an ASP.NET Web API>>
+* <<Updating your RAML specification>>
+* <<Implementing a Controller in ASP.NET Web API>>
+* <<Customizing the Generated Code>>
+** <<Compatibility With New Versions of the Templates>>
+** <<Customizing the Generated Code for the Client>>
+** <<Customizing the Generated cCode for the Asp.Net Web API>>
+* <<Metadata - Extract a RAML definition from your Web API>>
+** <<Api Console>>
+** <<Viewing the Raw RAML>>
+** <<Downloading the RAML>>
+** <<Customizing the Generated RAML>>
+* <<XML Schemas>>
+* <<FAQ>>
+
 == Supported Scenarios
 
 === API Client Code from a RAML Definition
@@ -22,7 +52,7 @@ In Visual Studio .NET, you can add a reference to a RAML definition, and a stron
 
 If the remote API does not provide a RAML definition, you can use a self-managed local definition to allow rapid generation of the client code in a declarative manner.
 
-=== ASP .NET Implementation from a RAML Definition
+=== ASP.NET Implementation from a RAML Definition
 
 You can generate an ASP .NET MVC 6 or Web API 2 implementation from a new or existing RAML definition.
 
@@ -30,7 +60,11 @@ From within Visual Studio .NET, you can add a RAML definition from which the too
 
 In code, the controllers definition and implementation are logically separated. The generated code representing the definition is driven by the RAML definition allowing you to focus exclusively on the implementation classes. This separation of concerns allows iterative evolution of the API with non-destructive forward engineering of the code-based definition.
 
-As a convenience, a local endpoint is registered to provide a browser-accessible API Console for the RAML-enabled implementation. This gives an easily navigable view of the API, including full documentation of routes, resource schema, and includes examples.
+=== Extract a RAML definition from a Web API
+
+You can generate a RAML 1 or 0.8 definition from your ASP .NET Web API 2 implementation.
+
+When enabling metadata a local endpoint is registered to provide a browser-accessible API Console for the RAML-enabled implementation. This gives an easily navigable view of the API, including full documentation of routes, resource schema, and includes examples.
 
 
 == Prerequisites
@@ -56,7 +90,7 @@ image::./docimages/RAML_NET_VSIXInstaller.png[align="center"]
 +
 image::./docimages/RAML_NET_SolutionExplorer.png[align="center"]
 +
-. Specify the URL of the RAML definition and click the *Go* button, or use the *Browse* button to select the file from the local filesystem.
+. Specify the URL of the RAML definition and click the *Go* button, use the *Upload* button to select the file from the local filesystem or choose an existing RAML definition from the *Exchange* library.
 +
 image::./docimages/RAML_NET_AddRAMLReference.png[align="center"]
 +
@@ -84,7 +118,7 @@ which is a fictitious video library service where users browse a movie catalog, 
 
 The main constructor of the project's MoviesClient client uses an endpoint URI. The overload for the constructor allows a custom HttpClient implementation to be injected, such as an HttpClient instance configured with a MessageHandler. You can use this instance for unit testing.
 
-=== C#: Consuming an API
+=== Consuming an API
 
 The MoviesClient model object replicates the same structure as the RAML definition through available resources and actions. The methods in this object model are asynchronous and based on the Task Parallel Library (TPL), so they can executed with the new async  and await syntax in C# version 5.
 
@@ -103,7 +137,7 @@ var availableMoviesResponse = await api.Movies.Available.Get();
 
 If your API requires authentication, you can specify the access token as per this example of an authenticated Post.
 
-=== C#: Calling an Authenticated API with OAuth
+=== Calling an Authenticated API with OAuth
 
 If your API is secured with OAuth, you can specify the access token before making a call as it is shown in this example:
 
@@ -128,7 +162,7 @@ var response = await moviesApi.Movies.Post(postMovie);
 
 Replace the <OAuth_Token> with your  OAuth token received from your OAuth authorization service.
 
-=== C#: Consuming the HTTP Response
+=== Consuming the HTTP Response
 
 All methods in the generated class return an instance of ApiResponse or of a subclass of it. This class provides access to the HTTP status codes, raw headers, and content. The following code fragment illustrates how to use those:
 
@@ -182,11 +216,23 @@ image::./docimages/webapi-vs2015.png[align="center", width="550"]
 +
 image::./docimages/RAML_NETAddRAMLContract.png[align="center", width="550"]
 +
-. The dialog lets you create a RAML definition or import an existing one. If you import an existing one, click  the *Go* button to download the RAML definition from an URL, or browse to use a local copy from your file system. Optionally change the filename, namespace or choose asynchronous methods.
-+
-image::./docimages/RAML_NETAddRAMLContractScreen.png[align="center", width="550"]
-+
-. A Contracts folder is added to the project containing the generated assets. These assets include a local copy of the RAML definition, the generated model classes (inferred from the JSON schemas in the RAML definition), and .NET interfaces representing the contracts for the ASP.NET Web API Controllers. The controllers are generated in the Controllers folder, and implement the contract interfaces.
+. The dialog lets you create a RAML definition or import an existing one. If you import an existing one, click  the *Go* button to download the RAML definition from an URL, or browse to use a local copy from your file system. 
+
+On the preview screen you have several options to customize the generated code. You can change the filename, namespace or choose asynchronous methods.
+
+Also you can customize the location of the generated classes. Check the "Customize output folders" and enter the path for the controllers and/or the models. 
+Also select the check box if you want to add "generated.cs" to the model filenames.
+
+A Contracts folder is added to the project containing the generated assets. These assets include a local copy of the RAML definition, the generated model classes (inferred from the RAML types or JSON schemas in the RAML definition), and .NET interfaces representing the contracts for the ASP.NET Controllers.
+
+If you want to customize the location of the generated classes select the "Customize output folders", specify the paths and choose if you want to add ".generated.cs" suffix to the Models. **Specified paths will be relative to the project's root folder**.
+If you leave these fields empty it will place the generated controllers in the "Controllers" folder and the rest of the assets under the Contracts folder.
+
+If you plan to host several versions of the API in the same solution you can check the "Use api version" option. 
+This will add the version as a prefix to routes, controllers and models, preventing collision between different versions of the API.
+
+image::docimages/RAML_NETAddRAMLContractScreen.png[align="center", width=550]
+
 
 
 == Implementing an ASP.NET Web API
@@ -202,11 +248,23 @@ image::./docimages/RAML_NET_NewASPProject.png[align="center", width="550"]
 +
 image::./docimages/RAML_NETAddRAMLContract.png[align="center", width="550"]
 +
-. The dialog lets you create a RAML definition or import an existing one. If you import an existing one, click  the *Go* button to download the RAML definition from an URL, or browse to use a local copy from your file system. Optionally change the filename, namespace or choose asynchronous methods.
-+
-image::./docimages/RAML_NETAddRAMLContractScreen.png[align="center", width="550"]
-+
-. A Contracts folder is added to the project containing the generated assets. These assets include a local copy of the RAML definition, the generated model classes (inferred from the JSON schemas in the RAML definition), and .NET interfaces representing the contracts for the ASP.NET Web API Controllers. The controllers are generated in the Controllers folder, and implement the contract interfaces.
+. The dialog lets you create a RAML definition or import an existing one. If you import an existing one, click  the *Go* button to download the RAML definition from an URL, or browse to use a local copy from your file system. 
+
+. On the preview screen you have several options to customize the generated code. You can change the filename, namespace or choose asynchronous methods.
+
+Also you can customize the location of the generated classes. Check the "Customize output folders" and enter the path for the controllers and/or the models. 
+Also select the check box if you want to add "generated.cs" to the model filenames.
+
+A Contracts folder is added to the project containing the generated assets. These assets include a local copy of the RAML definition, the generated model classes (inferred from the RAML types or JSON schemas in the RAML definition), and .NET interfaces representing the contracts for the ASP.NET Controllers.
+
+If you want to customize the location of the generated classes select the "Customize output folders", specify the paths and choose if you want to add ".generated.cs" suffix to the Models. **Specified paths will be relative to the project's root folder**.
+If you leave these fields empty it will place the generated controllers in the "Controllers" folder and the rest of the assets under the Contracts folder.
+
+If you plan to host several versions of the API in the same solution you can check the "Use api version" option. 
+This will add the version as a prefix to routes, controllers and models, preventing collision between different versions of the API.
+
+image::docimages/RAML_NETAddRAMLContractScreen.png[align="center", width=550]
+
 
 
 == Updating your RAML specification
@@ -403,7 +461,7 @@ For the Web API there are a several templates under "Contracts/Templates":
 - *ApiModel.t4*: Template for the request and response content models.
 
 
-== Metadata
+== Metadata - Extract a RAML definition from your Web API
 
 RAML metadata output lets you extract a RAML definition for your Web API app. To enable metadata output, right-click your project and choose *Enable RAML metadata output* command.
 This adds a `RamlController`, start up configurations, a razor view and other required files (css, js, etc.).

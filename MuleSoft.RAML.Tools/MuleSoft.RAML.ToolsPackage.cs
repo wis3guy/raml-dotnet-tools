@@ -471,9 +471,8 @@ namespace MuleSoft.RAML.Tools
         {
             var componentModel = (IComponentModel)ServiceProvider.GlobalProvider.GetService(typeof(SComponentModel));
             var installerServices = componentModel.GetService<IVsPackageInstallerServices>();
-            return installerServices.IsPackageInstalled(proj, "Microsoft.AspNet.Mvc");
+            return installerServices.IsPackageInstalled(proj, "Microsoft.AspNetCore.Mvc");
         }
-
 
 
         private void UpdateRamlRefCommand_BeforeQueryStatus(object sender, EventArgs e)

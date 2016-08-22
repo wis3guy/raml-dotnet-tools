@@ -23,5 +23,12 @@
         public bool UseAsyncMethods { get; set; }
         public string ClientRootClassName { get; set; }
         public bool IncludeApiVersionInRoutePrefix { get; set; }
+
+        public string ModelsFolder { get; set; }
+
+        public string BaseControllersFolder { get; set; }
+
+        public string ImplementationControllersFolder { get; set; }
+        public bool AddGeneratedSuffixToFiles { get; set; }
     }
 }
