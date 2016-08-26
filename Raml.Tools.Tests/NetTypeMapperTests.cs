@@ -36,5 +36,10 @@ namespace Raml.Tools.Tests
             Assert.AreEqual("byte[]", NetTypeMapper.Map("file"));
         }
 
+        [Test]
+        public void ShouldConvertToDateTimeWhenDate()
+        {
+            Assert.AreEqual("DateTime", NetTypeMapper.Map("datetime"));
+        }
     }
 }
