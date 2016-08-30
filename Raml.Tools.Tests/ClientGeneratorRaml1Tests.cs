@@ -39,7 +39,7 @@ namespace Raml.Tools.Tests
             var model = await GetCustomScalarModel();
             Assert.IsNotNull(model.Objects.First(o => o.Name == "Id"));
             Assert.IsTrue(model.Objects.First(o => o.Name == "Id").IsScalar);
-            Assert.AreEqual("int", model.Root.Methods.First().UriParameters.First().Type);
+            Assert.AreEqual("long", model.Root.Methods.First().UriParameters.First().Type);
         }
 
         [Test]

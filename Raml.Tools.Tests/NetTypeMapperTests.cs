@@ -7,9 +7,9 @@ namespace Raml.Tools.Tests
     public class NetTypeMapperTests
     {
         [Test]
-        public void ShouldConvertToInt()
+        public void ShouldConvertIntegerToLong()
         {
-            Assert.AreEqual("int", NetTypeMapper.Map(JsonSchemaType.Integer));
+            Assert.AreEqual("long", NetTypeMapper.Map(JsonSchemaType.Integer));
         }
 
         [Test]
