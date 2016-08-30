@@ -7,6 +7,7 @@ using CommandLine;
 using Raml.Common;
 using Raml.Parser;
 using Raml.Tools.ClientGenerator;
+using Error = CommandLine.Error;
 
 
 namespace MuleSoft.RAMLGen
