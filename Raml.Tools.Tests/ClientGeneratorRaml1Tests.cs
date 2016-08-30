@@ -66,7 +66,7 @@ namespace Raml.Tools.Tests
             Assert.IsTrue(model.Objects.Any(o => o.Name == "ArrayOfObjectItem"));
             Assert.IsTrue(model.Objects.Any(o => o.Name == "ArrayOfPerson"));
             Assert.IsTrue(model.Objects.Any(o => o.Name == "ArrayOfInt"));
-            Assert.AreEqual(CollectionTypeHelper.GetCollectionType("int"), model.Objects.First(o => o.Name == "ArrayOfInt").Type);
+            Assert.AreEqual(CollectionTypeHelper.GetCollectionType("long"), model.Objects.First(o => o.Name == "ArrayOfInt").Type);
             Assert.IsTrue(model.Objects.Any(o => o.Name == "ArrayOfObject"));
             Assert.AreEqual(CollectionTypeHelper.GetCollectionType("ArrayOfObjectItem"), model.Objects.First(o => o.Name == "ArrayOfObject").Type);
             Assert.AreEqual(CollectionTypeHelper.GetCollectionType("Person"), model.Objects.First(o => o.Name == "ArrayOfPerson").Type);
