@@ -12,7 +12,7 @@ namespace Raml.Tools
             {
                 {
                     JsonSchemaType.Integer,
-                    "int"
+                    "long"
                 },
                 {
                     JsonSchemaType.String,
@@ -37,7 +37,7 @@ namespace Raml.Tools
             {
                 {
                     Newtonsoft.JsonV4.Schema.JsonSchemaType.Integer,
-                    "int"
+                    "long"
                 },
                 {
                     Newtonsoft.JsonV4.Schema.JsonSchemaType.String,
@@ -62,7 +62,7 @@ namespace Raml.Tools
             {
                 {
                     "integer",
-                    "int"
+                    "long"
                 },
                 {
                     "string",
@@ -83,6 +83,10 @@ namespace Raml.Tools
                 {
                     "any",
                     "object"
+                },
+                {
+                    "date",
+                    "DateTime"
                 },
                 {
                     "datetime",

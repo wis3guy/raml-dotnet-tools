@@ -7,9 +7,9 @@ namespace Raml.Tools.Tests
     public class NetTypeMapperTests
     {
         [Test]
-        public void ShouldConvertToInt()
+        public void ShouldConvertIntegerToLong()
         {
-            Assert.AreEqual("int", NetTypeMapper.Map(JsonSchemaType.Integer));
+            Assert.AreEqual("long", NetTypeMapper.Map(JsonSchemaType.Integer));
         }
 
         [Test]
@@ -36,5 +36,10 @@ namespace Raml.Tools.Tests
             Assert.AreEqual("byte[]", NetTypeMapper.Map("file"));
         }
 
+        [Test]
+        public void ShouldConvertToDateTimeWhenDate()
+        {
+            Assert.AreEqual("DateTime", NetTypeMapper.Map("datetime"));
+        }
     }
 }

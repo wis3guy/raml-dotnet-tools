@@ -58,10 +58,14 @@ namespace Raml.Tools
                 ResourceTypeApplier.Apply(raml.ResourceTypes, GetResourceType(resource.Type), methods, raml.Traits, resource,
                     raml.MediaType);
 
+                if (resource.Is != null && resource.Is.Any())
+                    TraitsApplier.ApplyTraitsToMethods(methods, raml.Traits, resource.Is);
+
                 foreach (var method in methods.Where(method => method.Is != null))
                 {
-                    TraitsApplier.ApplyTraitsToMethods(methods, raml.Traits, method.Is);
+                    TraitsApplier.ApplyTraitsToMethod(method, raml.Traits, method.Is);
                 }
+
                 resource.Methods = methods;
                 ApplyResourceTypesAndTraits(resource.Resources);
             }

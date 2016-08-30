@@ -161,7 +161,7 @@ namespace Raml.Tools.Tests
              Assert.AreEqual("Name", obj.Name);
              Assert.IsFalse(obj.IsArray);
              Assert.AreEqual(6, obj.Properties.Count);
-             Assert.AreEqual("int", obj.Properties.First(p => p.Name == "Id").Type);
+             Assert.AreEqual("long", obj.Properties.First(p => p.Name == "Id").Type);
          }
 
         [Test]
@@ -193,7 +193,7 @@ namespace Raml.Tools.Tests
             Assert.AreEqual("Name", obj.Name);
             Assert.IsTrue(obj.IsArray);
             Assert.AreEqual(6, obj.Properties.Count);
-            Assert.AreEqual("int", obj.Properties.First(p => p.Name == "ToAddressId").Type);
+            Assert.AreEqual("long", obj.Properties.First(p => p.Name == "ToAddressId").Type);
         }
 
         [Test]
@@ -334,7 +334,7 @@ namespace Raml.Tools.Tests
             var obj = parser.Parse("name", schema, objects, warnings, enums, new Dictionary<string, ApiObject>(), new Dictionary<string, ApiObject>());
 
             Assert.AreEqual(1, obj.Properties.Count);
-            Assert.AreEqual("int?", obj.Properties.First().Type);
+            Assert.AreEqual("long?", obj.Properties.First().Type);
             Assert.AreEqual(0, warnings.Count);
         }
 
@@ -456,7 +456,7 @@ namespace Raml.Tools.Tests
             var obj = parser.Parse("name", schema, objects, warnings, enums, new Dictionary<string, ApiObject>(), new Dictionary<string, ApiObject>());
 
             Assert.AreEqual(3, obj.Properties.Count);
-            Assert.AreEqual(1, obj.Properties.Count(p => p.Type == "int"));
+            Assert.AreEqual(1, obj.Properties.Count(p => p.Type == "long"));
             Assert.AreEqual(0, warnings.Count);
         }
 
@@ -550,10 +550,10 @@ namespace Raml.Tools.Tests
             var enums = new Dictionary<string, ApiEnum>();
             var obj = parser.Parse("name", schema, objects, warnings, enums, new Dictionary<string, ApiObject>(), new Dictionary<string, ApiObject>());
             
-            Assert.AreEqual("int", obj.Properties.First(p => p.Name == "Id").Type);
+            Assert.AreEqual("long", obj.Properties.First(p => p.Name == "Id").Type);
             Assert.AreEqual("decimal", obj.Properties.First(p => p.Name == "Price").Type);
             Assert.AreEqual("decimal?", obj.Properties.First(p => p.Name == "OptionalPrice").Type);
-            Assert.AreEqual("int?", obj.Properties.First(p => p.Name == "OrderItemId").Type);
+            Assert.AreEqual("long?", obj.Properties.First(p => p.Name == "OrderItemId").Type);
             Assert.AreEqual("bool?", obj.Properties.First(p => p.Name == "Status").Type);
             Assert.AreEqual("string", obj.Properties.First(p => p.Name == "Description").Type);
             Assert.AreEqual("string", obj.Properties.First(p => p.Name == "Comment").Type);
@@ -584,10 +584,10 @@ namespace Raml.Tools.Tests
             var enums = new Dictionary<string, ApiEnum>();
             var obj = parser.Parse("name", schema, objects, warnings, enums, new Dictionary<string, ApiObject>(), new Dictionary<string, ApiObject>());
 
-            Assert.AreEqual("int", obj.Properties.First(p => p.Name == "Id").Type);
+            Assert.AreEqual("long", obj.Properties.First(p => p.Name == "Id").Type);
             Assert.AreEqual("decimal", obj.Properties.First(p => p.Name == "Price").Type);
             Assert.AreEqual("decimal?", obj.Properties.First(p => p.Name == "OptionalPrice").Type);
-            Assert.AreEqual("int?", obj.Properties.First(p => p.Name == "OrderItemId").Type);
+            Assert.AreEqual("long?", obj.Properties.First(p => p.Name == "OrderItemId").Type);
             Assert.AreEqual("bool?", obj.Properties.First(p => p.Name == "Status").Type);
             Assert.AreEqual("string", obj.Properties.First(p => p.Name == "Description").Type);
             Assert.AreEqual("string", obj.Properties.First(p => p.Name == "Comment").Type);
@@ -666,7 +666,7 @@ namespace Raml.Tools.Tests
             var obj = parser.Parse("name", schema, objects, warnings, enums, new Dictionary<string, ApiObject>(), new Dictionary<string, ApiObject>());
 
             Assert.AreEqual(true, obj.IsArray);
-            Assert.AreEqual("int", obj.Type);
+            Assert.AreEqual("long", obj.Type);
             Assert.AreEqual(0, obj.Properties.Count);
         }
 
@@ -823,7 +823,7 @@ namespace Raml.Tools.Tests
             var us = new CultureInfo("en-US");
             var minValue = double.MinValue;
             Assert.AreEqual("        [Range(double.MinValue,100.00)]", obj.Properties.First(c => c.Name == "Weight").CustomAttributes);
-            Assert.AreEqual("        [Required]" + Environment.NewLine + "        [Range(18,int.MaxValue)]", obj.Properties.First(c => c.Name == "Age").CustomAttributes);
+            Assert.AreEqual("        [Required]" + Environment.NewLine + "        [Range(18,long.MaxValue)]", obj.Properties.First(c => c.Name == "Age").CustomAttributes);
         }
 
         [Test]
@@ -909,7 +909,7 @@ namespace Raml.Tools.Tests
             var us = new CultureInfo("en-US");
             var minValue = double.MinValue;
             Assert.AreEqual("        [Range(double.MinValue,100.00)]", obj.Properties.First(c => c.Name == "Weight").CustomAttributes);
-            Assert.AreEqual("        [Required]" + Environment.NewLine + "        [Range(18,int.MaxValue)]", obj.Properties.First(c => c.Name == "Age").CustomAttributes);
+            Assert.AreEqual("        [Required]" + Environment.NewLine + "        [Range(18,long.MaxValue)]", obj.Properties.First(c => c.Name == "Age").CustomAttributes);
         }
 
     }

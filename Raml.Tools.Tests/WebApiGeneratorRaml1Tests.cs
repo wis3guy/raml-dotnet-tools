@@ -252,6 +252,26 @@ namespace Raml.Tools.Tests
             Assert.AreEqual(1, model.Objects.Count());
         }
 
+        [Test]
+        public async Task ShouldHandle_TraitsAtMethodLevel()
+        {
+            var model = await BuildModel("files/raml1/method-level-traits.raml");
+            Assert.IsTrue(model.Controllers.First().Methods.First(m => m.Verb.ToLower() == "get").ParametersString.Contains("pagesize"));
+            Assert.IsTrue(model.Controllers.First().Methods.First(m => m.Verb.ToLower() == "get").ParametersString.Contains("offset"));
+            Assert.IsFalse(model.Controllers.First().Methods.First(m => m.Verb.ToLower() == "post").ParametersString.Contains("pagesize"));
+            Assert.IsFalse(model.Controllers.First().Methods.First(m => m.Verb.ToLower() == "post").ParametersString.Contains("offset"));
+        }
+
+        [Test]
+        public async Task ShouldHandle_TraitsAtResourceLevel()
+        {
+            var model = await BuildModel("files/raml1/resource-level-traits.raml");
+            Assert.IsTrue(model.Controllers.First().Methods.First(m => m.Verb.ToLower() == "get").ParametersString.Contains("pagesize"));
+            Assert.IsTrue(model.Controllers.First().Methods.First(m => m.Verb.ToLower() == "get").ParametersString.Contains("offset"));
+            Assert.IsTrue(model.Controllers.First().Methods.First(m => m.Verb.ToLower() == "post").ParametersString.Contains("pagesize"));
+            Assert.IsTrue(model.Controllers.First().Methods.First(m => m.Verb.ToLower() == "post").ParametersString.Contains("offset"));
+        }
+
         private static async Task<WebApiGeneratorModel> GetAnnotationTargetsModel()
         {
             return await BuildModel("files/raml1/annotations-targets.raml");
