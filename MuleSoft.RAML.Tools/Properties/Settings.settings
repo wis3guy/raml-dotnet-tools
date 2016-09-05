@@ -57,7 +57,7 @@
       <Value Profile="(Default)">Enums</Value>
     </Setting>
     <Setting Name="RAMLExchangeUrl" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">https://library.mulesoft.com/#!/?types=api</Value>
+      <Value Profile="(Default)">https://www.mulesoft.com/exchange#!/?types=RAML</Value>
     </Setting>
     <Setting Name="RAMLWebApiExplorerPackageId" Type="System.String" Scope="Application">
       <Value Profile="(Default)">RAML.WebApiExplorer</Value>

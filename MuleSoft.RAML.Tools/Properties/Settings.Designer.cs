@@ -187,7 +187,7 @@ namespace MuleSoft.RAML.Tools.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("https://library.mulesoft.com/#!/?types=api")]
+        [global::System.Configuration.DefaultSettingValueAttribute("https://www.mulesoft.com/exchange#!/?types=RAML")]
         public string RAMLExchangeUrl {
             get {
                 return ((string)(this["RAMLExchangeUrl"]));
