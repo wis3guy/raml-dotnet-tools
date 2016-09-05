@@ -91,6 +91,7 @@
     <Compile Include="ApiObjectsCleanerTests.cs" />
     <Compile Include="ApiRequestObjectsGeneratorTests.cs" />
     <Compile Include="ApiResponseObjectsGeneratorTests.cs" />
+    <Compile Include="RamlTypeParserTests.cs" />
     <Compile Include="WebApiGeneratorRaml1Tests.cs" />
     <Compile Include="ClientGeneratorRaml1Tests.cs" />
     <Compile Include="ClientMethodsGeneratorTests.cs" />

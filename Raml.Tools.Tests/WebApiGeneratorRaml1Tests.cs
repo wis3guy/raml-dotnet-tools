@@ -272,6 +272,14 @@ namespace Raml.Tools.Tests
             Assert.IsTrue(model.Controllers.First().Methods.First(m => m.Verb.ToLower() == "post").ParametersString.Contains("offset"));
         }
 
+        [Test]
+        public async Task ShouldParse_RequiredScalarInProperty()
+        {
+            var model = await BuildModel("files/raml1/movietype.raml");
+            Assert.AreEqual(true, model.Objects.First(o => o.Name == "Movie").Properties.First(p => p.Name == "Name").Required);
+
+        }
+
         private static async Task<WebApiGeneratorModel> GetAnnotationTargetsModel()
         {
             return await BuildModel("files/raml1/annotations-targets.raml");

@@ -207,7 +207,8 @@ namespace Raml.Tools
                         Maximum = (double?) ramlType.Scalar.Maximum,
                         MinLength = ramlType.Scalar.MinLength,
                         MaxLength = ramlType.Scalar.MaxLength,
-                        OriginalName = key
+                        OriginalName = key,
+                        Required = ramlType.Scalar.Required || ramlType.Required
                     }
                 },
                 IsScalar = true,
@@ -414,7 +415,7 @@ namespace Raml.Tools
                 MaxLength = prop.Scalar.MaxLength,
                 MinLength = prop.Scalar.MinLength,
                 Name = NetNamingMapper.GetPropertyName(kv.Key),
-                Required = prop.Required,
+                Required = prop.Required || kv.Value.Scalar.Required,
                 Example = prop.Example,
                 Description = prop.Description,
                 IsEnum = prop.Scalar.Enum != null && prop.Scalar.Enum.Any(),
