@@ -12003,8 +12003,8 @@
       <HintPath>..\packages\RAML.Api.Core.0.9.9\lib\net45\Raml.Api.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Raml.Parser, Version=1.0.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Raml.Parser.1.0.3.0\lib\net45\Raml.Parser.dll</HintPath>
+    <Reference Include="Raml.Parser, Version=1.0.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Raml.Parser.1.0.4.0\lib\net45\Raml.Parser.dll</HintPath>
     </Reference>
     <Reference Include="stdole, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>False</EmbedInteropTypes>
