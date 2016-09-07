@@ -431,8 +431,14 @@ namespace Raml.Tools
             if (prop.Type == "object" || (prop.Scalar.Enum != null && prop.Scalar.Enum.Any()))
                 return NetNamingMapper.GetPropertyName(kv.Key);
 
-            if (NetTypeMapper.Map(prop.Type) != null) 
-                return NetTypeMapper.Map(prop.Type);
+            var propertyType = NetTypeMapper.Map(prop.Type);
+            if (propertyType != null)
+            {
+                if (!prop.Required && propertyType != "string")
+                    return propertyType + "?";
+
+                return propertyType;
+            }
 
             if (schemaObjects.ContainsKey(prop.Type))
             {

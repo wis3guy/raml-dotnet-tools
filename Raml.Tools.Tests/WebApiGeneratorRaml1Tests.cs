@@ -280,6 +280,18 @@ namespace Raml.Tools.Tests
 
         }
 
+        [Test]
+        public async Task ShouldParse_OptionalInProperty()
+        {
+            var model = await BuildModel("files/raml1/movietype.raml");
+            Assert.AreEqual(false, model.Objects.First(o => o.Name == "Movie").Properties.First(p => p.Name == "Rented").Required);
+            Assert.AreEqual(false, model.Objects.First(o => o.Name == "Movie").Properties.First(p => p.Name == "Duration").Required);
+            Assert.AreEqual(true, model.Objects.First(o => o.Name == "Movie").Properties.First(p => p.Name == "Language").Required);
+            Assert.AreEqual(false, model.Objects.First(o => o.Name == "Movie").Properties.First(p => p.Name == "Storyline").Required);
+            Assert.AreEqual("decimal?", model.Objects.First(o => o.Name == "Movie").Properties.First(p => p.Name == "Duration").Type);
+            Assert.AreEqual("bool?", model.Objects.First(o => o.Name == "Movie").Properties.First(p => p.Name == "Rented").Type);
+        }
+
         private static async Task<WebApiGeneratorModel> GetAnnotationTargetsModel()
         {
             return await BuildModel("files/raml1/annotations-targets.raml");
