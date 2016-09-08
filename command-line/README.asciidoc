@@ -15,7 +15,7 @@ This is provided as a command line tool.
 
 == Installation
 
-. Unzip the file and use from command line.
+* Unzip the file and use from the command line.
 
 == Supported Scenarios
 
@@ -70,7 +70,7 @@ Specify namespace:
   RAMLGen client -n My.Name.Space -s source.raml
 ----
 
-Use customn template:
+Use custom template:
 [source, bash]
 ----
   RAMLGen client -t MyCustomTemplate.t4 -s source.raml
@@ -91,7 +91,7 @@ RAMLGen server -s c:\path\to\source.raml;
 ----
 
 This implementation includes controller classes and route registrations that map to the resources exposed in the RAML definition and also includes model classes for their representation. The model classes are generated from the available RAML types or JSON schemas.
-This example will create a "generated" folder where base controllers, their interfaces and the models are placed and a "Cotrollers" folder where the controllers for the implementation are generated.
+This example will create a "generated" folder where base controllers, their interfaces and the models are placed, and a "Controllers" folder where the controllers for the implementation are generated.
 
 For more info on how to use the generated code refer to https://github.com/mulesoft-labs/raml-dotnet-tools#implementing-a-controller-in-aspnet-web-api
 
@@ -151,5 +151,5 @@ You can generate an ASP .NET WebAPI 2 implementation from a RAML definition.
 RAMLGen server -w -s c:\path\to\source.raml;
 ----
 
-This generates the same files as the previous options but the code implementes a WebAPI 2 solution instead.
+This generates the same files as the previous options but the code implements a WebAPI 2 solution instead.
 
