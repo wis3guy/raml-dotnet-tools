@@ -434,7 +434,7 @@ namespace Raml.Tools
             var propertyType = NetTypeMapper.Map(prop.Type);
             if (propertyType != null)
             {
-                if (!prop.Required && propertyType != "string")
+                if (!prop.Required && !prop.Scalar.Required && propertyType != "string" && prop.Type != "file")
                     return propertyType + "?";
 
                 return propertyType;
