@@ -52,7 +52,10 @@ namespace Raml.Tools.JSON
                         }
                         else
                         {
-                            obj.Type = NetTypeMapper.Map(schema.Items.First().Type);
+                            if (!string.IsNullOrWhiteSpace(schema.Items.First().Format))
+                                obj.Type = NumberFormatConversion[schema.Items.First().Format];
+                            else
+                                obj.Type = NetTypeMapper.Map(schema.Items.First().Type);
                         }
                     }
                 }
@@ -75,7 +78,10 @@ namespace Raml.Tools.JSON
                         }
                         else
                         {
-                            obj.Type = NetTypeMapper.Map(v4Schema.Items.First().Type);
+                            if (!string.IsNullOrWhiteSpace(v4Schema.Items.First().Format))
+                                obj.Type = NumberFormatConversion[v4Schema.Items.First().Format];
+                            else
+                                obj.Type = NetTypeMapper.Map(v4Schema.Items.First().Type);
                         }
                     }
                         
@@ -287,7 +293,12 @@ namespace Raml.Tools.JSON
             if (isEnum) 
                 return enumName;
 
-            var type = NetTypeMapper.Map(property.Value.Type);
+            string type;
+            if (!string.IsNullOrWhiteSpace(property.Value.Format))
+                type = NumberFormatConversion[property.Value.Format];
+            else
+                type = NetTypeMapper.Map(property.Value.Type);
+
             if (!string.IsNullOrWhiteSpace(type))
             {
                 if (type == "string" || (requiredProps != null && requiredProps.Contains(property.Key)))
@@ -329,10 +340,23 @@ namespace Raml.Tools.JSON
             return property.Value.Type != null && property.Value.Type.ToString().Contains(",") && property.Value.Type.ToString().Contains("Null") && !property.Value.Type.ToString().Contains("Object");
         }
 
+        private static  readonly IDictionary<string, string> NumberFormatConversion = new Dictionary<string, string>
+        {
+            {"double", "double"},
+            {"float", "float"},
+            {"int16", "short"},
+            {"short", "short"},
+            {"int64", "long"},
+            {"long", "long"}
+        };
+
         private static string GetType(KeyValuePair<string, JsonSchema> property, bool isEnum, string enumName)
         {
             if (isEnum)
                 return enumName;
+
+            if (!string.IsNullOrWhiteSpace(property.Value.Format))
+                return NumberFormatConversion[property.Value.Format];
 
             var type = NetTypeMapper.Map(property.Value.Type);
             if (!string.IsNullOrWhiteSpace(type))
@@ -488,7 +512,12 @@ namespace Raml.Tools.JSON
 
         private void ParseArray(IDictionary<string, ApiObject> objects, Newtonsoft.JsonV4.Schema.JsonSchema schema, Property prop, KeyValuePair<string, Newtonsoft.JsonV4.Schema.JsonSchema> property, IDictionary<string, ApiEnum> enums)
         {
-            var netType = NetTypeMapper.Map(schema.Items.First().Type);
+            string netType;
+            if (!string.IsNullOrWhiteSpace(schema.Items.First().Format))
+                netType = NumberFormatConversion[schema.Items.First().Format];
+            else
+                netType = NetTypeMapper.Map(schema.Items.First().Type);
+
             if (netType != null)
             {
                 prop.Type = CollectionTypeHelper.GetCollectionType(netType);
@@ -635,7 +664,12 @@ namespace Raml.Tools.JSON
             if (schema.Items == null || !schema.Items.Any())
                 return;
 
-            var netType = NetTypeMapper.Map(schema.Items.First().Type);
+            string netType;
+            if (!string.IsNullOrWhiteSpace(property.Value.Format))
+                netType = NumberFormatConversion[property.Value.Format];
+            else
+                netType = NetTypeMapper.Map(schema.Items.First().Type);
+
             if (netType != null)
             {
                 prop.Type = CollectionTypeHelper.GetCollectionType(netType);

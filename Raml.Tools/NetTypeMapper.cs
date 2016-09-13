@@ -12,7 +12,7 @@ namespace Raml.Tools
             {
                 {
                     JsonSchemaType.Integer,
-                    "long"
+                    "int"
                 },
                 {
                     JsonSchemaType.String,
@@ -37,7 +37,7 @@ namespace Raml.Tools
             {
                 {
                     Newtonsoft.JsonV4.Schema.JsonSchemaType.Integer,
-                    "long"
+                    "int"
                 },
                 {
                     Newtonsoft.JsonV4.Schema.JsonSchemaType.String,
@@ -62,7 +62,7 @@ namespace Raml.Tools
             {
                 {
                     "integer",
-                    "long"
+                    "int"
                 },
                 {
                     "string",
@@ -125,10 +125,15 @@ namespace Raml.Tools
             return type == null || !typeV4Conversion.ContainsKey(type.Value) ? null : typeV4Conversion[type.Value];
         }
 
+        private static readonly string[] OtherPrimitiveTypes = {"double", "float", "byte", "short", "long"};
+
         public static bool IsPrimitiveType(string type)
         {
             if (type.EndsWith("?"))
                 type = type.Substring(0, type.Length - 1);
+
+            if (OtherPrimitiveTypes.Contains(type))
+                return true;
 
 			return typeStringConversion.Any(t => t.Value == type);
 		}

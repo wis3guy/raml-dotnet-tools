@@ -219,6 +219,9 @@ namespace Raml.Tools
         {
             var type = NetTypeMapper.Map(ramlType.Scalar.Type);
 
+            if (ramlType.Scalar.Type == "number" && ramlType.Scalar.Format != null)
+                return numberFormatConversion[ramlType.Scalar.Format.Value];
+
             if (type != null)
                 return type;
 
@@ -423,6 +426,18 @@ namespace Raml.Tools
             };
         }
 
+        private readonly IDictionary<NumberFormat, string> numberFormatConversion = new Dictionary<NumberFormat, string>
+        {
+            {NumberFormat.Double, "double"},
+            {NumberFormat.Float, "float"},
+            {NumberFormat.Int, "int"},
+            {NumberFormat.Int8, "byte"},
+            {NumberFormat.Int16, "short"},
+            {NumberFormat.Int32, "int"},
+            {NumberFormat.Int64, "long"},
+            {NumberFormat.Long, "long"}
+        };
+
         private string GetPropertyType(RamlType prop, KeyValuePair<string, RamlType> kv)
         {
             if (string.IsNullOrWhiteSpace(prop.Type))
@@ -430,6 +445,9 @@ namespace Raml.Tools
 
             if (prop.Type == "object" || (prop.Scalar.Enum != null && prop.Scalar.Enum.Any()))
                 return NetNamingMapper.GetPropertyName(kv.Key);
+
+            if (prop.Scalar.Type == "number" && prop.Scalar.Format != null)
+                return numberFormatConversion[prop.Scalar.Format.Value];
 
             var propertyType = NetTypeMapper.Map(prop.Type);
             if (propertyType != null)
