@@ -255,13 +255,23 @@ namespace Raml.Tools.Tests
         }
 
         [Test]
-        public async Task ShouldHandleNumberFormatsOnRaml08()
+        public async Task ShouldHandleNumberFormatsOnRaml08_v3Schema()
         {
             var model = await BuildModel("files/numbers.raml");
             Assert.AreEqual("int", model.Objects.First(x => x.Name == "Sample").Properties.First(x => x.Name == "Intprop").Type);
-            Assert.AreEqual("long", model.Objects.First(x => x.Name == "Sample").Properties.First(x => x.Name == "Longprop").Type);
-            Assert.AreEqual("short", model.Objects.First(x => x.Name == "Sample").Properties.First(x => x.Name == "Shortprop").Type);
             Assert.AreEqual("decimal", model.Objects.First(x => x.Name == "Sample").Properties.First(x => x.Name == "Numberprop").Type);
+            Assert.AreEqual("long?", model.Objects.First(x => x.Name == "Sample").Properties.First(x => x.Name == "Longprop").Type);
+            Assert.AreEqual("short?", model.Objects.First(x => x.Name == "Sample").Properties.First(x => x.Name == "Shortprop").Type);
+        }
+
+        [Test]
+        public async Task ShouldHandleNumberFormatsOnRaml08_v4Schema()
+        {
+            var model = await BuildModel("files/numbers-v4.raml");
+            Assert.AreEqual("int", model.Objects.First(x => x.Name == "Sample").Properties.First(x => x.Name == "Intprop").Type);
+            Assert.AreEqual("decimal", model.Objects.First(x => x.Name == "Sample").Properties.First(x => x.Name == "Numberprop").Type);
+            Assert.AreEqual("long?", model.Objects.First(x => x.Name == "Sample").Properties.First(x => x.Name == "Longprop").Type);
+            Assert.AreEqual("short?", model.Objects.First(x => x.Name == "Sample").Properties.First(x => x.Name == "Shortprop").Type);
         }
 
         [Test]

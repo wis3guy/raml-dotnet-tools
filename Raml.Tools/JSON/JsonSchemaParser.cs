@@ -355,10 +355,12 @@ namespace Raml.Tools.JSON
             if (isEnum)
                 return enumName;
 
+            string type;
             if (!string.IsNullOrWhiteSpace(property.Value.Format))
-                return NumberFormatConversion[property.Value.Format];
+                type = NumberFormatConversion[property.Value.Format];
+            else
+                type = NetTypeMapper.Map(property.Value.Type);
 
-            var type = NetTypeMapper.Map(property.Value.Type);
             if (!string.IsNullOrWhiteSpace(type))
             {
                 if(type == "string" || (property.Value.Required != null && property.Value.Required.Value))

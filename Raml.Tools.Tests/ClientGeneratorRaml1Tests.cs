@@ -39,7 +39,7 @@ namespace Raml.Tools.Tests
             var model = await GetCustomScalarModel();
             Assert.IsNotNull(model.Objects.First(o => o.Name == "Id"));
             Assert.IsTrue(model.Objects.First(o => o.Name == "Id").IsScalar);
-            Assert.AreEqual("long", model.Root.Methods.First().UriParameters.First().Type);
+            Assert.AreEqual("int", model.Root.Methods.First().UriParameters.First().Type);
         }
 
         [Test]
@@ -66,7 +66,7 @@ namespace Raml.Tools.Tests
             Assert.IsTrue(model.Objects.Any(o => o.Name == "ArrayOfObjectItem"));
             Assert.IsTrue(model.Objects.Any(o => o.Name == "ArrayOfPerson"));
             Assert.IsTrue(model.Objects.Any(o => o.Name == "ArrayOfInt"));
-            Assert.AreEqual(CollectionTypeHelper.GetCollectionType("long"), model.Objects.First(o => o.Name == "ArrayOfInt").Type);
+            Assert.AreEqual(CollectionTypeHelper.GetCollectionType("int"), model.Objects.First(o => o.Name == "ArrayOfInt").Type);
             Assert.IsTrue(model.Objects.Any(o => o.Name == "ArrayOfObject"));
             Assert.AreEqual(CollectionTypeHelper.GetCollectionType("ArrayOfObjectItem"), model.Objects.First(o => o.Name == "ArrayOfObject").Type);
             Assert.AreEqual(CollectionTypeHelper.GetCollectionType("Person"), model.Objects.First(o => o.Name == "ArrayOfPerson").Type);

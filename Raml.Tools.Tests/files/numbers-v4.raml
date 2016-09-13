@@ -5,25 +5,24 @@ schemas:
     - sample: |
         {
           "type": "object",
-          "$schema": "http://json-schema.org/draft-03/schema",
+          "$schema": "http://json-schema.org/draft-04/schema",
           "properties": {
             "longprop": {
               "type": "number",
               "format": "long"
             },
             "intprop": { 
-              "type": "integer",
-              "required": true 
+              "type": "integer"
             },
             "numberprop": {
-              "type":"number",
-              "required": true
+              "type":"number"
             },
             "shortprop": {
               "type": "number",
               "format": "short"
             }
-          }
+          },
+          "required": ["numberprop", "intprop"]
         }
 /persons:
   get:
