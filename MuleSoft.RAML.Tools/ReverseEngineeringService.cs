@@ -45,10 +45,22 @@ namespace MuleSoft.RAML.Tools
                 var proj = VisualStudioAutomationHelper.GetActiveProject(dte);
 
                 InstallNugetAndDependencies(proj);
-                ActivityLog.LogInformation(VisualStudioAutomationHelper.RamlVsToolsActivityLogSource, "Nuget package and dependencies installed");
+                ActivityLog.LogInformation(VisualStudioAutomationHelper.RamlVsToolsActivityLogSource, "Nuget packages and dependencies installed");
 
-                AddXmlCommentsDocumentation(proj);
-                ActivityLog.LogInformation(VisualStudioAutomationHelper.RamlVsToolsActivityLogSource, "XML comments documentation added");
+                if (!VisualStudioAutomationHelper.IsAVisualStudio2015Project(proj))
+                {
+                    AddXmlCommentsDocumentation(proj);
+                    ActivityLog.LogInformation(VisualStudioAutomationHelper.RamlVsToolsActivityLogSource,
+                        "XML comments documentation added");
+                }
+                else
+                {
+                    ConfigureNetCoreStartUp(proj);
+                    ActivityLog.LogInformation(VisualStudioAutomationHelper.RamlVsToolsActivityLogSource,
+                        "StatUp configuration added");
+
+                    AddCoreContentFiles(proj);
+                }
             }
             catch (Exception ex)
             {
@@ -57,6 +69,75 @@ namespace MuleSoft.RAML.Tools
                 MessageBox.Show("Error when trying to enable RAML metadata output. " + ex.Message);
                 throw;
             }
+        }
+
+        private void AddCoreContentFiles(Project proj)
+        {
+            var extensionPath = Path.GetDirectoryName(GetType().Assembly.Location) + Path.DirectorySeparatorChar;
+            var contentPath = Path.Combine(extensionPath, "MetadataPackage/Content/");
+            AddRamlController(proj, contentPath);
+            AddViews(proj, contentPath);
+            AddWebContent(proj, contentPath);
+        }
+
+        private void AddWebContent(Project proj, string contentPath)
+        {
+            var webRootFolder = "wwwroot/";
+            var webRoot = proj.ProjectItems.Cast<ProjectItem>().FirstOrDefault(i => i.Name == webRootFolder);
+            var webRootPath = Path.Combine(contentPath, webRootFolder);
+            if (webRoot == null)
+            {
+                proj.ProjectItems.AddFromDirectory(webRootPath);
+            }
+            else
+            {
+                webRoot.ProjectItems.AddFromDirectory(Path.Combine(webRootPath, "fonts"));
+                webRoot.ProjectItems.AddFromDirectory(Path.Combine(webRootPath, "img"));
+                webRoot.ProjectItems.AddFromDirectory(Path.Combine(webRootPath, "scripts"));
+                webRoot.ProjectItems.AddFromDirectory(Path.Combine(webRootPath, "styles"));
+                webRoot.ProjectItems.AddFromFile(Path.Combine(webRootPath, "favicon.ico"));
+            }
+        }
+
+        private void AddViews(Project proj, string contentPath)
+        {
+            var viewsFolder = "Views/";
+            var views = proj.ProjectItems.Cast<ProjectItem>().FirstOrDefault(i => i.Name == viewsFolder);
+            var viewsPath = Path.Combine(contentPath, viewsFolder);
+            if (views == null)
+                proj.ProjectItems.AddFromDirectory(viewsPath);
+            else
+                views.ProjectItems.AddFromDirectory(Path.Combine(viewsPath, "Raml"));
+        }
+
+        private static void AddRamlController(Project proj, string contentPath)
+        {
+            var controllersFolder = "Controllers";
+            var controllers = proj.ProjectItems.Cast<ProjectItem>().FirstOrDefault(i => i.Name == controllersFolder);
+            var controllersPath = Path.Combine(contentPath, controllersFolder);
+            if (controllers == null)
+            {
+                proj.ProjectItems.AddFromDirectory(controllersPath);
+            }
+            else
+            {
+                var ramlConttrollerDest = Path.Combine(controllersPath, "RamlController.cs");
+                File.Move(Path.Combine(controllersPath, "RamlController.class"), ramlConttrollerDest);
+                controllers.ProjectItems.AddFromFile(ramlConttrollerDest);
+            }
+        }
+
+        private void ConfigureNetCoreStartUp(Project proj)
+        {
+            var startUp = proj.ProjectItems.Cast<ProjectItem>().FirstOrDefault(i => i.Name == "Startup");
+            if (startUp == null) return;
+
+            var path = startUp.FileNames[0];
+            var lines = File.ReadAllLines(path).ToList();
+
+            InsertNetCoreMvcOptions(lines);
+
+            File.WriteAllText(path, string.Join(Environment.NewLine, lines));            
         }
 
         private void AddXmlCommentsDocumentation(Project proj)
@@ -82,6 +163,49 @@ namespace MuleSoft.RAML.Tools
             InsertLine(lines);
 
             File.WriteAllText(path, string.Join(Environment.NewLine, lines));
+        }
+
+        private void InsertNetCoreMvcOptions(List<string> lines)
+        {
+            int line = -1;
+            if (!lines.Any(l => l.Contains("public void ConfigureServices")))
+            {
+                line = FindLineWith(lines, "public void ConfigureServices");
+                lines.Insert(line + 2, AddMvcWithOptions());
+                return;
+            }
+
+            line = FindLineWith(lines, "services.AddMvc(options =>");
+            if (line > 0)
+            {
+                lines.Insert(line + 2, AddOptions());
+                return;
+            }
+
+            line = FindLineWith(lines, "services.AddMvc()");
+            if (line > 0)
+            {
+                lines.RemoveAt(line + 2);
+                lines.Insert(line + 2, AddMvcWithOptions());
+                return;
+            }
+
+            //throw new InvalidOperationException("Could not insert");
+        }
+
+        private static string AddMvcWithOptions()
+        {
+            return "            services.AddMvc(options =>" + Environment.NewLine
+                   + "                {" + Environment.NewLine
+                   + AddOptions()
+                   + "            });";
+        }
+
+        private static string AddOptions()
+        {
+            return "                options.Filters.AddService(typeof(ApiExplorerDataFilter));" + Environment.NewLine
+                   + "                options.Conventions.Add(new ApiExplorerVisibilityEnabledConvention());" + Environment.NewLine
+                   + "                options.Conventions.Add(new ApiExplorerVisibilityDisabledConvention(typeof(RamlController)));" + Environment.NewLine;
         }
 
         private static void InsertLine(List<string> lines)
@@ -124,6 +248,8 @@ namespace MuleSoft.RAML.Tools
             prop.Value = string.Format("bin\\{0}.XML", proj.Name);
         }
 
+
+
         private void InstallNugetAndDependencies(Project proj)
         {
             var componentModel = (IComponentModel)serviceProvider.GetService(typeof(SComponentModel));
@@ -131,27 +257,67 @@ namespace MuleSoft.RAML.Tools
             var installer = componentModel.GetService<IVsPackageInstaller>();
 
             var packs = installerServices.GetInstalledPackages(proj).ToArray();
-            NugetInstallerHelper.InstallPackageIfNeeded(proj, packs, installer, newtonsoftJsonPackageId, newtonsoftJsonPackageVersion, Settings.Default.NugetExternalPackagesSource);
-            NugetInstallerHelper.InstallPackageIfNeeded(proj, packs, installer, edgePackageId, edgePackageVersion, Settings.Default.NugetExternalPackagesSource);
-            NugetInstallerHelper.InstallPackageIfNeeded(proj, packs, installer, "System.ComponentModel.Annotations", "4.0.0", Settings.Default.NugetExternalPackagesSource);
+
+            if (VisualStudioAutomationHelper.IsAVisualStudio2015Project(proj))
+            {
+                InstallNetCoreDependencies(proj, packs, installer, installerServices);
+            }
+            else
+            {
+                InstallWebApiDependencies(proj, packs, installer, installerServices);
+            }
+        }
+
+        private void InstallNetCoreDependencies(Project proj, IVsPackageMetadata[] packs, IVsPackageInstaller installer, IVsPackageInstallerServices installerServices)
+        {
+            NugetInstallerHelper.InstallPackageIfNeeded(proj, packs, installer, "Microsoft.AspNetCore.StaticFiles",
+                            "1.0.0", Settings.Default.NugetExternalPackagesSource);
+
+            // RAML.Parser
+            if (!installerServices.IsPackageInstalled(proj, "RAML.Parser.Expressions"))
+            {
+                installer.InstallPackage(nugetPackagesSource, proj, "RAML.Parser.Expressions", "1.0.0",
+                    false);
+            }
+
+            // RAML.NetCoreApiExplorer
+            if (!installerServices.IsPackageInstalled(proj, "RAML.NetCoreApiExplorer"))
+            {
+                installer.InstallPackage(nugetPackagesSource, proj, "RAML.NetCoreApiExplorer",
+                    "1.0.0", false);
+            }
+        }
+
+        private void InstallWebApiDependencies(Project proj, IVsPackageMetadata[] packs, IVsPackageInstaller installer,
+            IVsPackageInstallerServices installerServices)
+        {
+            NugetInstallerHelper.InstallPackageIfNeeded(proj, packs, installer, newtonsoftJsonPackageId,
+                newtonsoftJsonPackageVersion, Settings.Default.NugetExternalPackagesSource);
+            NugetInstallerHelper.InstallPackageIfNeeded(proj, packs, installer, edgePackageId, edgePackageVersion,
+                Settings.Default.NugetExternalPackagesSource);
+            NugetInstallerHelper.InstallPackageIfNeeded(proj, packs, installer, "System.ComponentModel.Annotations",
+                "4.0.0", Settings.Default.NugetExternalPackagesSource);
 
             // RAML.Parser
             if (!installerServices.IsPackageInstalled(proj, ramlParserPackageId))
             {
-                installer.InstallPackage(nugetPackagesSource, proj, ramlParserPackageId, ramlParserPackageVersion, false);
+                installer.InstallPackage(nugetPackagesSource, proj, ramlParserPackageId, ramlParserPackageVersion,
+                    false);
             }
 
             // RAML.Api.Core
             if (!installerServices.IsPackageInstalled(proj, ramlApiCorePackageId))
             {
                 //installer.InstallPackage(nugetPackagesSource, proj, ramlApiCorePackageId, ramlApiCorePackageVersion, false);
-                installer.InstallPackage(nugetPackagesSource, proj, ramlApiCorePackageId, ramlApiCorePackageVersion, false);
+                installer.InstallPackage(nugetPackagesSource, proj, ramlApiCorePackageId, ramlApiCorePackageVersion,
+                    false);
             }
 
             // RAML.WebApiExplorer
             if (!installerServices.IsPackageInstalled(proj, ramlWebApiExplorerPackageId))
             {
-                installer.InstallPackage(nugetPackagesSource, proj, ramlWebApiExplorerPackageId, ramlWebApiExplorerPackageVersion, false);
+                installer.InstallPackage(nugetPackagesSource, proj, ramlWebApiExplorerPackageId,
+                    ramlWebApiExplorerPackageVersion, false);
             }
         }
 
