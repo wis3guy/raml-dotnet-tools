@@ -81,7 +81,7 @@ namespace Raml.Common
             var preview = new RamlPreview(ServiceProvider, action, RamlTempFilePath, RamlOriginalSource, title, isContractUseCase);
             
             StartProgress();
-            preview.FromFile();
+            await preview.FromFile();
             StopProgress();
 
             var dialogResult = preview.ShowDialog();
@@ -122,7 +122,7 @@ namespace Raml.Common
                 var preview = new RamlPreview(ServiceProvider, action, RamlTempFilePath, txtURL.Text, "title", isContractUseCase);
                 
                 StartProgress();
-                preview.FromURL();
+                await preview.FromURL();
                 StopProgress();
 
                 var dialogResult = preview.ShowDialog();
@@ -143,7 +143,7 @@ namespace Raml.Common
             var preview = new RamlPreview(ServiceProvider, action, RamlTempFilePath, txtURL.Text, "title", isContractUseCase);
             
             StartProgress();
-            preview.FromURL();
+            await preview.FromURL();
             StopProgress();
 
             var dialogResult = preview.ShowDialog();
