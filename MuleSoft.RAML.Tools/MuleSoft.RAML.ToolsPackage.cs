@@ -369,10 +369,10 @@ namespace MuleSoft.RAML.Tools
             var dte = ServiceProvider.GlobalProvider.GetService(typeof(SDTE)) as DTE;
             var proj = VisualStudioAutomationHelper.GetActiveProject(dte);
 
-            if (VisualStudioAutomationHelper.IsAVisualStudio2015Project(proj))
+            if (!VisualStudioAutomationHelper.IsAVisualStudio2015Project(proj) && !IsWebApiCoreInstalled(proj))
                 return;
 
-            if (!IsWebApiCoreInstalled(proj))
+            if (VisualStudioAutomationHelper.IsAVisualStudio2015Project(proj) && !IsAspNet5MvcInstalled(proj))
                 return;
 
             ShowAndEnableCommand(menuCommand, true);
@@ -388,13 +388,10 @@ namespace MuleSoft.RAML.Tools
             var dte = ServiceProvider.GlobalProvider.GetService(typeof(SDTE)) as DTE;
             var proj = VisualStudioAutomationHelper.GetActiveProject(dte);
 
-            if (VisualStudioAutomationHelper.IsAVisualStudio2015Project(proj))
+            if (!VisualStudioAutomationHelper.IsAVisualStudio2015Project(proj) && (!IsWebApiCoreInstalled(proj) || IsWebApiExplorerInstalled()))
                 return;
 
-            if (!IsWebApiCoreInstalled(proj))
-                return;
-
-            if (IsWebApiExplorerInstalled())
+            if (VisualStudioAutomationHelper.IsAVisualStudio2015Project(proj) && (!IsAspNet5MvcInstalled(proj) || IsNetCoreApiExplorerInstalled()))
                 return;
 
             ShowAndEnableCommand(menuCommand, true);
@@ -436,6 +433,16 @@ namespace MuleSoft.RAML.Tools
         private void EditRamlPropertiesCommand_BeforeQueryStatus(object sender, EventArgs e)
         {
             ShowOrHideCommandRaml(sender);
+        }
+
+        private bool IsNetCoreApiExplorerInstalled()
+        {
+            var dte = ServiceProvider.GlobalProvider.GetService(typeof(SDTE)) as DTE;
+            var proj = VisualStudioAutomationHelper.GetActiveProject(dte);
+            var componentModel = (IComponentModel)ServiceProvider.GlobalProvider.GetService(typeof(SComponentModel));
+            var installerServices = componentModel.GetService<IVsPackageInstallerServices>();
+            var isWebApiCoreInstalled = installerServices.IsPackageInstalled(proj, "RAML.NetCoreApiExplorer");
+            return isWebApiCoreInstalled;
         }
 
         private bool IsWebApiExplorerInstalled()

@@ -59,7 +59,9 @@ namespace MuleSoft.RAML.Tools
                     ActivityLog.LogInformation(VisualStudioAutomationHelper.RamlVsToolsActivityLogSource,
                         "StatUp configuration added");
 
-                    AddCoreContentFiles(proj);
+                    AddCoreContentFiles(Path.GetDirectoryName(proj.FullName));
+                    ActivityLog.LogInformation(VisualStudioAutomationHelper.RamlVsToolsActivityLogSource,
+                       "Content files added");
                 }
             }
             catch (Exception ex)
@@ -71,73 +73,83 @@ namespace MuleSoft.RAML.Tools
             }
         }
 
-        private void AddCoreContentFiles(Project proj)
+        private void AddCoreContentFiles(string destinationPath)
         {
-            var extensionPath = Path.GetDirectoryName(GetType().Assembly.Location) + Path.DirectorySeparatorChar;
-            var contentPath = Path.Combine(extensionPath, "MetadataPackage/Content/");
-            AddRamlController(proj, contentPath);
-            AddViews(proj, contentPath);
-            AddWebContent(proj, contentPath);
+            var extensionPath = Path.GetDirectoryName(GetType().Assembly.Location);
+            var sourcePath = Path.Combine(extensionPath, "MetadataPackage" + Path.DirectorySeparatorChar + "Content");
+            AddRamlController(sourcePath, destinationPath);
+            AddViews(sourcePath, destinationPath);
+            AddWebContent(sourcePath, destinationPath);
         }
 
-        private void AddWebContent(Project proj, string contentPath)
+        private void AddWebContent(string sourcePath, string destinationPath)
         {
-            var webRootFolder = "wwwroot/";
-            var webRoot = proj.ProjectItems.Cast<ProjectItem>().FirstOrDefault(i => i.Name == webRootFolder);
-            var webRootPath = Path.Combine(contentPath, webRootFolder);
-            if (webRoot == null)
+            var webRoot = "wwwroot";
+            CopyFilesRecursively(sourcePath, destinationPath, webRoot);
+        }
+
+        private void AddViews(string sourcePath, string destinationPath)
+        {
+            var subfolder = "Views" + Path.DirectorySeparatorChar + "Raml";
+            CopyFilesRecursively(sourcePath, destinationPath, subfolder);
+        }
+
+        private static void CopyFilesRecursively(string sourcePath, string destinationPath, string subfolder)
+        {
+            var viewsSourcePath = Path.Combine(sourcePath, subfolder);
+            var viewDestinationPath = Path.Combine(destinationPath, subfolder);
+
+            CopyFilesRecusively(viewsSourcePath, viewDestinationPath);
+        }
+
+        private static void CopyFilesRecusively(string sourcePath, string destinationPath)
+        {
+            if (!Directory.Exists(destinationPath))
+                Directory.CreateDirectory(destinationPath);
+
+            var sourceFilePaths = Directory.GetFiles(sourcePath);
+            foreach (var sourceFilePath in sourceFilePaths)
             {
-                proj.ProjectItems.AddFromDirectory(webRootPath);
+                File.Copy(sourceFilePath, Path.Combine(destinationPath, Path.GetFileName(sourceFilePath)));
             }
-            else
+
+            // Copy sub folders
+            var sourceSubFolders = Directory.GetDirectories(sourcePath);
+            foreach (var sourceSubFolder in sourceSubFolders)
             {
-                webRoot.ProjectItems.AddFromDirectory(Path.Combine(webRootPath, "fonts"));
-                webRoot.ProjectItems.AddFromDirectory(Path.Combine(webRootPath, "img"));
-                webRoot.ProjectItems.AddFromDirectory(Path.Combine(webRootPath, "scripts"));
-                webRoot.ProjectItems.AddFromDirectory(Path.Combine(webRootPath, "styles"));
-                webRoot.ProjectItems.AddFromFile(Path.Combine(webRootPath, "favicon.ico"));
+                var lastDirectory = GetLastDirectory(sourceSubFolder);
+                CopyFilesRecusively(sourceSubFolder, Path.Combine(destinationPath, lastDirectory));
             }
         }
 
-        private void AddViews(Project proj, string contentPath)
+        private static string GetLastDirectory(string path)
         {
-            var viewsFolder = "Views/";
-            var views = proj.ProjectItems.Cast<ProjectItem>().FirstOrDefault(i => i.Name == viewsFolder);
-            var viewsPath = Path.Combine(contentPath, viewsFolder);
-            if (views == null)
-                proj.ProjectItems.AddFromDirectory(viewsPath);
-            else
-                views.ProjectItems.AddFromDirectory(Path.Combine(viewsPath, "Raml"));
+            path = path.TrimEnd(Path.DirectorySeparatorChar);
+            var index = path.LastIndexOf(Path.DirectorySeparatorChar);
+            return path.Substring(index + 1);
         }
 
-        private static void AddRamlController(Project proj, string contentPath)
+        private static void AddRamlController(string sourcePath, string destinationPath)
         {
             var controllersFolder = "Controllers";
-            var controllers = proj.ProjectItems.Cast<ProjectItem>().FirstOrDefault(i => i.Name == controllersFolder);
-            var controllersPath = Path.Combine(contentPath, controllersFolder);
-            if (controllers == null)
-            {
-                proj.ProjectItems.AddFromDirectory(controllersPath);
-            }
-            else
-            {
-                var ramlConttrollerDest = Path.Combine(controllersPath, "RamlController.cs");
-                File.Move(Path.Combine(controllersPath, "RamlController.class"), ramlConttrollerDest);
-                controllers.ProjectItems.AddFromFile(ramlConttrollerDest);
-            }
+            var controllersPath = Path.Combine(sourcePath, controllersFolder);
+            if (!Directory.Exists(controllersPath))
+                Directory.CreateDirectory(controllersPath);
+
+            var ramlControllerDest = Path.Combine(destinationPath, controllersFolder + Path.DirectorySeparatorChar + "RamlController.cs");
+            File.Copy(Path.Combine(controllersPath, "RamlController.class"), ramlControllerDest);
         }
 
         private void ConfigureNetCoreStartUp(Project proj)
         {
-            var startUp = proj.ProjectItems.Cast<ProjectItem>().FirstOrDefault(i => i.Name == "Startup");
-            if (startUp == null) return;
+            var startUpPath = Path.Combine(Path.GetDirectoryName(proj.FullName), "Startup.cs");
+            if (!File.Exists(startUpPath)) return;
 
-            var path = startUp.FileNames[0];
-            var lines = File.ReadAllLines(path).ToList();
+            var lines = File.ReadAllLines(startUpPath).ToList();
 
             InsertNetCoreMvcOptions(lines);
 
-            File.WriteAllText(path, string.Join(Environment.NewLine, lines));            
+            File.WriteAllText(startUpPath, string.Join(Environment.NewLine, lines));            
         }
 
         private void AddXmlCommentsDocumentation(Project proj)
@@ -167,7 +179,7 @@ namespace MuleSoft.RAML.Tools
 
         private void InsertNetCoreMvcOptions(List<string> lines)
         {
-            int line = -1;
+            int line;
             if (!lines.Any(l => l.Contains("public void ConfigureServices")))
             {
                 line = FindLineWith(lines, "public void ConfigureServices");
@@ -175,22 +187,19 @@ namespace MuleSoft.RAML.Tools
                 return;
             }
 
-            line = FindLineWith(lines, "services.AddMvc(options =>");
-            if (line > 0)
-            {
-                lines.Insert(line + 2, AddOptions());
-                return;
-            }
-
             line = FindLineWith(lines, "services.AddMvc()");
             if (line > 0)
             {
-                lines.RemoveAt(line + 2);
-                lines.Insert(line + 2, AddMvcWithOptions());
+                lines.RemoveAt(line);
+                lines.Insert(line, AddMvcWithOptions());
                 return;
             }
 
-            //throw new InvalidOperationException("Could not insert");
+            line = FindLineWith(lines, "services.AddMvc(options =>");
+            if (line > 0 && lines[line + 1] == "{")
+            {
+                lines.Insert(line + 2, AddOptions());
+            }
         }
 
         private static string AddMvcWithOptions()
@@ -198,14 +207,14 @@ namespace MuleSoft.RAML.Tools
             return "            services.AddMvc(options =>" + Environment.NewLine
                    + "                {" + Environment.NewLine
                    + AddOptions()
-                   + "            });";
+                   + "                });";
         }
 
         private static string AddOptions()
         {
-            return "                options.Filters.AddService(typeof(ApiExplorerDataFilter));" + Environment.NewLine
-                   + "                options.Conventions.Add(new ApiExplorerVisibilityEnabledConvention());" + Environment.NewLine
-                   + "                options.Conventions.Add(new ApiExplorerVisibilityDisabledConvention(typeof(RamlController)));" + Environment.NewLine;
+            return "                    options.Filters.AddService(typeof(RAML.WebApiExplorer.ApiExplorerDataFilter));" + Environment.NewLine
+                   + "                    options.Conventions.Add(new RAML.WebApiExplorer.ApiExplorerVisibilityEnabledConvention());" + Environment.NewLine
+                   + "                    options.Conventions.Add(new RAML.WebApiExplorer.ApiExplorerVisibilityDisabledConvention(typeof(RAML.WebApiExplorer.RamlController)));" + Environment.NewLine;
         }
 
         private static void InsertLine(List<string> lines)
@@ -276,15 +285,15 @@ namespace MuleSoft.RAML.Tools
             // RAML.Parser
             if (!installerServices.IsPackageInstalled(proj, "RAML.Parser.Expressions"))
             {
-                installer.InstallPackage(nugetPackagesSource, proj, "RAML.Parser.Expressions", "1.0.0",
-                    false);
+                //installer.InstallPackage(nugetPackagesSource, proj, "RAML.Parser.Expressions", "1.0.0", false);
+                installer.InstallPackage(@"C:\desarrollo\nuget\nugets", proj, "RAML.Parser.Expressions", "1.0.0", false);
             }
 
             // RAML.NetCoreApiExplorer
             if (!installerServices.IsPackageInstalled(proj, "RAML.NetCoreApiExplorer"))
             {
-                installer.InstallPackage(nugetPackagesSource, proj, "RAML.NetCoreApiExplorer",
-                    "1.0.0", false);
+                //installer.InstallPackage(nugetPackagesSource, proj, "RAML.NetCoreApiExplorer", "1.0.0", false);
+                installer.InstallPackage(@"C:\desarrollo\nuget\nugets", proj, "RAML.NetCoreApiExplorer", "1.0.0", false);
             }
         }
 
