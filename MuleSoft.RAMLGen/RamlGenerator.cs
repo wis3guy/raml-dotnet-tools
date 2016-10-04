@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using System.Net;
-using System.Reflection;
 using System.Threading.Tasks;
 using Raml.Common;
 using Raml.Parser;
@@ -24,6 +23,35 @@ namespace MuleSoft.RAMLGen
             generator.Generate(ramlDoc, targetFileName, targetNamespace, opts.TemplatesFolder, destinationFolder);
         }
 
+        public async Task HandleContract(ServerOptions opts)
+        {
+            string destinationFolder;
+            string targetFileName;
+            string targetNamespace;
+            HandleParameters(opts, out destinationFolder, out targetFileName, out targetNamespace);
+
+            var ramlDoc = await GetRamlDocument(opts, destinationFolder, targetFileName);
+
+            var generator = new RamlServerGenerator(ramlDoc, targetNamespace, opts.TemplatesFolder, targetFileName,
+                destinationFolder, opts.UseAsyncMethods, opts.WebApi);
+
+            generator.Generate();
+        }
+
+        public async Task HandleModels(ModelsOptions opts)
+        {
+            string destinationFolder;
+            string targetFileName;
+            string targetNamespace;
+            HandleParameters(opts, out destinationFolder, out targetFileName, out targetNamespace);
+
+            var ramlDoc = await GetRamlDocument(opts, destinationFolder, targetFileName);
+
+            var generator = new RamlModelsGenerator(ramlDoc, targetNamespace, opts.TemplatesFolder, targetFileName,
+                destinationFolder);
+
+            generator.Generate();
+        }
 
         private static async Task<RamlDocument> GetRamlDocument(Options opts, string destinationFolder, string targetFileName)
         {
@@ -57,22 +85,5 @@ namespace MuleSoft.RAMLGen
                 ? NetNamingMapper.GetNamespace(Path.GetFileNameWithoutExtension(targetFileName))
                 : opts.Namespace;
         }
-
-        public async Task HandleContract(ServerOptions opts)
-        {
-            string destinationFolder;
-            string targetFileName;
-            string targetNamespace;
-            HandleParameters(opts, out destinationFolder, out targetFileName, out targetNamespace);
-
-            var ramlDoc = await GetRamlDocument(opts, destinationFolder, targetFileName);
-
-            var generator = new RamlServerGenerator(ramlDoc, targetNamespace, opts.TemplatesFolder, targetFileName,
-                destinationFolder, opts.UseAsyncMethods, opts.WebApi);
-
-            generator.Generate();
-        }
-
-
     }
 }

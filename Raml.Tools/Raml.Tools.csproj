@@ -85,6 +85,8 @@
     <Compile Include="ResourceTypeApplier.cs" />
     <Compile Include="ResponseTypesService.cs" />
     <Compile Include="TraitsApplier.cs" />
+    <Compile Include="WebApiGenerator\ModelsGeneratorModel.cs" />
+    <Compile Include="WebApiGenerator\ModelsGeneratorService.cs" />
     <Compile Include="XML\ArraysToCollectionsExtension.cs" />
     <Compile Include="ClientGenerator\ApiRequestObjectsGenerator.cs" />
     <Compile Include="ClientGenerator\ApiResponseObjectsGenerator.cs" />
