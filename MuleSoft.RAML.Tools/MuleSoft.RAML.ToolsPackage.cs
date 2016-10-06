@@ -27,6 +27,8 @@ using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Runtime.InteropServices;
+using Caliburn.Micro;
+using Raml.Common.ViewModels;
 
 namespace MuleSoft.RAML.Tools
 {
@@ -70,6 +72,8 @@ namespace MuleSoft.RAML.Tools
         private static Events events;
         private static DocumentEvents documentEvents;
         private IVsThreadedWaitDialog3 attachingDialog;
+
+        private IWindowManager windowManager;
 
         public MuleSoft_RAML_ToolsPackage()
         {
@@ -157,6 +161,18 @@ namespace MuleSoft.RAML.Tools
             documentEvents = events.DocumentEvents;
             documentEvents.DocumentSaved += RamlScaffoldService.TriggerScaffoldOnRamlChanged;
             //MuleSoft.RAML.Tools.Command1.Initialize(this);
+
+            var bootstrapper = new Bootstrapper();
+            bootstrapper.Initialize();
+
+            try
+            {
+                windowManager = IoC.Get<IWindowManager>();
+            }
+            catch
+            {
+                windowManager = new WindowManager();
+            }
         }
 
         private void AddRamlRefCommandOnBeforeQueryStatus(object sender, EventArgs eventArgs)
@@ -296,10 +312,15 @@ namespace MuleSoft.RAML.Tools
 
             var refFilePath = InstallerServices.GetRefFilePath(ramlFilePath);
 
-            var frm = new RamlPropertiesEditor();
-            frm.Load(refFilePath, Settings.Default.ContractsFolderName, Settings.Default.ApiReferencesFolderName);
-            var result = frm.ShowDialog();
-            if (result != null && result.Value)
+
+            var editorModel = new RamlPropertiesEditorViewModel();
+            editorModel.Load(refFilePath, Settings.Default.ContractsFolderName, Settings.Default.ApiReferencesFolderName);
+            windowManager.ShowDialog(editorModel);
+
+            //var frm = new RamlPropertiesEditor();
+            //frm.Load(refFilePath, Settings.Default.ContractsFolderName, Settings.Default.ApiReferencesFolderName);
+            //var result = frm.ShowDialog();
+            if (editorModel.WasSaved)
             {
 
                 if (IsServerSide(ramlFilePath))
