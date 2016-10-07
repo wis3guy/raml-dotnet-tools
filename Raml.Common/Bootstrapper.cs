@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
-using System.Windows;
 using Caliburn.Micro;
-using Raml.Common.Views;
+using Raml.Common.ViewModels;
 
 namespace Raml.Common
 {
@@ -17,35 +16,8 @@ namespace Raml.Common
         {
             return new[]
             {
-                new RamlChooserModel().GetType().Assembly
+                new RamlChooserViewModel().GetType().Assembly
             };
-        }
-
-        protected override void OnStartup(object sender, StartupEventArgs e)
-        {
-            //DisplayRootViewFor<RamlChooserModel>();
-        }
-
-        public void DisplayChooser()
-        {
-            // DisplayRootViewFor<RamlChooserModel>();
-            IWindowManager windowManager;
-
-            try
-            {
-                windowManager = IoC.Get<IWindowManager>();
-            }
-            catch
-            {
-                windowManager = new WindowManager();
-            }
-
-            windowManager.ShowWindow(new RamlChooserModel());
-        }
-
-        public void DisplayPropertiesEditor()
-        {
-            DisplayRootViewFor<RamlPropertiesEditorView>();
         }
     }
 }

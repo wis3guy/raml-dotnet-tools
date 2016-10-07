@@ -3,12 +3,15 @@
 				 xmlns:ui="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.12.0"
 				 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 				 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+				 xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+				 xmlns:cal="http://www.caliburnproject.org"
 				 mc:Ignorable="d"
-				 x:Class="Raml.Common.RamlChooser"
+				 x:Class="Raml.Common.Views.RamlChooserView"
 				 x:Name="RamlChooserWindow"
                  Background="Gainsboro"
 				 Width="600"
                  d:DesignHeight="570"
+                 Height="{Binding Height}"
 				 ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
@@ -156,16 +159,21 @@
                 </Grid.RowDefinitions>
 
                 <RadioButton Content="New RAML contract"
-							 x:Name="newRamlRadioButton"
-							 Checked="NewRaml_Checked"
-                             Visibility="{Binding ElementName=RamlChooserWindow, Path=ContractUseCaseVisibility}"
+							 x:Name="IsNewRamlOption"
+                             Visibility="{Binding ContractUseCaseVisibility}"
 							 Style="{StaticResource DefaultRadioButton}"
 							 GroupName="MainOption"
                              Margin="0,0,0,5"
-							 Grid.Row="1" />
+							 Grid.Row="1" >
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="Checked">
+                            <cal:ActionMessage MethodName="NewRaml_Checked" />
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </RadioButton>
 
                 <Grid Grid.Row="2"
-                     Visibility="{Binding ElementName=RamlChooserWindow, Path=ContractUseCaseVisibility}">
+                     Visibility="{Binding ContractUseCaseVisibility}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"></ColumnDefinition>
                         <ColumnDefinition Width="*"></ColumnDefinition>
@@ -179,28 +187,36 @@
 
                     <TextBox x:Name="txtTitle"
 						 Grid.Column="1"
-						 Style="{StaticResource DefaultTextBox}"
-						 TextChanged="Title_OnTextChanged"
-						  />
+						 Style="{StaticResource DefaultTextBox}">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="TextChanged">
+                                <cal:ActionMessage MethodName="Title_OnTextChanged" />
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </TextBox>
 
                     <Button Content="OK"
-									x:Name="btnOk"
+									x:Name="AddNewContract"
 									Style="{StaticResource CommonButton}"
-									Grid.Column="2"
-									Click="btnOk_Click" />
+									Grid.Column="2" />
 
                 </Grid>
 
 
 
                 <RadioButton Content="Existing RAML contract"
-							 x:Name="existingRamlRadioButton"
-							 Checked="BrowseExisting_Checked"
+							 x:Name="ExistingRamlOption"
 							 Style="{StaticResource DefaultRadioButton}"
-							 Visibility="{Binding ElementName=RamlChooserWindow, Path=ContractUseCaseVisibility}"
+							 Visibility="{Binding ContractUseCaseVisibility}"
 							 GroupName="MainOption"
                              Margin="0,14,0,10"
-							 Grid.Row="3" />
+							 Grid.Row="3">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="Checked">
+                            <cal:ActionMessage MethodName="BrowseExisting_Checked" />
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </RadioButton>
 
                 <Grid Grid.Row="4"
 					  x:Name="browseRamlGrid">
@@ -213,8 +229,7 @@
 
                     <Button Grid.Column="0"
                             Style="{StaticResource BigButton}"
-							x:Name="LibraryButton"
-                            Click="LibraryButton_OnClick">
+							x:Name="LibraryButton">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"></RowDefinition>
@@ -230,8 +245,7 @@
                     <Button 
                                 Style="{StaticResource BigButton}"
 								Grid.Column="2"
-								x:Name="BrowseButton"
-								Click="btnChooseFile_Click" >
+								x:Name="BrowseButton" >
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"></RowDefinition>
@@ -268,7 +282,7 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-                    <TextBox x:Name="txtURL"
+                    <TextBox x:Name="Url"
                                  Style="{StaticResource DefaultTextBox}"
 								 Grid.Column="0" />
 
@@ -276,8 +290,7 @@
 								Style="{StaticResource DefaultButton}"
 								x:Name="GoButton"
                                 Content="OK"
-								Grid.Column="1"
-								Click="GoButton_Click" >
+								Grid.Column="1">
                     </Button>
 
                 </Grid>
@@ -286,7 +299,8 @@
 
             <ProgressBar Grid.Row="3"
                          Grid.ColumnSpan="3"
-								 Visibility="Hidden"
+                         Grid.Column="0"
+								 Visibility="{Binding ProgressBarVisibility}"
 								 Height="15"
 								 Margin="5,0"
 								 IsIndeterminate="True"
@@ -298,8 +312,7 @@
 									Grid.Column="0"
                                     Grid.Row="4"
                                     Width="68"
-                                    Height="35"
-									Click="btnCancel_Click" />
+                                    Height="35" />
 
         </Grid>
 

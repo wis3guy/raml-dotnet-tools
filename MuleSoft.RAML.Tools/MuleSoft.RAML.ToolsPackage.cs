@@ -29,6 +29,7 @@ using System.Net;
 using System.Runtime.InteropServices;
 using Caliburn.Micro;
 using Raml.Common.ViewModels;
+using Raml.Common.Views;
 
 namespace MuleSoft.RAML.Tools
 {
@@ -255,15 +256,21 @@ namespace MuleSoft.RAML.Tools
         private void AddRamlContractCallback(object sender, EventArgs e)
         {
             var ramlScaffoldUpdater = new RamlScaffoldService(new T4Service(ServiceProvider.GlobalProvider), ServiceProvider.GlobalProvider);
-            var frm = new RamlChooser(ServiceProvider.GlobalProvider, ramlScaffoldUpdater.AddContract, "Add RAML Contract", true, Settings.Default.RAMLExchangeUrl);
-            frm.ShowDialog();
+            var ramlChooserViewModel = new RamlChooserViewModel();
+            ramlChooserViewModel.Load(ServiceProvider.GlobalProvider, ramlScaffoldUpdater.AddContract, "Add RAML Contract", true, Settings.Default.RAMLExchangeUrl);
+            windowManager.ShowDialog(ramlChooserViewModel);
+            //var frm = new RamlChooserView(ServiceProvider.GlobalProvider, ramlScaffoldUpdater.AddContract, "Add RAML Contract", true, Settings.Default.RAMLExchangeUrl);
+            //frm.ShowDialog();
         }
 
         private void AddRamlReferenceCallback(object sender, EventArgs e)
         {
             var generationServices = new RamlReferenceService(ServiceProvider.GlobalProvider, new ActivityLogger());
-            var ramlChooser = new RamlChooser(this, generationServices.AddRamlReference, "Add RAML Reference", false, Settings.Default.RAMLExchangeUrl);
-            ramlChooser.ShowDialog();
+            var ramlChooserViewModel = new RamlChooserViewModel();
+            ramlChooserViewModel.Load(this, generationServices.AddRamlReference, "Add RAML Reference", false, Settings.Default.RAMLExchangeUrl);
+            windowManager.ShowDialog(ramlChooserViewModel);
+            //var ramlChooser = new RamlChooserView(this, generationServices.AddRamlReference, "Add RAML Reference", false, Settings.Default.RAMLExchangeUrl);
+            //ramlChooser.ShowDialog();
         }
 
         private void UpdateRamlRefCallback(object sender, EventArgs e)

@@ -133,16 +133,16 @@
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="RamlChooserActionParams.cs" />
     <Compile Include="ViewModels\RamlPropertiesEditorViewModel.cs" />
-    <Compile Include="RamlChooserModel.cs" />
+    <Compile Include="ViewModels\RamlChooserViewModel.cs" />
     <Compile Include="RamlData.cs" />
     <Compile Include="RamlIncludesManager.cs" />
     <Compile Include="RamlIncludesManagerResult.cs" />
     <Compile Include="RamlInfoService.cs" />
     <Compile Include="RamlInfo.cs" />
-    <Compile Include="RAMLLibraryBrowser.xaml.cs">
+    <Compile Include="Views\RAMLLibraryBrowser.xaml.cs">
       <DependentUpon>RAMLLibraryBrowser.xaml</DependentUpon>
     </Compile>
-    <Compile Include="RamlPreview.xaml.cs">
+    <Compile Include="Views\RamlPreview.xaml.cs">
       <DependentUpon>RamlPreview.xaml</DependentUpon>
     </Compile>
     <Compile Include="RamlProperties.cs" />
@@ -156,8 +156,8 @@
     <Compile Include="T4Service.cs" />
     <Compile Include="TaskExtensions.cs" />
     <Compile Include="VisualStudioAutomationHelper.cs" />
-    <Compile Include="RamlChooser.xaml.cs">
-      <DependentUpon>RamlChooser.xaml</DependentUpon>
+    <Compile Include="Views\RamlChooserView.xaml.cs">
+      <DependentUpon>RamlChooserView.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -191,15 +191,15 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="RamlChooser.xaml">
+    <Page Include="Views\RamlChooserView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="RAMLLibraryBrowser.xaml">
+    <Page Include="Views\RAMLLibraryBrowser.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="RamlPreview.xaml">
+    <Page Include="Views\RamlPreview.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
