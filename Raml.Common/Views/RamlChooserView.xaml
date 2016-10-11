@@ -165,11 +165,6 @@
 							 GroupName="MainOption"
                              Margin="0,0,0,5"
 							 Grid.Row="1" >
-                    <i:Interaction.Triggers>
-                        <i:EventTrigger EventName="Checked">
-                            <cal:ActionMessage MethodName="NewRaml_Checked" />
-                        </i:EventTrigger>
-                    </i:Interaction.Triggers>
                 </RadioButton>
 
                 <Grid Grid.Row="2"
@@ -185,12 +180,12 @@
                        Margin="0,5"
 					   Grid.Column="0" />
 
-                    <TextBox x:Name="txtTitle"
+                    <TextBox x:Name="Title"
 						 Grid.Column="1"
 						 Style="{StaticResource DefaultTextBox}">
                         <i:Interaction.Triggers>
-                            <i:EventTrigger EventName="TextChanged">
-                                <cal:ActionMessage MethodName="Title_OnTextChanged" />
+                            <i:EventTrigger EventName="KeyUp">
+                                <cal:ActionMessage MethodName="Title_Changed" />
                             </i:EventTrigger>
                         </i:Interaction.Triggers>
                     </TextBox>
@@ -211,15 +206,9 @@
 							 GroupName="MainOption"
                              Margin="0,14,0,10"
 							 Grid.Row="3">
-                    <i:Interaction.Triggers>
-                        <i:EventTrigger EventName="Checked">
-                            <cal:ActionMessage MethodName="BrowseExisting_Checked" />
-                        </i:EventTrigger>
-                    </i:Interaction.Triggers>
                 </RadioButton>
 
-                <Grid Grid.Row="4"
-					  x:Name="browseRamlGrid">
+                <Grid Grid.Row="4">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"></ColumnDefinition>
                         <ColumnDefinition Width="*"></ColumnDefinition>
@@ -229,7 +218,7 @@
 
                     <Button Grid.Column="0"
                             Style="{StaticResource BigButton}"
-							x:Name="LibraryButton">
+							x:Name="AddExistingRamlFromExchange">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"></RowDefinition>
@@ -245,7 +234,7 @@
                     <Button 
                                 Style="{StaticResource BigButton}"
 								Grid.Column="2"
-								x:Name="BrowseButton" >
+								x:Name="AddExistingRamlFromDisk" >
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"></RowDefinition>
@@ -284,11 +273,17 @@
 
                     <TextBox x:Name="Url"
                                  Style="{StaticResource DefaultTextBox}"
-								 Grid.Column="0" />
+								 Grid.Column="0">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="KeyUp">
+                                <cal:ActionMessage MethodName="Url_Changed" />
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>                        
+                    </TextBox>
 
                     <Button 
 								Style="{StaticResource DefaultButton}"
-								x:Name="GoButton"
+								x:Name="AddExistingRamlFromUrl"
                                 Content="OK"
 								Grid.Column="1">
                     </Button>
@@ -303,11 +298,10 @@
 								 Visibility="{Binding ProgressBarVisibility}"
 								 Height="15"
 								 Margin="5,0"
-								 IsIndeterminate="True"
-								 Name="progressBar"></ProgressBar>
+								 IsIndeterminate="True"></ProgressBar>
 
             <Button Content="Cancel"
-									x:Name="btnCancel"
+									x:Name="Cancel"
 									Style="{StaticResource Button}"
 									Grid.Column="0"
                                     Grid.Row="4"

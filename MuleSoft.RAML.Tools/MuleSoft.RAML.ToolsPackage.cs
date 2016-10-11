@@ -174,7 +174,19 @@ namespace MuleSoft.RAML.Tools
             {
                 windowManager = new WindowManager();
             }
+
+            LoadSystemWindowsInteractivity();
         }
+
+        // workaround http://stackoverflow.com/questions/29362125/visual-studio-extension-could-not-find-a-required-assembly
+        private static void LoadSystemWindowsInteractivity()
+        {
+            // HACK: Force load System.Windows.Interactivity.dll from plugin's 
+            // directory
+            typeof(System.Windows.Interactivity.Behavior).ToString();
+        }
+
+
 
         private void AddRamlRefCommandOnBeforeQueryStatus(object sender, EventArgs eventArgs)
         {

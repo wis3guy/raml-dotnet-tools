@@ -19,15 +19,9 @@ namespace Raml.Common.ViewModels
         public IServiceProvider ServiceProvider { get; set; }
 
         private bool isContractUseCase;
-        private bool canAddNewContract;
         private int height;
-        private bool canLibraryButton;
-        private bool canBrowseButton;
         private string url;
-        private string title1;
-        private bool canTitle;
-        private bool canUrl;
-        private bool canGoButton;
+        private string title;
         private Visibility progressBarVisibility;
         private bool isNewRamlOption;
         private bool existingRamlOption;
@@ -58,9 +52,8 @@ namespace Raml.Common.ViewModels
             ServiceProvider = serviceProvider;
             DisplayName = title;
             IsContractUseCase = isContractUseCase;
-            CanAddNewContract = false;
-            Height = isContractUseCase ? 570 : 475;
-            NotifyOfPropertyChange(() => Height);
+            Height = isContractUseCase ? 750 : 375;
+            StopProgress();
         }
 
         public int Height
@@ -76,16 +69,10 @@ namespace Raml.Common.ViewModels
 
         public bool CanAddNewContract
         {
-            get { return canAddNewContract; }
-            set
-            {
-                if (value == canAddNewContract) return;
-                canAddNewContract = value;
-                NotifyOfPropertyChange(() => CanAddNewContract);
-            }
+            get { return !string.IsNullOrWhiteSpace(Title); }
         }
 
-        public async void BrowseButton()
+        public async void AddExistingRamlFromDisk()
         {
             SelectExistingRamlOption();
             FileDialog fd = new OpenFileDialog();
@@ -119,9 +106,6 @@ namespace Raml.Common.ViewModels
         private void StartProgress()
         {
             ProgressBarVisibility = Visibility.Visible;
-            CanAddNewContract = false;
-            CanBrowseButton = false;
-            CanLibraryButton = false;
             Mouse.OverrideCursor = Cursors.Wait;
         }
 
@@ -139,35 +123,10 @@ namespace Raml.Common.ViewModels
         private void StopProgress()
         {
             ProgressBarVisibility = Visibility.Hidden;
-            CanAddNewContract = true;
-            CanBrowseButton = true;
-            CanLibraryButton = true;
             Mouse.OverrideCursor = null;
         }
 
-        public bool CanBrowseButton
-        {
-            get { return canBrowseButton; }
-            set
-            {
-                if (value == canBrowseButton) return;
-                canBrowseButton = value;
-                NotifyOfPropertyChange(() => CanBrowseButton);
-            }
-        }
-
-        public bool CanLibraryButton
-        {
-            get { return canLibraryButton; }
-            set
-            {
-                if (value == canLibraryButton) return;
-                canLibraryButton = value;
-                NotifyOfPropertyChange(() => CanLibraryButton);
-            }
-        }
-
-        public async void LibraryButton()
+        public async void AddExistingRamlFromExchange()
         {
             SelectExistingRamlOption();
             var rmlLibrary = new RAMLLibraryBrowser(exchangeUrl);
@@ -199,11 +158,12 @@ namespace Raml.Common.ViewModels
                 if (value == url) return;
                 url = value;
                 NotifyOfPropertyChange(() => Url);
+                NotifyOfPropertyChange(() => CanAddExistingRamlFromUrl);
             }
         }
 
 
-        public async void GoButton()
+        public async void AddExistingRamlFromUrl()
         {
             SelectExistingRamlOption();
             var preview = new RamlPreview(ServiceProvider, action, RamlTempFilePath, Url, "title", isContractUseCase);
@@ -217,11 +177,6 @@ namespace Raml.Common.ViewModels
                 TryClose();
         }
 
-        public void NewRaml_Checked()
-        {
-            NewOrExistingRamlOptionChanged(IsNewRamlOption);
-        }
-
         public bool IsNewRamlOption
         {
             get { return isNewRamlOption; }
@@ -233,51 +188,9 @@ namespace Raml.Common.ViewModels
             }
         }
 
-        private void NewOrExistingRamlOptionChanged(bool newRamlIsChecked)
+        public bool CanAddExistingRamlFromUrl
         {
-            CanTitle = newRamlIsChecked;
-
-            CanUrl = !newRamlIsChecked;
-            CanGoButton = !newRamlIsChecked;
-            CanBrowseButton = !newRamlIsChecked;
-        }
-
-        public bool CanGoButton
-        {
-            get { return canGoButton; }
-            set
-            {
-                if (value == canGoButton) return;
-                canGoButton = value;
-                NotifyOfPropertyChange(() => CanGoButton);
-            }
-        }
-
-        public bool CanUrl
-        {
-            get { return canUrl; }
-            set
-            {
-                if (value == canUrl) return;
-                canUrl = value;
-                NotifyOfPropertyChange(() => CanUrl);
-            }
-        }
-
-        public bool CanTitle
-        {
-            get { return canTitle; }
-            set
-            {
-                if (value == canTitle) return;
-                canTitle = value;
-                NotifyOfPropertyChange(() => CanTitle);
-            }
-        }
-
-        public void BrowseExisting_Checked()
-        {
-            NewOrExistingRamlOptionChanged(ExistingRamlOption);
+            get { return !string.IsNullOrWhiteSpace(Url); }
         }
 
         public bool ExistingRamlOption
@@ -291,26 +204,33 @@ namespace Raml.Common.ViewModels
             }
         }
 
-        public void Title_OnTextChanged()
+        public void Url_Changed()
         {
-            CanAddNewContract = false;
-            if (string.IsNullOrWhiteSpace(Title)) 
+            if (string.IsNullOrWhiteSpace(url))
+                return;
+
+            SelectExistingRamlOption();
+        }
+
+        public void Title_Changed()
+        {
+            if (string.IsNullOrWhiteSpace(title)) 
                 return;
 
             SelectNewRamlOption();
             NewRamlFilename = NetNamingMapper.RemoveIndalidChars(Title) + RamlFileExtension;
             NewRamlNamespace = GetNamespace(NewRamlFilename);
-            CanAddNewContract = true;
         }
 
         public string Title
         {
-            get { return title1; }
+            get { return title; }
             set
             {
-                if (value == title1) return;
-                title1 = value;
+                if (value == title) return;
+                title = value;
                 NotifyOfPropertyChange(() => Title);
+                NotifyOfPropertyChange(() => CanAddNewContract);
             }
         }
 
@@ -336,7 +256,7 @@ namespace Raml.Common.ViewModels
             ExistingRamlOption = false;
         }
 
-        public void btnCancel()
+        public void Cancel()
         {
             TryClose();
         }
