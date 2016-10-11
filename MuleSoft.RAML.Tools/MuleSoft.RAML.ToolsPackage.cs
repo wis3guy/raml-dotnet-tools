@@ -23,6 +23,7 @@ using Raml.Common;
 using System;
 using System.ComponentModel.Design;
 using System.Diagnostics;
+using System.Dynamic;
 using System.Globalization;
 using System.IO;
 using System.Net;
@@ -270,7 +271,9 @@ namespace MuleSoft.RAML.Tools
             var ramlScaffoldUpdater = new RamlScaffoldService(new T4Service(ServiceProvider.GlobalProvider), ServiceProvider.GlobalProvider);
             var ramlChooserViewModel = new RamlChooserViewModel();
             ramlChooserViewModel.Load(ServiceProvider.GlobalProvider, ramlScaffoldUpdater.AddContract, "Add RAML Contract", true, Settings.Default.RAMLExchangeUrl);
-            windowManager.ShowDialog(ramlChooserViewModel);
+            dynamic settings = new ExpandoObject();
+            settings.Height = 570;
+            windowManager.ShowDialog(ramlChooserViewModel, null, settings);
             //var frm = new RamlChooserView(ServiceProvider.GlobalProvider, ramlScaffoldUpdater.AddContract, "Add RAML Contract", true, Settings.Default.RAMLExchangeUrl);
             //frm.ShowDialog();
         }
@@ -280,7 +283,9 @@ namespace MuleSoft.RAML.Tools
             var generationServices = new RamlReferenceService(ServiceProvider.GlobalProvider, new ActivityLogger());
             var ramlChooserViewModel = new RamlChooserViewModel();
             ramlChooserViewModel.Load(this, generationServices.AddRamlReference, "Add RAML Reference", false, Settings.Default.RAMLExchangeUrl);
-            windowManager.ShowDialog(ramlChooserViewModel);
+            dynamic settings = new ExpandoObject();
+            settings.Height = 475;
+            windowManager.ShowDialog(ramlChooserViewModel, null, settings);
             //var ramlChooser = new RamlChooserView(this, generationServices.AddRamlReference, "Add RAML Reference", false, Settings.Default.RAMLExchangeUrl);
             //ramlChooser.ShowDialog();
         }
