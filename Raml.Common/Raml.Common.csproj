@@ -132,6 +132,7 @@
     <Compile Include="IT4Service.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="RamlChooserActionParams.cs" />
+    <Compile Include="ViewModels\RamlPreviewViewModel.cs" />
     <Compile Include="ViewModels\RamlPropertiesEditorViewModel.cs" />
     <Compile Include="ViewModels\RamlChooserViewModel.cs" />
     <Compile Include="RamlData.cs" />
@@ -142,8 +143,8 @@
     <Compile Include="Views\RAMLLibraryBrowser.xaml.cs">
       <DependentUpon>RAMLLibraryBrowser.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\RamlPreview.xaml.cs">
-      <DependentUpon>RamlPreview.xaml</DependentUpon>
+    <Compile Include="Views\RamlPreviewView.xaml.cs">
+      <DependentUpon>RamlPreviewView.xaml</DependentUpon>
     </Compile>
     <Compile Include="RamlProperties.cs" />
     <Compile Include="Views\RamlPropertiesEditorView.xaml.cs">
@@ -199,7 +200,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\RamlPreview.xaml">
+    <Page Include="Views\RamlPreviewView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

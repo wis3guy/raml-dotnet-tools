@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Dynamic;
 using System.IO;
 using System.Windows;
 using System.Windows.Input;
@@ -25,6 +26,7 @@ namespace Raml.Common.ViewModels
         private Visibility progressBarVisibility;
         private bool isNewRamlOption;
         private bool existingRamlOption;
+        private IWindowManager windowManager;
 
         private bool IsContractUseCase
         {
@@ -33,7 +35,7 @@ namespace Raml.Common.ViewModels
             {
                 if (value.Equals(isContractUseCase)) return;
                 isContractUseCase = value;
-                NotifyOfPropertyChange("ContractUseCaseVisibility");
+                NotifyOfPropertyChange(() => ContractUseCaseVisibility);
             }
         }
 
@@ -89,17 +91,42 @@ namespace Raml.Common.ViewModels
             RamlTempFilePath = fd.FileName;
             RamlOriginalSource = fd.FileName;
 
-            var title = Path.GetFileName(fd.FileName);
+            var previewViewModel = new RamlPreviewViewModel(ServiceProvider, action, RamlTempFilePath, RamlOriginalSource,
+                Path.GetFileName(fd.FileName), isContractUseCase);
 
-            
-            var preview = new RamlPreview(ServiceProvider, action, RamlTempFilePath, RamlOriginalSource, title, isContractUseCase);
-            
             StartProgress();
-            await preview.FromFile();
+            await previewViewModel.FromFile();
             StopProgress();
 
-            var dialogResult = preview.ShowDialog();
-            if(dialogResult == true)
+            ShowPreviewViewAndClose(previewViewModel);
+        }
+
+        private IWindowManager WindowManager
+        {
+            get
+            {
+                if (windowManager != null) 
+                    return windowManager;
+                
+                try
+                {
+                    windowManager = IoC.Get<IWindowManager>();
+                }
+                catch
+                {
+                    windowManager = new WindowManager();
+                }
+                return windowManager;
+            }
+        }
+
+        private void ShowPreviewViewAndClose(RamlPreviewViewModel previewViewModel)
+        {
+            dynamic settings = new ExpandoObject();
+            settings.Height = isContractUseCase ? 660 : 480;
+            WindowManager.ShowDialog(previewViewModel, null, settings);
+
+            if (previewViewModel.WasImported)
                 TryClose();
         }
 
@@ -138,15 +165,13 @@ namespace Raml.Common.ViewModels
 
                 Url = url;
 
-                var preview = new RamlPreview(ServiceProvider, action, RamlTempFilePath, url, "title", isContractUseCase);
+                var previewViewModel = new RamlPreviewViewModel(ServiceProvider, action, RamlTempFilePath, url, "title", isContractUseCase);
                 
                 StartProgress();
-                await preview.FromURL();
+                await previewViewModel.FromUrl();
                 StopProgress();
 
-                var dialogResult = preview.ShowDialog();
-                if (dialogResult == true)
-                    TryClose();
+                ShowPreviewViewAndClose(previewViewModel);
             }
         }
 
@@ -166,15 +191,13 @@ namespace Raml.Common.ViewModels
         public async void AddExistingRamlFromUrl()
         {
             SelectExistingRamlOption();
-            var preview = new RamlPreview(ServiceProvider, action, RamlTempFilePath, Url, "title", isContractUseCase);
+            var previewViewModel = new RamlPreviewViewModel(ServiceProvider, action, RamlTempFilePath, Url, "title", isContractUseCase);
             
             StartProgress();
-            await preview.FromURL();
+            await previewViewModel.FromUrl();
             StopProgress();
-
-            var dialogResult = preview.ShowDialog();
-            if(dialogResult == true)
-                TryClose();
+            
+            ShowPreviewViewAndClose(previewViewModel);
         }
 
         public bool IsNewRamlOption
@@ -263,9 +286,11 @@ namespace Raml.Common.ViewModels
 
         public void AddNewContract()
         {
-            var preview = new RamlPreview(ServiceProvider, action, Title);
-            preview.NewContract();
-            preview.ShowDialog();
+            var previewViewModel = new RamlPreviewViewModel(ServiceProvider, action, Title);
+            previewViewModel.NewContract();
+            dynamic settings = new ExpandoObject();
+            settings.Height = 420;
+            WindowManager.ShowDialog(previewViewModel, null, settings);
             TryClose();
         }
     }
