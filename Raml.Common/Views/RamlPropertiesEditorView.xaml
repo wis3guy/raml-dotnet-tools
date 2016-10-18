@@ -4,12 +4,11 @@
 				 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 				 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 				 mc:Ignorable="d"
-				 x:Class="Raml.Common.RamlPropertiesEditor"
+				 x:Class="Raml.Common.Views.RamlPropertiesEditorView"
                  Background="Gainsboro"
                  Title="Edit RAML Properties"
                  Width="500"
                  Height="360"
-                 x:Name="RamlPropertiesEditorWindow"
 				 WindowStartupLocation="CenterScreen">
     <Window.Resources>
 
@@ -100,7 +99,7 @@
 							   Grid.Row="1"
                                Margin="5" />
         <TextBox Style="{StaticResource DefaultTextBox}"
-                                 Text="{Binding ElementName=RamlPropertiesEditorWindow, Path=Source}"
+                                 Name="Source"
 								 Grid.Column="2"
 								 Grid.Row="1" />
 
@@ -109,7 +108,7 @@
 							   Grid.Column="1"
 							   Grid.Row="2"
                                Margin="5" />
-        <TextBox Text="{Binding ElementName=RamlPropertiesEditorWindow, Path=Namespace}"
+        <TextBox Name="Namespace"
 								 Style="{StaticResource DefaultTextBox}"
 								 Grid.Column="2"
 								 Grid.Row="2" />
@@ -118,40 +117,40 @@
 							   Style="{StaticResource DefaultLabel}"
 							   Grid.Column="1"
                                ToolTip="Name of the main class in the client proxy"
-                               Visibility="{Binding ElementName=RamlPropertiesEditorWindow, Path=ClientVisibility}"
+                               Visibility="{Binding ClientIsVisible}"
 							   Grid.Row="3"
                                Margin="5" />
-        <TextBox Text="{Binding ElementName=RamlPropertiesEditorWindow, Path=ClientName}"
+        <TextBox Name="ClientName"
 								 Style="{StaticResource DefaultTextBox}"
                                  ToolTip="Name of the main class in the client proxy"
-                                 Visibility="{Binding ElementName=RamlPropertiesEditorWindow, Path=ClientVisibility}"
+                                 Visibility="{Binding ClientIsVisible}"
 								 Grid.Column="2"
 								 Grid.Row="3" />
 
-        <CheckBox IsChecked="{Binding ElementName=RamlPropertiesEditorWindow, Path=UseAsyncMethods}"
+        <CheckBox Name="UseAsyncMethods"
                                  Content="Use async method signatures"
                                  Style="{StaticResource DefaultCheckBox}"
 								 Grid.Column="2"
-                                 Visibility="{Binding ElementName=RamlPropertiesEditorWindow, Path=ServerVisibility}"
+                                 Visibility="{Binding ServerIsVisible}"
 								 Grid.Row="3" />
 
-        <CheckBox IsChecked="{Binding ElementName=RamlPropertiesEditorWindow, Path=IncludeApiVersionInRoutePrefix}"
+        <CheckBox Name="IncludeApiVersionInRoutePrefix"
                                  Content="Include api version in route prefix"
                                  Style="{StaticResource DefaultCheckBox}"
 								 Grid.Column="2"
-                                 Visibility="{Binding ElementName=RamlPropertiesEditorWindow, Path=ServerVisibility}"
+                                 Visibility="{Binding ServerIsVisible}"
 								 Grid.Row="4" />
 
         <Label Content="Controllers Folder"
 							   Style="{StaticResource DefaultLabel}"
-                               Visibility="{Binding ElementName=RamlPropertiesEditorWindow, Path=ServerVisibility}"
+                               Visibility="{Binding ServerIsVisible}"
                                ToolTip="Folder where the controllers to be implemented will be placed, leave blank for default Controllers folder"
 							   Grid.Column="1"
 							   Grid.Row="5"
                                Margin="5" />
-        <TextBox Text="{Binding ElementName=RamlPropertiesEditorWindow, Path=ImplementationControllersFolder}"
+        <TextBox Name="ImplementationControllersFolder"
 								 Style="{StaticResource DefaultTextBox}"
-                                 Visibility="{Binding ElementName=RamlPropertiesEditorWindow, Path=ServerVisibility}"
+                                 Visibility="{Binding ServerIsVisible}"
                                  ToolTip="Folder where the controllers to be implemented will be placed, leave blank for default Controllers folder"
 								 Grid.Column="2"
 								 Grid.Row="5" />
@@ -160,26 +159,26 @@
 							   Style="{StaticResource DefaultLabel}"
 							   Grid.Column="1"
 							   Grid.Row="6"
-                               Visibility="{Binding ElementName=RamlPropertiesEditorWindow, Path=ServerVisibility}"
+                               Visibility="{Binding ServerIsVisible}"
                                ToolTip="Folder where the generated models will be placed, leave blank for default Contracts folder"
                                Margin="5" />
-        <TextBox Text="{Binding ElementName=RamlPropertiesEditorWindow, Path=ModelsFolder}"
+        <TextBox Name="ModelsFolder"
 								 Style="{StaticResource DefaultTextBox}"
 								 Grid.Column="2"
                                  ToolTip="Folder where the generated models will be placed, leave blank for default Contracts folder"
-                                 Visibility="{Binding ElementName=RamlPropertiesEditorWindow, Path=ServerVisibility}"
+                                 Visibility="{Binding ServerIsVisible}"
 								 Grid.Row="6" />
 
         <Label Content="Add 'generated.cs' suffix"
 							   Style="{StaticResource DefaultLabel}"
 							   Grid.Column="1"
                                ToolTip="Add 'generated.cs' suffix to generated Model files"
-                               Visibility="{Binding ElementName=RamlPropertiesEditorWindow, Path=ServerVisibility}"               
+                               Visibility="{Binding ServerIsVisible}"               
 							   Grid.Row="7"
                                Margin="5" />
-        <CheckBox IsChecked="{Binding ElementName=RamlPropertiesEditorWindow, Path=AddGeneratedSuffixToFiles}"
+        <CheckBox Name="AddGeneratedSuffixToFiles"
 								 Style="{StaticResource DefaultCheckBox}"
-                                 Visibility="{Binding ElementName=RamlPropertiesEditorWindow, Path=ServerVisibility}"
+                                 Visibility="{Binding ServerIsVisible}"
                                  ToolTip="Add 'generated.cs' suffix to generated Model files"
 								 Grid.Column="2"
 								 Grid.Row="7" />
@@ -196,7 +195,6 @@
         <Button Name="CancelButton" 
                 Content="Cancel" 
                 Grid.Column="1"  
-                Click="CancelButton_Click" 
                 Width="55"
                 Height="30"
                 Margin="10,0,0,10"
@@ -210,7 +208,6 @@
                 Width="55"
                 Height="30"
                 Margin="0,0,6,10"
-                Click="SaveButton_Click"
                 HorizontalAlignment="Right"
                 Style="{StaticResource DefaultButton}">
         </Button>

@@ -1,17 +1,11 @@
-﻿using System;
-using System.ComponentModel;
-using System.IO;
-using System.Runtime.CompilerServices;
-using System.Windows;
+﻿using System.IO;
 using System.Linq;
-using Raml.Common.Annotations;
+using System.Windows;
+using Caliburn.Micro;
 
-namespace Raml.Common
+namespace Raml.Common.ViewModels
 {
-    /// <summary>
-    /// Interaction logic for RamlPropertiesEditor.xaml
-    /// </summary>
-    public partial class RamlPropertiesEditor : INotifyPropertyChanged
+    public class RamlPropertiesEditorViewModel : Screen
     {
         private bool isServerUseCase;
 
@@ -26,13 +20,18 @@ namespace Raml.Common
         private string modelsFolder;
         private bool addGeneratedSuffixToFiles;
 
+        public RamlPropertiesEditorViewModel()
+        {
+            DisplayName = "Edit RAML Properties";
+        }
+
         public string Namespace
         {
             get { return ns; }
             set
             {
                 ns = value;
-                OnPropertyChanged();
+                NotifyOfPropertyChange();
             }
         }
 
@@ -41,8 +40,8 @@ namespace Raml.Common
             get { return source; }
             set
             {
-                source = value; 
-                OnPropertyChanged();
+                source = value;
+                NotifyOfPropertyChange();
             }
         }
 
@@ -52,7 +51,7 @@ namespace Raml.Common
             set
             {
                 clientName = value;
-                OnPropertyChanged();
+                NotifyOfPropertyChange();
             }
         }
 
@@ -62,7 +61,7 @@ namespace Raml.Common
             set
             {
                 useAsyncMethods = value;
-                OnPropertyChanged();
+                NotifyOfPropertyChange();
             }
         }
 
@@ -72,7 +71,7 @@ namespace Raml.Common
             set
             {
                 includeApiVersionInRoutePrefix = value;
-                OnPropertyChanged();
+                NotifyOfPropertyChange();
             }
         }
 
@@ -81,8 +80,8 @@ namespace Raml.Common
             get { return modelsFolder; }
             set
             {
-                modelsFolder = value; 
-                OnPropertyChanged();
+                modelsFolder = value;
+                NotifyOfPropertyChange();
             }
         }
 
@@ -92,7 +91,7 @@ namespace Raml.Common
             set
             {
                 baseControllersFolder = value;
-                OnPropertyChanged();
+                NotifyOfPropertyChange();
             }
         }
 
@@ -102,16 +101,18 @@ namespace Raml.Common
             set
             {
                 implementationControllersFolder = value;
-                OnPropertyChanged();
+                NotifyOfPropertyChange();
             }
         }
 
-        public Visibility ServerVisibility
+        public bool WasSaved { get; set; }
+
+        public Visibility ServerIsVisible
         {
             get { return isServerUseCase ? Visibility.Visible : Visibility.Collapsed; }
         }
 
-        public Visibility ClientVisibility
+        public Visibility ClientIsVisible
         {
             get { return isServerUseCase ? Visibility.Collapsed : Visibility.Visible; }
         }
@@ -121,23 +122,18 @@ namespace Raml.Common
             get { return addGeneratedSuffixToFiles; }
             set
             {
-                addGeneratedSuffixToFiles = value; 
-                OnPropertyChanged();
+                addGeneratedSuffixToFiles = value;
+                NotifyOfPropertyChange();
             }
         }
 
-        public RamlPropertiesEditor()
+        public void Load(string ramlPathParam, string serverPath, string clientPath)
         {
-            InitializeComponent();
-        }
-
-        public void Load(string ramlPath, string serverPath, string clientPath)
-        {
-            this.ramlPath = ramlPath;
-            if (ramlPath.Contains(serverPath) && !ramlPath.Contains(clientPath))
+            ramlPath = ramlPathParam;
+            if (ramlPathParam.Contains(serverPath) && !ramlPathParam.Contains(clientPath))
                 isServerUseCase = true;
 
-            var ramlProperties = RamlPropertiesManager.Load(ramlPath);
+            var ramlProperties = RamlPropertiesManager.Load(ramlPathParam);
             Namespace = ramlProperties.Namespace;
             Source = ramlProperties.Source;
             if (isServerUseCase)
@@ -152,16 +148,16 @@ namespace Raml.Common
             else
                 ClientName = ramlProperties.ClientName;
 
-            OnPropertyChanged("ServerVisibility");
-            OnPropertyChanged("ClientVisibility");
+            NotifyOfPropertyChange(() => ServerIsVisible);
+            NotifyOfPropertyChange(() => ClientIsVisible);
         }
 
-        private void SaveButton_Click(object sender, RoutedEventArgs e)
+        public void SaveButton()
         {
             if (Namespace == null || NetNamingMapper.HasIndalidChars(Namespace))
             {
                 MessageBox.Show("Error: invalid namespace.");
-                return;                
+                return;
             }
             if (clientName != null && NetNamingMapper.HasIndalidChars(ClientName))
             {
@@ -197,10 +193,16 @@ namespace Raml.Common
                 AddGeneratedSuffix = AddGeneratedSuffixToFiles,
                 ImplementationControllersFolder = ImplementationControllersFolder
             };
-            
+
             RamlPropertiesManager.Save(ramlProperties, ramlPath);
-            DialogResult = true;
-            Close();
+            WasSaved = true;
+            TryClose();
+        }
+
+        public void CancelButton()
+        {
+            WasSaved = false;
+            TryClose();
         }
 
         private readonly char[] invalidPathChars = Path.GetInvalidPathChars().Union((new[] { ':' }).ToList()).ToArray();
@@ -209,22 +211,7 @@ namespace Raml.Common
             if (folder == null)
                 return false;
 
-            return invalidPathChars.Any(c => folder.Contains(c));
-        }
-
-        private void CancelButton_Click(object sender, System.Windows.RoutedEventArgs e)
-        {
-            DialogResult = false;
-            Close();
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        [NotifyPropertyChangedInvocator]
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            var handler = PropertyChanged;
-            if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+            return invalidPathChars.Any(folder.Contains);
         }
     }
 }
