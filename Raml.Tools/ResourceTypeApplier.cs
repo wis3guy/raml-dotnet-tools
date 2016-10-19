@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Raml.Parser.Builders;
 using Raml.Parser.Expressions;
 
 namespace Raml.Tools
@@ -17,6 +16,22 @@ namespace Raml.Tools
             }
 
             ApplyToMethods(resourceTypes, methods, type, traits, defaultMediaType);
+
+            if (type == null || !resourceTypes.Any(t => t.ContainsKey(type)))
+                return;
+
+            var resourceType = resourceTypes.First(t => t.ContainsKey(type))[type];
+
+            if (resourceType.UriParameters != null)
+            {
+                if (resource.UriParameters == null)
+                    resource.UriParameters = new Dictionary<string, Parameter>();
+
+                foreach (var uriParameter in resourceType.UriParameters.Where(u => !resource.UriParameters.ContainsKey(u.Key)))
+                {
+                    resource.UriParameters.Add(uriParameter);
+                }
+            }
         }
 
         private static void ApplyToMethods(IEnumerable<IDictionary<string, ResourceType>> resourceTypes, ICollection<Method> methods, string type,
@@ -46,43 +61,43 @@ namespace Raml.Tools
             ApplyToMethods(resourceTypes, methods, resourceType.Type, traits, defaultMediaType);
         }
 
-        private static void AddOrApplyToMethod(ICollection<Method> methods, string methodVerb, Verb verb, string defaultMediaType)
+        private static void AddOrApplyToMethod(ICollection<Method> methods, string methodVerb, Verb resourceTypeVerb, string defaultMediaType)
         {
-            if (verb != null && !methods.Any(m => methodVerb.Equals(m.Verb, StringComparison.OrdinalIgnoreCase)))
+            if (resourceTypeVerb != null && !methods.Any(m => methodVerb.Equals(m.Verb, StringComparison.OrdinalIgnoreCase)))
             {
-                methods.Add(GetMethod(verb, defaultMediaType));
+                methods.Add(GetMethod(resourceTypeVerb, defaultMediaType));
             }
-            else if (verb != null)
+            else if (resourceTypeVerb != null)
             {
                 var method = methods.First(m => methodVerb.Equals(m.Verb, StringComparison.OrdinalIgnoreCase));
-                ApplyToMethod(method, verb, defaultMediaType);
+                ApplyToMethod(method, resourceTypeVerb, defaultMediaType);
             }
         }
 
-        private static void ApplyToMethod(Method method, Verb verb, string defaultMediaType)
+        private static void ApplyToMethod(Method method, Verb resourceTypeVerb, string defaultMediaType)
         {
-            if (verb.Body != null)
+            if (resourceTypeVerb.Body != null)
             {
-                ApplyToMethod(method, verb.Body, defaultMediaType);
+                ApplyToMethod(method, resourceTypeVerb.Body, defaultMediaType);
             }
  
-            if (verb.Headers != null)
+            if (resourceTypeVerb.Headers != null)
             {
                 if(method.Headers == null)
                     method.Headers = new Dictionary<string, Parameter>();
                 
-                foreach (var header in verb.Headers.Where(header => !method.Headers.ContainsKey(header.Key)))
+                foreach (var header in resourceTypeVerb.Headers.Where(header => !method.Headers.ContainsKey(header.Key)))
                 {
                     method.Headers.Add(header);
                 }
             }
 
-            if (verb.Responses != null)
+            if (resourceTypeVerb.Responses != null)
             {
                 if(method.Responses == null)
                     method.Responses = new List<Response>();
 
-                foreach (var response in verb.Responses)
+                foreach (var response in resourceTypeVerb.Responses)
                 {
                     if (method.Responses.Any(r => r.Code == response.Code))
                     {
@@ -109,7 +124,7 @@ namespace Raml.Tools
                             }
                         }
                         if (string.IsNullOrWhiteSpace(resp.Description))
-                            resp.Description = verb.Description;
+                            resp.Description = resourceTypeVerb.Description;
                     }
                     else
                     {
@@ -121,7 +136,18 @@ namespace Raml.Tools
             }
 
             if (string.IsNullOrWhiteSpace(method.Description))
-                method.Description = verb.Description;
+                method.Description = resourceTypeVerb.Description;
+
+            if (resourceTypeVerb.QueryParameters != null)
+            {
+                if(method.QueryParameters == null)
+                    method.QueryParameters = new Dictionary<string, Parameter>();
+
+                foreach (var queryParameter in resourceTypeVerb.QueryParameters)
+                {
+                    method.QueryParameters.Add(queryParameter);
+                }
+            }
         }
 
         private static void ApplyToMethod(Method method, MimeType body, string defaultMediaType)
