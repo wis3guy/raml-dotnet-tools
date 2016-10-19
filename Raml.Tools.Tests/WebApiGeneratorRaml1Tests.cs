@@ -328,6 +328,16 @@ namespace Raml.Tools.Tests
             Assert.AreEqual("bool?", model.Objects.First(o => o.Name == "Movie").Properties.First(p => p.Name == "Rented").Type);
         }
 
+        [Test]
+        public async Task ShouldApplyParametersOfResourceType()
+        {
+            var model = await BuildModel("files/raml1/resource-types.raml");
+            Assert.AreEqual(1, model.Controllers.First(c => c.Name == "Users").Methods.First(m => m.Verb == "Get").UriParameters.Count());
+            Assert.AreEqual(1, model.Controllers.First(c => c.Name == "Users").Methods.First(m => m.Verb == "Post").UriParameters.Count());
+            Assert.AreEqual(1, model.Controllers.First(c => c.Name == "Users").Methods.First(m => m.Verb == "Put").UriParameters.Count());
+            Assert.AreEqual(3, model.Controllers.First(c => c.Name == "Users").Methods.First(m => m.Verb == "Get").QueryParameters.Count);
+        }
+
         private static async Task<WebApiGeneratorModel> GetAnnotationTargetsModel()
         {
             return await BuildModel("files/raml1/annotations-targets.raml");
