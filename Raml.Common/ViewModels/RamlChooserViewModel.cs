@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Input;
 using Caliburn.Micro;
 using Microsoft.Win32;
+using Raml.Common.Views;
 
 namespace Raml.Common.ViewModels
 {
@@ -156,7 +157,8 @@ namespace Raml.Common.ViewModels
         public async void AddExistingRamlFromExchange()
         {
             SelectExistingRamlOption();
-            var rmlLibrary = new RAMLLibraryBrowser(exchangeUrl);
+            //var rmlLibrary = new RamlLibraryBrowserView(exchangeUrl);
+            var rmlLibrary = new RamlLibraryBrowserTestView(exchangeUrl);
             var selectedRamlFile = rmlLibrary.ShowDialog();
 
             if (selectedRamlFile.HasValue && selectedRamlFile.Value)

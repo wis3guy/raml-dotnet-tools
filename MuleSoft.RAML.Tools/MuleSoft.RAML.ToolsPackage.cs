@@ -177,13 +177,15 @@ namespace MuleSoft.RAML.Tools
             }
 
             LoadSystemWindowsInteractivity();
+
+            // HACK: Force load CefSharp dll from plugin's directory
+            typeof (CefSharp.Wpf.ChromiumWebBrowser).ToString();
         }
 
         // workaround http://stackoverflow.com/questions/29362125/visual-studio-extension-could-not-find-a-required-assembly
         private static void LoadSystemWindowsInteractivity()
         {
-            // HACK: Force load System.Windows.Interactivity.dll from plugin's 
-            // directory
+            // HACK: Force load System.Windows.Interactivity.dll from plugin's directory
             typeof(System.Windows.Interactivity.Behavior).ToString();
         }
 

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using EnvDTE;
-using MuleSoft.RAML.Tools.Properties;
 using Raml.Common;
 using Raml.Tools.WebApiGenerator;
 
