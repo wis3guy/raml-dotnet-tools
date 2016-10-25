@@ -131,7 +131,7 @@ namespace Raml.Tools
                     {
                         foreach (var mimeType in response.Body)
                         {
-                            var key = mimeType.Key + " " + mimeType.Value.Type + ResponseContentSuffix;
+                            var key = method.Key + " " + mimeType.Key + " " + ResponseContentSuffix;
                             var obj = objectParser.ParseObject(key, mimeType.Value.Schema, schemaResponseObjects, warnings, enums, schemaRequestObjects, schemaObjects, targetNamespace);
 
                             AddObjectToObjectCollectionOrLink(obj, key, schemaResponseObjects, schemaObjects);

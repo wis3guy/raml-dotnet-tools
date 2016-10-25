@@ -366,6 +366,16 @@ namespace Raml.Tools.Tests
             Assert.AreEqual(3, model.Objects.Count());
         }
 
+        [Test]
+        public async Task ShouldParseTraitsWithResponsese()
+        {
+            var model = await BuildModel("files/traits-response.raml");
+            Assert.AreEqual(5, model.Objects.Count());
+            Assert.AreEqual("ContactsGetOKResponseContent", model.Controllers.First(c => c.PrefixUri == "contacts").Methods.First(m => m.Url == "").ReturnType);
+            Assert.AreEqual("ContactsIdGetBadRequestResponseContent", model.Controllers.First(c => c.PrefixUri == "contacts").Methods.First(m => m.Url == "{id}").ReturnType);
+            Assert.AreEqual("MultipleTestGet", model.Controllers.First(c => c.PrefixUri == "test").Methods.First(m => m.Url == "").ReturnType);
+        }
+
         private static string GetXml(string comment)
         {
             if (string.IsNullOrWhiteSpace(comment))
