@@ -367,13 +367,35 @@ namespace Raml.Tools.Tests
         }
 
         [Test]
-        public async Task ShouldParseTraitsWithResponsese()
+        public async Task ShouldParseTraitsWithResponses()
         {
             var model = await BuildModel("files/traits-response.raml");
             Assert.AreEqual(5, model.Objects.Count());
             Assert.AreEqual("ContactsGetOKResponseContent", model.Controllers.First(c => c.PrefixUri == "contacts").Methods.First(m => m.Url == "").ReturnType);
             Assert.AreEqual("ContactsIdGetBadRequestResponseContent", model.Controllers.First(c => c.PrefixUri == "contacts").Methods.First(m => m.Url == "{id}").ReturnType);
             Assert.AreEqual("MultipleTestGet", model.Controllers.First(c => c.PrefixUri == "test").Methods.First(m => m.Url == "").ReturnType);
+        }
+
+        [Test]
+        public async Task ShouldHandleRepeatedNamesInEnums()
+        {
+            var model = await BuildModel("files/enums-repeated-names.raml");
+            Assert.AreEqual(3, model.Objects.Count());
+            Assert.AreEqual(3, model.Enums.Count());
+            Assert.AreEqual("Color", model.Objects.First(o => o.Name == "Things").Properties.First(p => p.IsEnum).Type);
+            Assert.AreEqual("Color0", model.Objects.First(o => o.Name == "Thing").Properties.First(p => p.IsEnum).Type);
+            Assert.AreEqual("Color1", model.Objects.First(o => o.Name == "ThingResult").Properties.First(p => p.IsEnum).Type);
+        }
+
+        [Test]
+        public async Task ShouldHandleRepeatedNamesInEnums_Schema_v4()
+        {
+            var model = await BuildModel("files/enums-repeated-names-v4.raml");
+            Assert.AreEqual(3, model.Objects.Count());
+            Assert.AreEqual(3, model.Enums.Count());
+            Assert.AreEqual("Color", model.Objects.First(o => o.Name == "Things").Properties.First(p => p.IsEnum).Type);
+            Assert.AreEqual("Color0", model.Objects.First(o => o.Name == "Thing").Properties.First(p => p.IsEnum).Type);
+            Assert.AreEqual("Color1", model.Objects.First(o => o.Name == "ThingResult").Properties.First(p => p.IsEnum).Type);
         }
 
         private static string GetXml(string comment)

@@ -594,7 +594,7 @@ namespace Raml.Tools.JSON
 
             enums.Add(apiEnum.Name, apiEnum);
 
-            return name;
+            return apiEnum.Name;
         }
 
         private string ParseEnum(string key, Newtonsoft.JsonV4.Schema.JsonSchema schema, IDictionary<string, ApiEnum> enums, string description)
