@@ -113,7 +113,7 @@ namespace Raml.Tools
             var typeOfArray = GetTypeOfArray(key, ramlType);
 
             var baseType = CollectionTypeHelper.GetBaseType(typeOfArray);
-            if (NetTypeMapper.Map(baseType) == null &&
+            if (!NetTypeMapper.IsPrimitiveType(baseType) &&
                 ramlType.Array.Items != null && ramlType.Array.Items.Type == "object")
             {
                 if (baseType == typeOfArray)
@@ -144,7 +144,7 @@ namespace Raml.Tools
 
                 if (pureType != "array" && pureType != "object")
                 {
-                    if (NetTypeMapper.Map(pureType) != null)
+                    if (NetTypeMapper.IsPrimitiveType(pureType))
                         pureType = NetTypeMapper.Map(pureType);
                     else
                         pureType = NetNamingMapper.GetObjectName(pureType);
@@ -157,7 +157,7 @@ namespace Raml.Tools
                 if (ramlType.Array.Items.Type != "object")
                 {
                     var netType = ramlType.Array.Items.Type;
-                    if (NetTypeMapper.Map(netType) != null)
+                    if (NetTypeMapper.IsPrimitiveType(netType))
                         netType = NetTypeMapper.Map(netType);
                     else
                         netType = NetNamingMapper.GetObjectName(netType);
@@ -217,10 +217,15 @@ namespace Raml.Tools
 
         private string GetScalarType(RamlType ramlType)
         {
-            var type = NetTypeMapper.Map(ramlType.Scalar.Type);
+            var type = NetTypeMapper.GetNetType(ramlType.Scalar.Type, ramlType.Scalar.Format);
 
-            if (ramlType.Scalar.Type == "number" && ramlType.Scalar.Format != null)
-                return numberFormatConversion[ramlType.Scalar.Format.Value];
+            if (ramlType.Scalar.Type == "number" && ramlType.Scalar.Format != null 
+                && numberFormatConversion.ContainsKey(ramlType.Scalar.Format.ToLowerInvariant()))
+                return numberFormatConversion[ramlType.Scalar.Format.ToLowerInvariant()];
+
+            if (ramlType.Scalar.Type == "datetime" && ramlType.Scalar.Format != null 
+                && dateFormatConversion.ContainsKey(ramlType.Scalar.Format.ToLowerInvariant()))
+                return dateFormatConversion[ramlType.Scalar.Format.ToLowerInvariant()];
 
             if (type != null)
                 return type;
@@ -302,7 +307,7 @@ namespace Raml.Tools
 
             type = RamlTypesHelper.DecodeRaml1Type(type);
 
-            if (NetTypeMapper.Map(type) != null)
+            if (NetTypeMapper.IsPrimitiveType(type))
                 type = NetTypeMapper.Map(type);
 
             return new ApiObject
@@ -382,7 +387,7 @@ namespace Raml.Tools
                     if (type.EndsWith("[]"))
                     {
                         type = type.Substring(0, type.Length - 2);
-                        if (NetTypeMapper.Map(type) == null)
+                        if (!NetTypeMapper.IsPrimitiveType(type))
                             type = NetNamingMapper.GetObjectName(type);
 
                         type = CollectionTypeHelper.GetCollectionType(type);
@@ -426,16 +431,22 @@ namespace Raml.Tools
             };
         }
 
-        private readonly IDictionary<NumberFormat, string> numberFormatConversion = new Dictionary<NumberFormat, string>
+        private readonly IDictionary<string, string> numberFormatConversion = new Dictionary<string, string>
         {
-            {NumberFormat.Double, "double"},
-            {NumberFormat.Float, "float"},
-            {NumberFormat.Int, "int"},
-            {NumberFormat.Int8, "byte"},
-            {NumberFormat.Int16, "short"},
-            {NumberFormat.Int32, "int"},
-            {NumberFormat.Int64, "long"},
-            {NumberFormat.Long, "long"}
+            {"double", "double"},
+            {"float", "float"},
+            {"int", "int"},
+            {"int8", "byte"},
+            {"int16", "short"},
+            {"int32", "int"},
+            {"int64", "long"},
+            {"long", "long"}
+        };
+
+        private readonly IDictionary<string, string> dateFormatConversion = new Dictionary<string, string>
+        {
+            {"rfc3339", "DateTime"},
+            {"rfc2616", "DateTimeOffset"}
         };
 
         private string GetPropertyType(RamlType prop, KeyValuePair<string, RamlType> kv)
@@ -447,7 +458,10 @@ namespace Raml.Tools
                 return NetNamingMapper.GetPropertyName(kv.Key);
 
             if (prop.Scalar.Type == "number" && prop.Scalar.Format != null)
-                return numberFormatConversion[prop.Scalar.Format.Value];
+                return numberFormatConversion[prop.Scalar.Format.ToLowerInvariant()];
+
+            if (prop.Scalar.Type == "datetime" && prop.Scalar.Format != null)
+                return dateFormatConversion[prop.Scalar.Format.ToLowerInvariant()];
 
             var propertyType = NetTypeMapper.Map(prop.Type);
             if (propertyType != null)

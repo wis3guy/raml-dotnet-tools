@@ -7,39 +7,39 @@ namespace Raml.Tools.Tests
     public class NetTypeMapperTests
     {
         [Test]
-        public void ShouldConvertIntegerToLong()
+        public void ShouldConvertIntegerToInt()
         {
-            Assert.AreEqual("int", NetTypeMapper.Map(JsonSchemaType.Integer));
+            Assert.AreEqual("int", NetTypeMapper.GetNetType(JsonSchemaType.Integer, null));
         }
 
         [Test]
         public void ShouldConvertToString()
         {
-            Assert.AreEqual("string", NetTypeMapper.Map(JsonSchemaType.String));
+            Assert.AreEqual("string", NetTypeMapper.GetNetType(JsonSchemaType.String, null));
         }
 
         [Test]
         public void ShouldConvertToBool()
         {
-            Assert.AreEqual("bool", NetTypeMapper.Map(JsonSchemaType.Boolean));
+            Assert.AreEqual("bool", NetTypeMapper.GetNetType(JsonSchemaType.Boolean, null));
         }
 
         [Test]
         public void ShouldConvertToDecimal()
         {
-            Assert.AreEqual("decimal", NetTypeMapper.Map(JsonSchemaType.Float));
+            Assert.AreEqual("decimal", NetTypeMapper.GetNetType(JsonSchemaType.Float, null));
         }
 
         [Test]
         public void ShouldConvertToByteArrayWhenFile()
         {
-            Assert.AreEqual("byte[]", NetTypeMapper.Map("file"));
+            Assert.AreEqual("byte[]", NetTypeMapper.GetNetType("file", null));
         }
 
         [Test]
         public void ShouldConvertToDateTimeWhenDate()
         {
-            Assert.AreEqual("DateTime", NetTypeMapper.Map("datetime"));
+            Assert.AreEqual("DateTime", NetTypeMapper.GetNetType("datetime", null));
         }
     }
 }

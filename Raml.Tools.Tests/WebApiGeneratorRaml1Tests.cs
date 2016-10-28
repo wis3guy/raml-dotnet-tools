@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using NUnit.Framework;
 using Raml.Parser;
 using System.Linq;
@@ -233,13 +234,16 @@ namespace Raml.Tools.Tests
             Assert.AreEqual("DateTime", model.Objects.First(x => x.Name == "User").Properties.First(x => x.Name == "Lastaccess").Type);
             Assert.AreEqual("DateTime", model.Objects.First(x => x.Name == "Sample").Properties.First(x => x.Name == "Prop1").Type);
             Assert.AreEqual("DateTime", model.Objects.First(x => x.Name == "Sample").Properties.First(x => x.Name == "Prop2").Type);
+            Assert.AreEqual("DateTimeOffset", model.Objects.First(x => x.Name == "Sample").Properties.First(x => x.Name == "Prop3").Type);
+
             Assert.AreEqual("DateTime", model.Controllers.First(x => x.Name == "Access").Methods.First(x => x.Name == "Post").Parameter.Type);
             Assert.AreEqual(CollectionTypeHelper.GetCollectionType("DateTime"), model.Controllers.First(x => x.Name == "Access").Methods.First(x => x.Name == "Get").ReturnType);
             Assert.AreEqual(CollectionTypeHelper.GetCollectionType("DateTime"), model.Controllers.First(x => x.Name == "Persons").Methods.First(x => x.Name == "Put").Parameter.Type);
+            
         }
 
         [Test]
-        public async Task ShouldHandleNumberFormatsOnRaml1()
+        public async Task ShouldHandleNumberFormats()
         {
             var model = await BuildModel("files/raml1/numbers.raml");
             Assert.AreEqual("int", model.Objects.First(x => x.Name == "Sample").Properties.First(x => x.Name == "Intprop").Type);
