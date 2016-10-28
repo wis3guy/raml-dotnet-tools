@@ -174,7 +174,6 @@ namespace Raml.Tools
 
         private ApiObject ParseScalar(string key, RamlType ramlType)
         {
-            // TODO: check, should not really be an object, but is needed to map to primitive type...
             if (ramlType.Scalar.Enum != null && ramlType.Scalar.Enum.Any())
             {
                 if (enums.ContainsKey(key))
@@ -218,14 +217,6 @@ namespace Raml.Tools
         private string GetScalarType(RamlType ramlType)
         {
             var type = NetTypeMapper.GetNetType(ramlType.Scalar.Type, ramlType.Scalar.Format);
-
-            if (ramlType.Scalar.Type == "number" && ramlType.Scalar.Format != null 
-                && numberFormatConversion.ContainsKey(ramlType.Scalar.Format.ToLowerInvariant()))
-                return numberFormatConversion[ramlType.Scalar.Format.ToLowerInvariant()];
-
-            if (ramlType.Scalar.Type == "datetime" && ramlType.Scalar.Format != null 
-                && dateFormatConversion.ContainsKey(ramlType.Scalar.Format.ToLowerInvariant()))
-                return dateFormatConversion[ramlType.Scalar.Format.ToLowerInvariant()];
 
             if (type != null)
                 return type;
@@ -431,24 +422,6 @@ namespace Raml.Tools
             };
         }
 
-        private readonly IDictionary<string, string> numberFormatConversion = new Dictionary<string, string>
-        {
-            {"double", "double"},
-            {"float", "float"},
-            {"int", "int"},
-            {"int8", "byte"},
-            {"int16", "short"},
-            {"int32", "int"},
-            {"int64", "long"},
-            {"long", "long"}
-        };
-
-        private readonly IDictionary<string, string> dateFormatConversion = new Dictionary<string, string>
-        {
-            {"rfc3339", "DateTime"},
-            {"rfc2616", "DateTimeOffset"}
-        };
-
         private string GetPropertyType(RamlType prop, KeyValuePair<string, RamlType> kv)
         {
             if (string.IsNullOrWhiteSpace(prop.Type))
@@ -457,13 +430,7 @@ namespace Raml.Tools
             if (prop.Type == "object" || (prop.Scalar.Enum != null && prop.Scalar.Enum.Any()))
                 return NetNamingMapper.GetPropertyName(kv.Key);
 
-            if (prop.Scalar.Type == "number" && prop.Scalar.Format != null)
-                return numberFormatConversion[prop.Scalar.Format.ToLowerInvariant()];
-
-            if (prop.Scalar.Type == "datetime" && prop.Scalar.Format != null)
-                return dateFormatConversion[prop.Scalar.Format.ToLowerInvariant()];
-
-            var propertyType = NetTypeMapper.Map(prop.Type);
+            var propertyType = NetTypeMapper.GetNetType(prop.Scalar.Type, prop.Scalar.Format);
             if (propertyType != null)
             {
                 if (!prop.Required && !prop.Scalar.Required && propertyType != "string" && prop.Type != "file")

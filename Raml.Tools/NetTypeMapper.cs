@@ -7,7 +7,7 @@ namespace Raml.Tools
 {
     public class NetTypeMapper
     {
-        private static readonly IDictionary<JsonSchemaType, string> typeConversion = 
+        private static readonly IDictionary<JsonSchemaType, string> TypeConversion = 
             new Dictionary<JsonSchemaType, string>
             {
                 {
@@ -32,7 +32,7 @@ namespace Raml.Tools
                 }
             };
 
-        private static readonly IDictionary<Newtonsoft.JsonV4.Schema.JsonSchemaType, string> typeV4Conversion =
+        private static readonly IDictionary<Newtonsoft.JsonV4.Schema.JsonSchemaType, string> TypeV4Conversion =
             new Dictionary<Newtonsoft.JsonV4.Schema.JsonSchemaType, string>
             {
                 {
@@ -57,7 +57,7 @@ namespace Raml.Tools
                 }
             };
 
-        private static readonly IDictionary<string, string> typeStringConversion =
+        private static readonly IDictionary<string, string> TypeStringConversion =
             new Dictionary<string, string>
             {
                 {
@@ -117,7 +117,10 @@ namespace Raml.Tools
             {"int16", "short"},
             {"short", "short"},
             {"int64", "long"},
-            {"long", "long"}
+            {"long", "long"},
+            {"int32", "int"},
+            {"int", "int"},
+            {"int8", "byte"}
         };
 
         private static readonly IDictionary<string, string> DateFormatConversion = new Dictionary<string, string>
@@ -179,17 +182,17 @@ namespace Raml.Tools
 
         private static string Map(JsonSchemaType? type)
         {
-            return type == null || !typeConversion.ContainsKey(type.Value) ? null : typeConversion[type.Value];
+            return type == null || !TypeConversion.ContainsKey(type.Value) ? null : TypeConversion[type.Value];
         }
 
         private static string Map(Newtonsoft.JsonV4.Schema.JsonSchemaType? type)
         {
-            return type == null || !typeV4Conversion.ContainsKey(type.Value) ? null : typeV4Conversion[type.Value];
+            return type == null || !TypeV4Conversion.ContainsKey(type.Value) ? null : TypeV4Conversion[type.Value];
         }
 
         public static string Map(string type)
         {
-            return !typeStringConversion.ContainsKey(type) ? null : typeStringConversion[type];
+            return !TypeStringConversion.ContainsKey(type) ? null : TypeStringConversion[type];
         }
 
         private static readonly string[] OtherPrimitiveTypes = {"double", "float", "byte", "short", "long", "DateTimeOffset"};
@@ -202,7 +205,7 @@ namespace Raml.Tools
             if (OtherPrimitiveTypes.Contains(type))
                 return true;
 
-			return typeStringConversion.Any(t => t.Value == type) || typeStringConversion.ContainsKey(type);
+			return TypeStringConversion.Any(t => t.Value == type) || TypeStringConversion.ContainsKey(type);
 		}
 
 	    public static string Map(XmlQualifiedName schemaTypeName)
