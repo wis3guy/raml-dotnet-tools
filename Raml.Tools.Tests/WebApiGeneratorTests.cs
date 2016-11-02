@@ -263,8 +263,8 @@ namespace Raml.Tools.Tests
         public async Task ShouldInheritUriParametersType_Issue23()
         {
             var model = await GetIssue23GeneratedModel();
-            Assert.AreEqual("long", model.Controllers.First().Methods.First(m => m.Name == "GetById").UriParameters.First().Type);
-            Assert.AreEqual("long", model.Controllers.First().Methods.First(m => m.Name == "GetHistory").UriParameters.First().Type);
+            Assert.AreEqual("int", model.Controllers.First().Methods.First(m => m.Name == "GetById").UriParameters.First().Type);
+            Assert.AreEqual("int", model.Controllers.First().Methods.First(m => m.Name == "GetHistory").UriParameters.First().Type);
         }
 
         [Test]
@@ -364,6 +364,38 @@ namespace Raml.Tools.Tests
         {
             var model = await BuildModel("files/trait-multiple-response.raml");
             Assert.AreEqual(3, model.Objects.Count());
+        }
+
+        [Test]
+        public async Task ShouldParseTraitsWithResponses()
+        {
+            var model = await BuildModel("files/traits-response.raml");
+            Assert.AreEqual(5, model.Objects.Count());
+            Assert.AreEqual("ContactsGetOKResponseContent", model.Controllers.First(c => c.PrefixUri == "contacts").Methods.First(m => m.Url == "").ReturnType);
+            Assert.AreEqual("ContactsIdGetBadRequestResponseContent", model.Controllers.First(c => c.PrefixUri == "contacts").Methods.First(m => m.Url == "{id}").ReturnType);
+            Assert.AreEqual("MultipleTestGet", model.Controllers.First(c => c.PrefixUri == "test").Methods.First(m => m.Url == "").ReturnType);
+        }
+
+        [Test]
+        public async Task ShouldHandleRepeatedNamesInEnums()
+        {
+            var model = await BuildModel("files/enums-repeated-names.raml");
+            Assert.AreEqual(3, model.Objects.Count());
+            Assert.AreEqual(3, model.Enums.Count());
+            Assert.AreEqual("Color", model.Objects.First(o => o.Name == "Things").Properties.First(p => p.IsEnum).Type);
+            Assert.AreEqual("Color0", model.Objects.First(o => o.Name == "Thing").Properties.First(p => p.IsEnum).Type);
+            Assert.AreEqual("Color1", model.Objects.First(o => o.Name == "ThingResult").Properties.First(p => p.IsEnum).Type);
+        }
+
+        [Test]
+        public async Task ShouldHandleRepeatedNamesInEnums_Schema_v4()
+        {
+            var model = await BuildModel("files/enums-repeated-names-v4.raml");
+            Assert.AreEqual(3, model.Objects.Count());
+            Assert.AreEqual(3, model.Enums.Count());
+            Assert.AreEqual("Color", model.Objects.First(o => o.Name == "Things").Properties.First(p => p.IsEnum).Type);
+            Assert.AreEqual("Color0", model.Objects.First(o => o.Name == "Thing").Properties.First(p => p.IsEnum).Type);
+            Assert.AreEqual("Color1", model.Objects.First(o => o.Name == "ThingResult").Properties.First(p => p.IsEnum).Type);
         }
 
         private static string GetXml(string comment)

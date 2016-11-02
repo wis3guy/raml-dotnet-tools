@@ -74,11 +74,11 @@ namespace Raml.Tools
 
         private void BuildRangeAttribute(Collection<string> attributes, string identation)
         {
-            if (Type == "long")
+            if (Type == "int")
             {
                 var attr = string.Format("[Range({0},{1:F0})]",
-                    Minimum == null ? "long.MinValue" : Minimum.Value.ToString("F0"),
-                    Maximum == null ? "long.MaxValue" : Maximum.Value.ToString("F0"));
+                    Minimum == null ? "int.MinValue" : Minimum.Value.ToString("F0"),
+                    Maximum == null ? "int.MaxValue" : Maximum.Value.ToString("F0"));
                 attributes.Add(attr.Insert(0, identation));
             }
             else

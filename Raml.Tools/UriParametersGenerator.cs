@@ -63,7 +63,7 @@ namespace Raml.Tools
         public IEnumerable<GeneratorParameter> GetUriParameters(Resource resource, string url, IDictionary<string, Parameter> parentUriParameters)
         {
             var parameters = resource.BaseUriParameters
-                    .Select(p => new GeneratorParameter { Name = p.Key, Type = NetTypeMapper.Map(p.Value.Type), Description = p.Value.Description })
+                    .Select(p => new GeneratorParameter { Name = p.Key, Type = NetTypeMapper.GetNetType(p.Value.Type, p.Value.Format), Description = p.Value.Description })
                     .ToList();
 
             parameters.AddRange(resource.UriParameters
@@ -81,7 +81,7 @@ namespace Raml.Tools
 
         private string GetParameterType(KeyValuePair<string, Parameter> parameter)
         {
-            var parameterType = NetTypeMapper.Map(parameter.Value.Type);
+            var parameterType = NetTypeMapper.GetNetType(parameter.Value.Type, parameter.Value.Format);
             if(parameterType != null)
                 return parameterType;
 
@@ -104,7 +104,7 @@ namespace Raml.Tools
             {
                 if (parentUriParameters.ContainsKey(param.Name))
                 {
-                    param.Type = NetTypeMapper.Map(parentUriParameters[param.Name].Type);
+                    param.Type = NetTypeMapper.GetNetType(parentUriParameters[param.Name].Type, parentUriParameters[param.Name].Format);
                     param.Description = parentUriParameters[param.Name].Description;
                 }
                 parameters.Add(param);

@@ -7,12 +7,12 @@ namespace Raml.Tools
 {
     public class NetTypeMapper
     {
-        private static readonly IDictionary<JsonSchemaType, string> typeConversion = 
+        private static readonly IDictionary<JsonSchemaType, string> TypeConversion = 
             new Dictionary<JsonSchemaType, string>
             {
                 {
                     JsonSchemaType.Integer,
-                    "long"
+                    "int"
                 },
                 {
                     JsonSchemaType.String,
@@ -32,12 +32,12 @@ namespace Raml.Tools
                 }
             };
 
-        private static readonly IDictionary<Newtonsoft.JsonV4.Schema.JsonSchemaType, string> typeV4Conversion =
+        private static readonly IDictionary<Newtonsoft.JsonV4.Schema.JsonSchemaType, string> TypeV4Conversion =
             new Dictionary<Newtonsoft.JsonV4.Schema.JsonSchemaType, string>
             {
                 {
                     Newtonsoft.JsonV4.Schema.JsonSchemaType.Integer,
-                    "long"
+                    "int"
                 },
                 {
                     Newtonsoft.JsonV4.Schema.JsonSchemaType.String,
@@ -57,12 +57,12 @@ namespace Raml.Tools
                 }
             };
 
-        private static readonly IDictionary<string, string> typeStringConversion =
+        private static readonly IDictionary<string, string> TypeStringConversion =
             new Dictionary<string, string>
             {
                 {
                     "integer",
-                    "long"
+                    "int"
                 },
                 {
                     "string",
@@ -110,27 +110,102 @@ namespace Raml.Tools
                 }
             };
 
-        public static string Map(JsonSchemaType? type)
+        private static readonly IDictionary<string, string> NumberFormatConversion = new Dictionary<string, string>
         {
-            return type == null || !typeConversion.ContainsKey(type.Value) ? null : typeConversion[type.Value];
+            {"double", "double"},
+            {"float", "float"},
+            {"int16", "short"},
+            {"short", "short"},
+            {"int64", "long"},
+            {"long", "long"},
+            {"int32", "int"},
+            {"int", "int"},
+            {"int8", "byte"}
+        };
+
+        private static readonly IDictionary<string, string> DateFormatConversion = new Dictionary<string, string>
+        {
+            {"rfc3339", "DateTime"},
+            {"rfc2616", "DateTimeOffset"}
+        };
+
+        public static string GetNetType(string type, string format)
+        {
+            string netType;
+            if (!string.IsNullOrWhiteSpace(format) &&
+                (NumberFormatConversion.ContainsKey(format.ToLowerInvariant()) || DateFormatConversion.ContainsKey(format.ToLowerInvariant())))
+            {
+                netType = NumberFormatConversion.ContainsKey(format.ToLowerInvariant())
+                    ? NumberFormatConversion[format.ToLowerInvariant()]
+                    : DateFormatConversion[format.ToLowerInvariant()];
+            }
+            else
+            {
+                netType = Map(type);
+            }
+            return netType;
+        }
+
+        public static string GetNetType(JsonSchemaType? jsonSchemaType, string format)
+        {
+            string netType;
+            if (!string.IsNullOrWhiteSpace(format) &&
+                (NumberFormatConversion.ContainsKey(format.ToLowerInvariant()) || DateFormatConversion.ContainsKey(format.ToLowerInvariant())))
+            {
+                netType = NumberFormatConversion.ContainsKey(format.ToLowerInvariant())
+                    ? NumberFormatConversion[format.ToLowerInvariant()]
+                    : DateFormatConversion[format.ToLowerInvariant()];
+            }
+            else
+            {
+                netType = Map(jsonSchemaType);
+            }
+            return netType;
+        }
+
+        public static string GetNetType(Newtonsoft.JsonV4.Schema.JsonSchemaType? jsonSchemaType, string format)
+        {
+            string netType;
+            if (!string.IsNullOrWhiteSpace(format) &&
+                (NumberFormatConversion.ContainsKey(format.ToLowerInvariant()) || DateFormatConversion.ContainsKey(format.ToLowerInvariant())))
+            {
+                netType = NumberFormatConversion.ContainsKey(format.ToLowerInvariant())
+                    ? NumberFormatConversion[format.ToLowerInvariant()]
+                    : DateFormatConversion[format.ToLowerInvariant()];
+            }
+            else
+            {
+                netType = Map(jsonSchemaType);
+            }
+            return netType;
+        }
+
+        private static string Map(JsonSchemaType? type)
+        {
+            return type == null || !TypeConversion.ContainsKey(type.Value) ? null : TypeConversion[type.Value];
+        }
+
+        private static string Map(Newtonsoft.JsonV4.Schema.JsonSchemaType? type)
+        {
+            return type == null || !TypeV4Conversion.ContainsKey(type.Value) ? null : TypeV4Conversion[type.Value];
         }
 
         public static string Map(string type)
         {
-            return !typeStringConversion.ContainsKey(type) ? null : typeStringConversion[type];
+            return !TypeStringConversion.ContainsKey(type) ? null : TypeStringConversion[type];
         }
 
-        public static string Map(Newtonsoft.JsonV4.Schema.JsonSchemaType? type)
-        {
-            return type == null || !typeV4Conversion.ContainsKey(type.Value) ? null : typeV4Conversion[type.Value];
-        }
+        private static readonly string[] OtherPrimitiveTypes = {"double", "float", "byte", "short", "long", "DateTimeOffset"};
 
         public static bool IsPrimitiveType(string type)
         {
             if (type.EndsWith("?"))
                 type = type.Substring(0, type.Length - 1);
 
-			return typeStringConversion.Any(t => t.Value == type);
+            if (OtherPrimitiveTypes.Contains(type))
+                return true;
+
+			return TypeStringConversion.Any(t => t.Value == type) || TypeStringConversion.ContainsKey(type);
 		}
 
 	    public static string Map(XmlQualifiedName schemaTypeName)

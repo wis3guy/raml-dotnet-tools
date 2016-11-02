@@ -52,7 +52,7 @@ namespace Raml.Tools.JSON
                         }
                         else
                         {
-                            obj.Type = NetTypeMapper.Map(schema.Items.First().Type);
+                            obj.Type = NetTypeMapper.GetNetType(schema.Items.First().Type, schema.Items.First().Format);
                         }
                     }
                 }
@@ -75,7 +75,7 @@ namespace Raml.Tools.JSON
                         }
                         else
                         {
-                            obj.Type = NetTypeMapper.Map(v4Schema.Items.First().Type);
+                            obj.Type = NetTypeMapper.GetNetType(v4Schema.Items.First().Type, v4Schema.Items.First().Format);
                         }
                     }
                         
@@ -287,7 +287,8 @@ namespace Raml.Tools.JSON
             if (isEnum) 
                 return enumName;
 
-            var type = NetTypeMapper.Map(property.Value.Type);
+            var type = NetTypeMapper.GetNetType(property.Value.Type, property.Value.Format);
+
             if (!string.IsNullOrWhiteSpace(type))
             {
                 if (type == "string" || (requiredProps != null && requiredProps.Contains(property.Key)))
@@ -312,8 +313,8 @@ namespace Raml.Tools.JSON
             if (types.Length == 2)
             {
                 type = types[0] == "Null"
-                    ? NetTypeMapper.Map(types[1].ToLowerInvariant())
-                    : NetTypeMapper.Map(types[0].ToLowerInvariant());
+                    ? NetTypeMapper.GetNetType(types[1].ToLowerInvariant(), property.Value.Format)
+                    : NetTypeMapper.GetNetType(types[0].ToLowerInvariant(), property.Value.Format);
                 type = IsNullableType(type) ? type + "?" : type;
             }
             return type;
@@ -334,7 +335,8 @@ namespace Raml.Tools.JSON
             if (isEnum)
                 return enumName;
 
-            var type = NetTypeMapper.Map(property.Value.Type);
+            var type = NetTypeMapper.GetNetType(property.Value.Type, property.Value.Format);
+
             if (!string.IsNullOrWhiteSpace(type))
             {
                 if(type == "string" || (property.Value.Required != null && property.Value.Required.Value))
@@ -370,8 +372,8 @@ namespace Raml.Tools.JSON
             if (types.Length == 2)
             {
                 type = types[0] == "Null"
-                    ? NetTypeMapper.Map(types[1].ToLowerInvariant())
-                    : NetTypeMapper.Map(types[0].ToLowerInvariant());
+                    ? NetTypeMapper.GetNetType(types[1].ToLowerInvariant(), property.Value.Format)
+                    : NetTypeMapper.GetNetType(types[0].ToLowerInvariant(), property.Value.Format);
                 type = IsNullableType(type) ? type + "?" : type;
             }
             return type;
@@ -488,7 +490,8 @@ namespace Raml.Tools.JSON
 
         private void ParseArray(IDictionary<string, ApiObject> objects, Newtonsoft.JsonV4.Schema.JsonSchema schema, Property prop, KeyValuePair<string, Newtonsoft.JsonV4.Schema.JsonSchema> property, IDictionary<string, ApiEnum> enums)
         {
-            var netType = NetTypeMapper.Map(schema.Items.First().Type);
+            var netType = NetTypeMapper.GetNetType(schema.Items.First().Type, schema.Items.First().Format);
+
             if (netType != null)
             {
                 prop.Type = CollectionTypeHelper.GetCollectionType(netType);
@@ -563,7 +566,7 @@ namespace Raml.Tools.JSON
 
             enums.Add(apiEnum.Name, apiEnum);
 
-            return name;
+            return apiEnum.Name;
         }
 
         private string ParseEnum(string key, Newtonsoft.JsonV4.Schema.JsonSchema schema, IDictionary<string, ApiEnum> enums, string description)
@@ -635,7 +638,8 @@ namespace Raml.Tools.JSON
             if (schema.Items == null || !schema.Items.Any())
                 return;
 
-            var netType = NetTypeMapper.Map(schema.Items.First().Type);
+            var netType = NetTypeMapper.GetNetType(schema.Items.First().Type, property.Value.Format);
+
             if (netType != null)
             {
                 prop.Type = CollectionTypeHelper.GetCollectionType(netType);
@@ -651,5 +655,7 @@ namespace Raml.Tools.JSON
                 }
             }
         }
+
+
     }
 }

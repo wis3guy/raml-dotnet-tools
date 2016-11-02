@@ -1,22 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Raml.Tools.WebApiGenerator;
 
 namespace Raml.Tools.ClientGenerator
 {
     [Serializable]
-    public class ClientGeneratorModel
+    public class ClientGeneratorModel : ModelsGeneratorModel
     {
-        public ClientGeneratorModel()
-        {
-            Warnings = new Dictionary<string, string>();
-        }
-
         private string baseUri;
-        public string Namespace { get; set; }
-        public IDictionary<string, ApiObject> SchemaObjects { get; set; }
-        public IDictionary<string, ApiObject> ResponseObjects { get; set; }
-        public IDictionary<string, ApiObject> RequestObjects { get; set; }
         public IDictionary<string, ApiObject> QueryObjects { get; set; }
         public IDictionary<string, ApiObject> HeaderObjects { get; set; }
         public IDictionary<string, ApiObject> ResponseHeaderObjects { get; set; }
@@ -27,8 +19,7 @@ namespace Raml.Tools.ClientGenerator
 
         public ClassObject Root { get; set; }
 
-        public IDictionary<string, string> Warnings { get; set; }
-        public IEnumerable<ApiObject> Objects
+        public override IEnumerable<ApiObject> Objects
         {
             get
             {
@@ -89,7 +80,5 @@ namespace Raml.Tools.ClientGenerator
                 return res + ", HttpClient httpClient = null";
             }
         }
-
-        public IEnumerable<ApiEnum> Enums { get; set; }
     }
 }
