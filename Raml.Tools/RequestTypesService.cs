@@ -155,10 +155,10 @@ namespace Raml.Tools
             if (type.EndsWith("[][]")) // array of arrays
             {
                 var subtype = type.Substring(0, type.Length - 4);
-                if (NetTypeMapper.Map(subtype) == null)
-                    subtype = NetNamingMapper.GetObjectName(subtype);
-                else
+                if (NetTypeMapper.IsPrimitiveType(subtype))
                     subtype = NetTypeMapper.Map(subtype);
+                else
+                    subtype = NetNamingMapper.GetObjectName(subtype);
 
                 return CollectionTypeHelper.GetCollectionType(CollectionTypeHelper.GetCollectionType(subtype));
             }
@@ -167,12 +167,12 @@ namespace Raml.Tools
             {
                 var subtype = type.Substring(0, type.Length - 2);
 
-                if (NetTypeMapper.Map(subtype) == null)
-                    subtype = NetNamingMapper.GetObjectName(subtype);
-                else
+                if (NetTypeMapper.IsPrimitiveType(subtype))
                     subtype = NetTypeMapper.Map(subtype);
-                    
-                
+                else
+                    subtype = NetNamingMapper.GetObjectName(subtype);
+
+
                 return CollectionTypeHelper.GetCollectionType(subtype);
             }
 
@@ -190,7 +190,7 @@ namespace Raml.Tools
                 return "IDictionary<string, object>";
             }
 
-            if (NetTypeMapper.Map(type) != null)
+            if (NetTypeMapper.IsPrimitiveType(type))
                 return NetTypeMapper.Map(type);
 
             if (CollectionTypeHelper.IsCollection(type))

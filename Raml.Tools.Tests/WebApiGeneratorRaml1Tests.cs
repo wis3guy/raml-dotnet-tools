@@ -233,13 +233,16 @@ namespace Raml.Tools.Tests
             Assert.AreEqual("DateTime", model.Objects.First(x => x.Name == "User").Properties.First(x => x.Name == "Lastaccess").Type);
             Assert.AreEqual("DateTime", model.Objects.First(x => x.Name == "Sample").Properties.First(x => x.Name == "Prop1").Type);
             Assert.AreEqual("DateTime", model.Objects.First(x => x.Name == "Sample").Properties.First(x => x.Name == "Prop2").Type);
+            Assert.AreEqual("DateTimeOffset", model.Objects.First(x => x.Name == "Sample").Properties.First(x => x.Name == "Prop3").Type);
+
             Assert.AreEqual("DateTime", model.Controllers.First(x => x.Name == "Access").Methods.First(x => x.Name == "Post").Parameter.Type);
             Assert.AreEqual(CollectionTypeHelper.GetCollectionType("DateTime"), model.Controllers.First(x => x.Name == "Access").Methods.First(x => x.Name == "Get").ReturnType);
             Assert.AreEqual(CollectionTypeHelper.GetCollectionType("DateTime"), model.Controllers.First(x => x.Name == "Persons").Methods.First(x => x.Name == "Put").Parameter.Type);
+            
         }
 
         [Test]
-        public async Task ShouldHandleNumberFormatsOnRaml1()
+        public async Task ShouldHandleNumberFormats()
         {
             var model = await BuildModel("files/raml1/numbers.raml");
             Assert.AreEqual("int", model.Objects.First(x => x.Name == "Sample").Properties.First(x => x.Name == "Intprop").Type);
@@ -326,6 +329,16 @@ namespace Raml.Tools.Tests
             Assert.AreEqual(false, model.Objects.First(o => o.Name == "Movie").Properties.First(p => p.Name == "Storyline").Required);
             Assert.AreEqual("decimal?", model.Objects.First(o => o.Name == "Movie").Properties.First(p => p.Name == "Duration").Type);
             Assert.AreEqual("bool?", model.Objects.First(o => o.Name == "Movie").Properties.First(p => p.Name == "Rented").Type);
+        }
+
+        [Test]
+        public async Task ShouldApplyParametersOfResourceType()
+        {
+            var model = await BuildModel("files/raml1/resource-types.raml");
+            Assert.AreEqual(1, model.Controllers.First(c => c.Name == "Users").Methods.First(m => m.Verb == "Get").UriParameters.Count());
+            Assert.AreEqual(1, model.Controllers.First(c => c.Name == "Users").Methods.First(m => m.Verb == "Post").UriParameters.Count());
+            Assert.AreEqual(1, model.Controllers.First(c => c.Name == "Users").Methods.First(m => m.Verb == "Put").UriParameters.Count());
+            Assert.AreEqual(3, model.Controllers.First(c => c.Name == "Users").Methods.First(m => m.Verb == "Get").QueryParameters.Count);
         }
 
         private static async Task<WebApiGeneratorModel> GetAnnotationTargetsModel()

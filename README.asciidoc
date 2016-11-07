@@ -40,6 +40,9 @@ Contents:
 ** <<Downloading the RAML>>
 ** <<Customizing the Generated RAML>>
 * <<XML Schemas>>
+* <<Fine tuning generated .NET primitive types>>
+** <<Numeric types>>
+** <<Date types>>
 * <<FAQ>>
 
 == Supported Scenarios
@@ -64,7 +67,7 @@ In code, the controllers definition and implementation are logically separated. 
 
 You can generate a RAML 1 or 0.8 definition from your ASP .NET Web API 2 implementation.
 
-When enabling metadata a local endpoint is registered to provide a browser-accessible API Console for the RAML-enabled implementation. This gives an easily navigable view of the API, including full documentation of routes, resource schema, and includes examples.
+When enabling metadata, a local endpoint is registered to provide a browser-accessible API Console for the RAML-enabled implementation. This gives an easily navigable view of the API, including full documentation of routes, resource schema, and includes examples.
 
 
 == Prerequisites
@@ -120,7 +123,7 @@ The main constructor of the project's MoviesClient client uses an endpoint URI. 
 
 === Consuming an API
 
-The MoviesClient model object replicates the same structure as the RAML definition through available resources and actions. The methods in this object model are asynchronous and based on the Task Parallel Library (TPL), so they can executed with the new async  and await syntax in C# version 5.
+The MoviesClient model object replicates the same structure as the RAML definition through available resources and actions. The methods in this object model are asynchronous and based on the Task Parallel Library (TPL), so they can execute with the new async  and await syntax in C# version 5.
 
 
 [source, c#]
@@ -139,7 +142,7 @@ If your API requires authentication, you can specify the access token as per thi
 
 === Calling an Authenticated API with OAuth
 
-If your API is secured with OAuth, you can specify the access token before making a call as it is shown in this example:
+If your API is secured with OAuth, you can specify the access token before making a call as shown in this example:
 
 [source, c#]
 ----
@@ -218,18 +221,18 @@ image::./docimages/RAML_NETAddRAMLContract.png[align="center", width="550"]
 +
 . The dialog lets you create a RAML definition or import an existing one. If you import an existing one, click  the *Go* button to download the RAML definition from an URL, or browse to use a local copy from your file system. 
 
-On the preview screen you have several options to customize the generated code. You can change the filename, namespace or choose asynchronous methods.
+The preview screen has several options to customize the generated code. You can change the filename, namespace, or choose asynchronous methods.
 
 Also you can customize the location of the generated classes. Check the "Customize output folders" and enter the path for the controllers and/or the models. 
-Also select the check box if you want to add "generated.cs" to the model filenames.
+Select the check box if you want to add "generated.cs" to the model filenames.
 
 A Contracts folder is added to the project containing the generated assets. These assets include a local copy of the RAML definition, the generated model classes (inferred from the RAML types or JSON schemas in the RAML definition), and .NET interfaces representing the contracts for the ASP.NET Controllers.
 
-If you want to customize the location of the generated classes select the "Customize output folders", specify the paths and choose if you want to add ".generated.cs" suffix to the Models. **Specified paths will be relative to the project's root folder**.
-If you leave these fields empty it will place the generated controllers in the "Controllers" folder and the rest of the assets under the Contracts folder.
+If you want to customize the location of the generated classes, select the "Customize output folders", specify the paths, and choose if you want to add ".generated.cs" suffix to the Models. **Specified paths will be relative to the project's root folder**.
+If you leave these fields empty, it will place the generated controllers in the "Controllers" folder and the rest of the assets under the Contracts folder.
 
-If you plan to host several versions of the API in the same solution you can check the "Use api version" option. 
-This will add the version as a prefix to routes, controllers and models, preventing collision between different versions of the API.
+If you plan to host several versions of the API in the same solution, you can check the "Use api version" option. 
+This will add the version as a prefix to routes, controllers, and models, thus preventing collision between different versions of the API.
 
 image::docimages/RAML_NETAddRAMLContractScreen.png[align="center", width=550]
 
@@ -250,18 +253,18 @@ image::./docimages/RAML_NETAddRAMLContract.png[align="center", width="550"]
 +
 . The dialog lets you create a RAML definition or import an existing one. If you import an existing one, click  the *Go* button to download the RAML definition from an URL, or browse to use a local copy from your file system. 
 
-. On the preview screen you have several options to customize the generated code. You can change the filename, namespace or choose asynchronous methods.
+. On the preview screen you have several options to customize the generated code. You can change the filename, namespace, or choose asynchronous methods.
 
 Also you can customize the location of the generated classes. Check the "Customize output folders" and enter the path for the controllers and/or the models. 
-Also select the check box if you want to add "generated.cs" to the model filenames.
+Select the check box if you want to add "generated.cs" to the model filenames.
 
 A Contracts folder is added to the project containing the generated assets. These assets include a local copy of the RAML definition, the generated model classes (inferred from the RAML types or JSON schemas in the RAML definition), and .NET interfaces representing the contracts for the ASP.NET Controllers.
 
-If you want to customize the location of the generated classes select the "Customize output folders", specify the paths and choose if you want to add ".generated.cs" suffix to the Models. **Specified paths will be relative to the project's root folder**.
-If you leave these fields empty it will place the generated controllers in the "Controllers" folder and the rest of the assets under the Contracts folder.
+If you want to customize the location of the generated classes, select the "Customize output folders", specify the paths, and choose if you want to add ".generated.cs" suffix to the Models. **Specified paths will be relative to the project's root folder**.
+If you leave these fields empty, it will place the generated controllers in the "Controllers" folder and the rest of the assets under the Contracts folder.
 
-If you plan to host several versions of the API in the same solution you can check the "Use api version" option. 
-This will add the version as a prefix to routes, controllers and models, preventing collision between different versions of the API.
+If you plan to host several versions of the API in the same solution, you can check the "Use api version" option. 
+This will add the version as a prefix to routes, controllers, and models, thus preventing collision between different versions of the API.
 
 image::docimages/RAML_NETAddRAMLContractScreen.png[align="center", width=550]
 
@@ -430,7 +433,7 @@ The `IMoviesController` interface implemented by the controller represents the c
 == Customizing the Generated Code
 
 RAML Tools for .NET uses T4 templates for code generation of client and service implementation.
-The T4 templates are now placed in your project folder to be able to easily customize them.
+The T4 templates are now placed in your project folder to let you easily customize them.
 
 If you customize a template, be sure to add this file to your VCS repository.
 
@@ -463,7 +466,7 @@ For the Web API there are a several templates under "Contracts/Templates":
 
 == Metadata - Extract a RAML definition from your Web API
 
-RAML metadata output lets you extract a RAML definition for your Web API app. To enable metadata output, right-click your project and choose *Enable RAML metadata output* command.
+RAML metadata output lets you extract a RAML definition for your Web API app. To enable metadata output, right-click your project and choose the *Enable RAML metadata output* command.
 This adds a `RamlController`, start up configurations, a razor view and other required files (css, js, etc.).
 The next sections list the three ways you can access the information about your API.
 
@@ -490,7 +493,7 @@ If you wish to download the RAML as a file, run your web app and navigate to `/r
 
 === Customizing the Generated RAML
 
-Some aspects of your API like security are not automatically detected. You can customize the RAML generation process and further adjust it to your API.
+Some aspects of your API-like security are not automatically detected. You can customize the RAML generation process and further adjust it to your API.
 
 To do this, modify the GetRamlContents method of your RamlController class.
 
@@ -635,8 +638,8 @@ You can also modify the Body or the Responses using the same strategy.
 
 == XML Schemas
 
-When using XML shcemas please note that there is no root type. You need to create all the types that you will reference in your RAML 1 spec as they external types, with the same name that appears on the XSD.
-For example for the following RAML we will need *PurchaseOrderType* and *ElementType*, note you can specify the same XML Schema in both cases.
+When using XML schemas, please note that there is no root type. You need to create all the types that you will reference in your RAML 1 spec as they are external types, with the same name that appears on the XSD.
+For example for the following RAML we will need *PurchaseOrderType* and *ElementType*. Note that you can specify the same XML Schema in both cases.
 
 ----
 #%RAML 1.0
@@ -661,6 +664,59 @@ schemas:
           body:
             type: ElementType
 ----
+
+
+
+== Fine tuning generated .NET primitive types
+
+You can use the format property in your RAML specification to customize the generated .NET type.
+Using type datetime and format rfc2616 we will obtain a DateTimeOffset type.
+Using type number and format long, double, float will generate the corresponding .NET types.
+
+Example to obtain a .NET long type in the generated code:
+
+RAML 1:
+
+----
+types:
+    longprop: 
+        type: number
+        format: long
+----
+
+RAML 0.8:
+
+----
+{
+    "longprop": { "type": "number", "format": "long" }
+}
+----
+
+
+=== Numeric types
+
+[width="40%",frame="topbot",options="header"]
+|======================
+|Format   |.Net type
+|long     |long
+|int64    |long
+|int32    |int
+|int16    |short
+|int8     |byte
+|int      |int
+|double   |double
+|float    |float
+|======================
+
+
+=== Date types
+
+[width="40%",frame="topbot",options="header"]
+|======================
+|Format   |.Net type
+|rfc2616  |DateTimeOffset
+|rfc3339  |DateTime
+|======================
 
 
 

@@ -4,7 +4,7 @@
 
 :!numbered:
 
-The RAML Generator allows developers to easily generate a client proxy to consume an API, or ASP.NET MVC 6 or WebAPI 2 scaffold based on a RAML definition. See http://raml.org for information on RAML (RESTful API Markup Language).
+The RAML Generator allows developers to easily generate a client proxy to consume an API, ASP.NET MVC 6 or WebAPI 2 scaffold, or class models based on a RAML definition. See http://raml.org for information on RAML (RESTful API Markup Language).
 
 This is provided as a command line tool.
 
@@ -50,12 +50,6 @@ Minimal:
 [source, bash]
 ----
   RAMLGen client -s c:\path\to\source.raml
-----
-
-Generate WebApi 2 code:
-[source, bash]
-----
-  RAMLGen client -s source.raml -w
 ----
 
 Specify destination folder:
@@ -153,3 +147,56 @@ RAMLGen server -w -s c:\path\to\source.raml;
 
 This generates the same files as the previous options but the code implementes a WebAPI 2 solution instead.
 
+
+=== Models only from a RAML Definition
+
+You can generate just the model classes from RAML 1 types or JSON schemas in a RAML definition.
+
+[source, bash]
+----
+RAMLGen models -s c:\path\to\source.raml;
+----
+
+This will create a "generated" folder under the current directory and all the models extracted from the RAML specification.
+
+These are all the modifiers you can use:
+
+  -s, --source         Required. RAML source URL or file.
+
+  -n, --namespace      Target namespace
+
+  -d, --destination    Target folder
+
+  -t, --templates      Templates folder
+
+  -o, --overwrite      Overwrite files (defaults to not overwrite)
+
+Or type *RAMLGen models help* to get the options and usage examples.
+
+==== Usage scenarios
+
+Minimal:
+[source, bash]
+----
+  RAMLGen models -s c:\path\to\source.raml
+----
+
+Specify destination folder:
+[source, bash]
+----
+  RAMLGen models -d c:\path\to\generate\ -s source.raml
+----
+
+Specify namespace:
+[source, bash]
+----
+  RAMLGen models -n My.Name.Space -s source.raml
+----
+
+Use customn template:
+[source, bash]
+----
+  RAMLGen models -t MyCustomTemplate.t4 -s source.raml
+----
+
+Code is generated using T4, you can customize the templates, for more info refer to https://github.com/mulesoft-labs/raml-dotnet-tools#customizing-the-generated-code

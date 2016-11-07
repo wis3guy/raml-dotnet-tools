@@ -113,7 +113,7 @@ namespace Raml.Tools
             var typeOfArray = GetTypeOfArray(key, ramlType);
 
             var baseType = CollectionTypeHelper.GetBaseType(typeOfArray);
-            if (NetTypeMapper.Map(baseType) == null &&
+            if (!NetTypeMapper.IsPrimitiveType(baseType) &&
                 ramlType.Array.Items != null && ramlType.Array.Items.Type == "object")
             {
                 if (baseType == typeOfArray)
@@ -144,7 +144,7 @@ namespace Raml.Tools
 
                 if (pureType != "array" && pureType != "object")
                 {
-                    if (NetTypeMapper.Map(pureType) != null)
+                    if (NetTypeMapper.IsPrimitiveType(pureType))
                         pureType = NetTypeMapper.Map(pureType);
                     else
                         pureType = NetNamingMapper.GetObjectName(pureType);
@@ -157,7 +157,7 @@ namespace Raml.Tools
                 if (ramlType.Array.Items.Type != "object")
                 {
                     var netType = ramlType.Array.Items.Type;
-                    if (NetTypeMapper.Map(netType) != null)
+                    if (NetTypeMapper.IsPrimitiveType(netType))
                         netType = NetTypeMapper.Map(netType);
                     else
                         netType = NetNamingMapper.GetObjectName(netType);
@@ -174,7 +174,6 @@ namespace Raml.Tools
 
         private ApiObject ParseScalar(string key, RamlType ramlType)
         {
-            // TODO: check, should not really be an object, but is needed to map to primitive type...
             if (ramlType.Scalar.Enum != null && ramlType.Scalar.Enum.Any())
             {
                 if (enums.ContainsKey(key))
@@ -217,10 +216,7 @@ namespace Raml.Tools
 
         private string GetScalarType(RamlType ramlType)
         {
-            var type = NetTypeMapper.Map(ramlType.Scalar.Type);
-
-            if (ramlType.Scalar.Type == "number" && ramlType.Scalar.Format != null)
-                return numberFormatConversion[ramlType.Scalar.Format.Value];
+            var type = NetTypeMapper.GetNetType(ramlType.Scalar.Type, ramlType.Scalar.Format);
 
             if (type != null)
                 return type;
@@ -302,7 +298,7 @@ namespace Raml.Tools
 
             type = RamlTypesHelper.DecodeRaml1Type(type);
 
-            if (NetTypeMapper.Map(type) != null)
+            if (NetTypeMapper.IsPrimitiveType(type))
                 type = NetTypeMapper.Map(type);
 
             return new ApiObject
@@ -382,7 +378,7 @@ namespace Raml.Tools
                     if (type.EndsWith("[]"))
                     {
                         type = type.Substring(0, type.Length - 2);
-                        if (NetTypeMapper.Map(type) == null)
+                        if (!NetTypeMapper.IsPrimitiveType(type))
                             type = NetNamingMapper.GetObjectName(type);
 
                         type = CollectionTypeHelper.GetCollectionType(type);
@@ -426,18 +422,6 @@ namespace Raml.Tools
             };
         }
 
-        private readonly IDictionary<NumberFormat, string> numberFormatConversion = new Dictionary<NumberFormat, string>
-        {
-            {NumberFormat.Double, "double"},
-            {NumberFormat.Float, "float"},
-            {NumberFormat.Int, "int"},
-            {NumberFormat.Int8, "byte"},
-            {NumberFormat.Int16, "short"},
-            {NumberFormat.Int32, "int"},
-            {NumberFormat.Int64, "long"},
-            {NumberFormat.Long, "long"}
-        };
-
         private string GetPropertyType(RamlType prop, KeyValuePair<string, RamlType> kv)
         {
             if (string.IsNullOrWhiteSpace(prop.Type))
@@ -446,10 +430,7 @@ namespace Raml.Tools
             if (prop.Type == "object" || (prop.Scalar.Enum != null && prop.Scalar.Enum.Any()))
                 return NetNamingMapper.GetPropertyName(kv.Key);
 
-            if (prop.Scalar.Type == "number" && prop.Scalar.Format != null)
-                return numberFormatConversion[prop.Scalar.Format.Value];
-
-            var propertyType = NetTypeMapper.Map(prop.Type);
+            var propertyType = NetTypeMapper.GetNetType(prop.Scalar.Type, prop.Scalar.Format);
             if (propertyType != null)
             {
                 if (!prop.Required && !prop.Scalar.Required && propertyType != "string" && prop.Type != "file")

@@ -23,10 +23,14 @@ using Raml.Common;
 using System;
 using System.ComponentModel.Design;
 using System.Diagnostics;
+using System.Dynamic;
 using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Runtime.InteropServices;
+using Caliburn.Micro;
+using Raml.Common.ViewModels;
+using Raml.Common.Views;
 
 namespace MuleSoft.RAML.Tools
 {
@@ -70,6 +74,8 @@ namespace MuleSoft.RAML.Tools
         private static Events events;
         private static DocumentEvents documentEvents;
         private IVsThreadedWaitDialog3 attachingDialog;
+
+        private IWindowManager windowManager;
 
         public MuleSoft_RAML_ToolsPackage()
         {
@@ -157,7 +163,31 @@ namespace MuleSoft.RAML.Tools
             documentEvents = events.DocumentEvents;
             documentEvents.DocumentSaved += RamlScaffoldService.TriggerScaffoldOnRamlChanged;
             //MuleSoft.RAML.Tools.Command1.Initialize(this);
+
+            var bootstrapper = new Bootstrapper();
+            bootstrapper.Initialize();
+
+            try
+            {
+                windowManager = IoC.Get<IWindowManager>();
+            }
+            catch
+            {
+                windowManager = new WindowManager();
+            }
+
+            LoadSystemWindowsInteractivity();
         }
+
+        // workaround http://stackoverflow.com/questions/29362125/visual-studio-extension-could-not-find-a-required-assembly
+        private static void LoadSystemWindowsInteractivity()
+        {
+            // HACK: Force load System.Windows.Interactivity.dll from plugin's 
+            // directory
+            typeof(System.Windows.Interactivity.Behavior).ToString();
+        }
+
+
 
         private void AddRamlRefCommandOnBeforeQueryStatus(object sender, EventArgs eventArgs)
         {
@@ -239,15 +269,25 @@ namespace MuleSoft.RAML.Tools
         private void AddRamlContractCallback(object sender, EventArgs e)
         {
             var ramlScaffoldUpdater = new RamlScaffoldService(new T4Service(ServiceProvider.GlobalProvider), ServiceProvider.GlobalProvider);
-            var frm = new RamlChooser(ServiceProvider.GlobalProvider, ramlScaffoldUpdater.AddContract, "Add RAML Contract", true, Settings.Default.RAMLExchangeUrl);
-            frm.ShowDialog();
+            var ramlChooserViewModel = new RamlChooserViewModel();
+            ramlChooserViewModel.Load(ServiceProvider.GlobalProvider, ramlScaffoldUpdater.AddContract, "Add RAML Contract", true, Settings.Default.RAMLExchangeUrl);
+            dynamic settings = new ExpandoObject();
+            settings.Height = 570;
+            windowManager.ShowDialog(ramlChooserViewModel, null, settings);
+            //var frm = new RamlChooserView(ServiceProvider.GlobalProvider, ramlScaffoldUpdater.AddContract, "Add RAML Contract", true, Settings.Default.RAMLExchangeUrl);
+            //frm.ShowDialog();
         }
 
         private void AddRamlReferenceCallback(object sender, EventArgs e)
         {
             var generationServices = new RamlReferenceService(ServiceProvider.GlobalProvider, new ActivityLogger());
-            var ramlChooser = new RamlChooser(this, generationServices.AddRamlReference, "Add RAML Reference", false, Settings.Default.RAMLExchangeUrl);
-            ramlChooser.ShowDialog();
+            var ramlChooserViewModel = new RamlChooserViewModel();
+            ramlChooserViewModel.Load(this, generationServices.AddRamlReference, "Add RAML Reference", false, Settings.Default.RAMLExchangeUrl);
+            dynamic settings = new ExpandoObject();
+            settings.Height = 475;
+            windowManager.ShowDialog(ramlChooserViewModel, null, settings);
+            //var ramlChooser = new RamlChooserView(this, generationServices.AddRamlReference, "Add RAML Reference", false, Settings.Default.RAMLExchangeUrl);
+            //ramlChooser.ShowDialog();
         }
 
         private void UpdateRamlRefCallback(object sender, EventArgs e)
@@ -296,10 +336,15 @@ namespace MuleSoft.RAML.Tools
 
             var refFilePath = InstallerServices.GetRefFilePath(ramlFilePath);
 
-            var frm = new RamlPropertiesEditor();
-            frm.Load(refFilePath, Settings.Default.ContractsFolderName, Settings.Default.ApiReferencesFolderName);
-            var result = frm.ShowDialog();
-            if (result != null && result.Value)
+
+            var editorModel = new RamlPropertiesEditorViewModel();
+            editorModel.Load(refFilePath, Settings.Default.ContractsFolderName, Settings.Default.ApiReferencesFolderName);
+            windowManager.ShowDialog(editorModel);
+
+            //var frm = new RamlPropertiesEditor();
+            //frm.Load(refFilePath, Settings.Default.ContractsFolderName, Settings.Default.ApiReferencesFolderName);
+            //var result = frm.ShowDialog();
+            if (editorModel.WasSaved)
             {
 
                 if (IsServerSide(ramlFilePath))

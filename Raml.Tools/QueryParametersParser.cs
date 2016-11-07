@@ -54,9 +54,9 @@ namespace Raml.Tools
 	        if (param.Type == null)
                 return "string";
 	        
-            if(NetTypeMapper.Map(param.Type) != null)
-	            return NetTypeMapper.Map(param.Type) +
-	                   (NetTypeMapper.Map(param.Type) == "string" || param.Required ? "" : "?");
+            if(NetTypeMapper.IsPrimitiveType(param.Type))
+	            return NetTypeMapper.GetNetType(param.Type, param.Format) +
+	                   (NetTypeMapper.GetNetType(param.Type, param.Format) == "string" || param.Required ? "" : "?");
 
 	        var pureType = RamlTypesHelper.ExtractType(param.Type);
 
