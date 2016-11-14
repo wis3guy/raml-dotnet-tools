@@ -341,6 +341,17 @@ namespace Raml.Tools.Tests
             Assert.AreEqual(3, model.Controllers.First(c => c.Name == "Users").Methods.First(m => m.Verb == "Get").QueryParameters.Count);
         }
 
+        [Test]
+        public async Task StringArrayTest()
+        {
+            var model = await BuildModel("files/raml1/string-array.raml");
+            Assert.AreEqual(2, model.Objects.Count());
+            Assert.AreEqual("Messages", model.Objects.First(o => o.Name == "Other").Properties.First().Name);
+            Assert.AreEqual("Messages", model.Objects.First(o => o.Name == "Some").Properties.First().Name);
+            Assert.AreEqual("Some", model.Controllers.First(c => c.Name == "Messages").Methods.First(m => m.Verb == "Post").Parameter.Type);
+            Assert.AreEqual("Other", model.Controllers.First(c => c.Name == "Messages").Methods.First(m => m.Verb == "Get").ReturnType);
+        }
+
         private static async Task<WebApiGeneratorModel> GetAnnotationTargetsModel()
         {
             return await BuildModel("files/raml1/annotations-targets.raml");
