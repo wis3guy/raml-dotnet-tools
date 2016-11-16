@@ -722,9 +722,9 @@ RAML 0.8:
 
 == Internal dependencies
 
-https://github.com/raml-org/raml-dotnet-parser-2[RAML .Net Parser]
-https://github.com/mulesoft-labs/raml-dotnet-apicore[RAML API Core]
-https://github.com/mulesoft-labs/raml-dotnet-apiexplorer[RAML ApiExplorer]
+. https://github.com/raml-org/raml-dotnet-parser-2[RAML .Net Parser]
+. https://github.com/mulesoft-labs/raml-dotnet-apicore[RAML API Core]
+. https://github.com/mulesoft-labs/raml-dotnet-apiexplorer[RAML ApiExplorer]
 
 
 == FAQ
