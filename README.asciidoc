@@ -43,6 +43,7 @@ Contents:
 * <<Fine tuning generated .NET primitive types>>
 ** <<Numeric types>>
 ** <<Date types>>
+** <<Internal dependencies>>
 * <<FAQ>>
 
 == Supported Scenarios
@@ -719,6 +720,11 @@ RAML 0.8:
 |======================
 
 
+== Internal dependencies
+
+https://github.com/raml-org/raml-dotnet-parser-2[RAML .Net Parser]
+https://github.com/mulesoft-labs/raml-dotnet-apicore[RAML API Core]
+https://github.com/mulesoft-labs/raml-dotnet-apiexplorer[RAML ApiExplorer]
 
 
 == FAQ
