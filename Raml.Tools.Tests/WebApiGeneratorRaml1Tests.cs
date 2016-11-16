@@ -352,6 +352,15 @@ namespace Raml.Tools.Tests
             Assert.AreEqual("Other", model.Controllers.First(c => c.Name == "Messages").Methods.First(m => m.Verb == "Get").ReturnType);
         }
 
+        [Test]
+        public async Task ShouldHandleSimilarSchemas()
+        {
+            var model = await BuildModel("files/raml1/similar-schemas-ignored.raml");
+            Assert.AreEqual(2, model.Objects.Count());
+            Assert.AreEqual("Thing", model.Controllers.First(o => o.Name == "Things").Methods.First().ReturnType);
+            Assert.AreEqual("Thingy", model.Controllers.First(o => o.Name == "Thingys").Methods.First().ReturnType);
+        }
+
         private static async Task<WebApiGeneratorModel> GetAnnotationTargetsModel()
         {
             return await BuildModel("files/raml1/annotations-targets.raml");
