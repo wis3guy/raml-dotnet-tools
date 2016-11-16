@@ -43,7 +43,7 @@ Contents:
 * <<Fine tuning generated .NET primitive types>>
 ** <<Numeric types>>
 ** <<Date types>>
-** <<Internal dependencies>>
+* <<Internal dependencies>>
 * <<FAQ>>
 
 == Supported Scenarios
