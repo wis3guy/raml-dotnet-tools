@@ -11,7 +11,7 @@ namespace Raml.Tools.WebApiGenerator
             if (controllerRoutePrefix.Trim() == string.Empty)
                 return url;
 
-            var relativeUri = url.Replace(controllerRoutePrefix, string.Empty);
+            var relativeUri = url.Replace(controllerRoutePrefix + "/", string.Empty);
             relativeUri = ReplaceMultipleMediaTypeExtensionParamaters(relativeUri);
             relativeUri = FixConsecutiveParameters(relativeUri);
             relativeUri = FixConsecutiveSlashes(relativeUri);

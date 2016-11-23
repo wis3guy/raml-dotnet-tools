@@ -361,6 +361,14 @@ namespace Raml.Tools.Tests
             Assert.AreEqual("Thingy", model.Controllers.First(o => o.Name == "Thingys").Methods.First().ReturnType);
         }
 
+        [Test]
+        public async Task ShouldHandleRouteNameContainedInUriParam()
+        {
+            var model = await BuildModel("files/raml1/applicationId.raml");
+            Assert.AreEqual("{applicationId}", model.Controllers.First().Methods.First(m => m.UriParameters.Any()).Url);
+            Assert.AreEqual("{applicationId}", model.Controllers.First().Methods.Last(m => m.UriParameters.Any()).Url);
+        }
+
         private static async Task<WebApiGeneratorModel> GetAnnotationTargetsModel()
         {
             return await BuildModel("files/raml1/annotations-targets.raml");
