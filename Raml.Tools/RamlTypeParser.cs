@@ -371,9 +371,15 @@ namespace Raml.Tools
                     var type = kv.Value.Type;
                     if (kv.Value.Array.Items != null)
                     {
-                        var obj = ParseArray(kv.Key, kv.Value);
-
-                        type = CollectionTypeHelper.GetCollectionType(obj.Type);
+                        if (NetTypeMapper.IsPrimitiveType(kv.Value.Array.Items.Type))
+                        {
+                            type = NetTypeMapper.Map(kv.Value.Array.Items.Type);
+                        }
+                        else
+                        {
+                            var obj = ParseArray(kv.Key, kv.Value);
+                            type = CollectionTypeHelper.GetCollectionType(obj.Type);
+                        }
                     }
                     if (type.EndsWith("[]"))
                     {
