@@ -147,7 +147,9 @@ namespace MuleSoft.RAML.Tools
 
             var lines = File.ReadAllLines(startUpPath).ToList();
 
-            InsertNetCoreMvcOptions(lines);
+            ConfigureNetCoreMvcServices(lines);
+
+            ConfigureNetCoreMvc(lines);
 
             File.WriteAllText(startUpPath, string.Join(Environment.NewLine, lines));            
         }
@@ -177,12 +179,27 @@ namespace MuleSoft.RAML.Tools
             File.WriteAllText(path, string.Join(Environment.NewLine, lines));
         }
 
-        private void InsertNetCoreMvcOptions(List<string> lines)
+        private void ConfigureNetCoreMvc(List<string> lines)
         {
+            var appUsestaticfiles = "            app.UseStaticFiles();";
+
+            if (!lines.Any(l => l.Contains("app.UseStaticFiles();")))
+                return;
+
+            var line = FindLineWith(lines, "public void Configure(IApplicationBuilder app");
+            if (line > 0)
+                lines.Insert(line + 2, appUsestaticfiles);
+        }
+
+        private void ConfigureNetCoreMvcServices(List<string> lines)
+        {
+            var addService = "            services.AddScoped<RAML.WebApiExplorer.ApiExplorerDataFilter>();";
+
             int line;
-            if (!lines.Any(l => l.Contains("public void ConfigureServices")))
+            if (!lines.Any(l => l.Contains("services.AddMvc")))
             {
                 line = FindLineWith(lines, "public void ConfigureServices");
+                lines.Insert(line + 2, addService);
                 lines.Insert(line + 2, AddMvcWithOptions());
                 return;
             }
@@ -190,6 +207,7 @@ namespace MuleSoft.RAML.Tools
             line = FindLineWith(lines, "services.AddMvc()");
             if (line > 0)
             {
+                lines.Insert(line -1, addService);
                 lines.RemoveAt(line);
                 lines.Insert(line, AddMvcWithOptions());
                 return;
@@ -198,6 +216,7 @@ namespace MuleSoft.RAML.Tools
             line = FindLineWith(lines, "services.AddMvc(options =>");
             if (line > 0 && lines[line + 1] == "{")
             {
+                lines.Insert(line + 1, addService);
                 lines.Insert(line + 2, AddOptions());
             }
         }
@@ -285,15 +304,13 @@ namespace MuleSoft.RAML.Tools
             // RAML.Parser
             if (!installerServices.IsPackageInstalled(proj, "RAML.Parser.Expressions"))
             {
-                //installer.InstallPackage(nugetPackagesSource, proj, "RAML.Parser.Expressions", "1.0.0", false);
-                installer.InstallPackage(@"C:\desarrollo\nuget\nugets", proj, "RAML.Parser.Expressions", "1.0.0", false);
+                installer.InstallPackage(nugetPackagesSource, proj, "RAML.Parser.Expressions", "1.0.0", false);
             }
 
             // RAML.NetCoreApiExplorer
             if (!installerServices.IsPackageInstalled(proj, "RAML.NetCoreApiExplorer"))
             {
-                //installer.InstallPackage(nugetPackagesSource, proj, "RAML.NetCoreApiExplorer", "1.0.0", false);
-                installer.InstallPackage(@"C:\desarrollo\nuget\nugets", proj, "RAML.NetCoreApiExplorer", "1.0.0", false);
+                installer.InstallPackage(nugetPackagesSource, proj, "RAML.NetCoreApiExplorer", "1.0.0", false);
             }
         }
 
@@ -346,8 +363,16 @@ namespace MuleSoft.RAML.Tools
                 UninstallNugetAndDependencies(proj);
                 ActivityLog.LogInformation(VisualStudioAutomationHelper.RamlVsToolsActivityLogSource, "Nuget package uninstalled");
 
-                RemovXmlCommentsDocumentation(proj);
-                ActivityLog.LogInformation(VisualStudioAutomationHelper.RamlVsToolsActivityLogSource, "XML comments documentation removed");
+                if (VisualStudioAutomationHelper.IsAVisualStudio2015Project(proj))
+                {
+                    RemoveNetCoreStartUpConfiguration(proj);
+                }
+                else
+                {
+                    RemovXmlCommentsDocumentation(proj);
+                    ActivityLog.LogInformation(VisualStudioAutomationHelper.RamlVsToolsActivityLogSource,
+                        "XML comments documentation removed");
+                }
             }
             catch (Exception ex)
             {
@@ -368,6 +393,12 @@ namespace MuleSoft.RAML.Tools
             if (installerServices.IsPackageInstalled(proj, ramlWebApiExplorerPackageId))
             {
                 installer.UninstallPackage(proj, ramlWebApiExplorerPackageId, false);
+            }
+
+            // RAML.NetCoreApiExplorer
+            if (installerServices.IsPackageInstalled(proj, "RAML.NetCoreApiExplorer"))
+            {
+                installer.UninstallPackage(proj, "RAML.NetCoreApiExplorer", false);
             }
         }
 
@@ -404,5 +435,36 @@ namespace MuleSoft.RAML.Tools
             prop.Value = string.Empty;
         }
 
+        private void RemoveNetCoreStartUpConfiguration(Project proj)
+        {
+            var startUpPath = Path.Combine(Path.GetDirectoryName(proj.FullName), "Startup.cs");
+            if (!File.Exists(startUpPath)) return;
+
+            var lines = File.ReadAllLines(startUpPath).ToList();
+
+            var addService = "            services.AddScoped<RAML.WebApiExplorer.ApiExplorerDataFilter>();";
+            RemoveLine(lines, addService);
+
+            var appUsestaticfiles = "            app.UseStaticFiles();";
+            RemoveLine(lines, appUsestaticfiles);
+
+            var option1 = "                    options.Filters.AddService(typeof(RAML.WebApiExplorer.ApiExplorerDataFilter));";
+            RemoveLine(lines, option1);
+
+            var option2 = "                    options.Conventions.Add(new RAML.WebApiExplorer.ApiExplorerVisibilityEnabledConvention());";
+            RemoveLine(lines, option2);
+
+            var option3 = "                    options.Conventions.Add(new RAML.WebApiExplorer.ApiExplorerVisibilityDisabledConvention(typeof(RAML.WebApiExplorer.RamlController)));";
+            RemoveLine(lines, option3);
+
+            File.WriteAllText(startUpPath, string.Join(Environment.NewLine, lines));
+        }
+
+        private static void RemoveLine(List<string> lines, string content)
+        {
+            var line = FindLineWith(lines, content);
+            if (line > 0)
+                lines.RemoveAt(line);
+        }
     }
 }
