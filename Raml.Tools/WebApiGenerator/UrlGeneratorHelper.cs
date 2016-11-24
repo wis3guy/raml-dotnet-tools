@@ -11,13 +11,21 @@ namespace Raml.Tools.WebApiGenerator
             if (controllerRoutePrefix.Trim() == string.Empty)
                 return url;
 
-            var relativeUri = url.Replace(controllerRoutePrefix + "/", string.Empty);
+            var relativeUri = url == controllerRoutePrefix ? string.Empty : url.Replace(AdaptedControllerRoutePrefix(controllerRoutePrefix), string.Empty);
             relativeUri = ReplaceMultipleMediaTypeExtensionParamaters(relativeUri);
             relativeUri = FixConsecutiveParameters(relativeUri);
             relativeUri = FixConsecutiveSlashes(relativeUri);
             relativeUri = relativeUri.StartsWith("/") ? relativeUri.Substring(1) : relativeUri;
             relativeUri = relativeUri.Trim(new []{'/'});
             return relativeUri;
+        }
+
+        private static string AdaptedControllerRoutePrefix(string controllerRoutePrefix)
+        {
+            if (controllerRoutePrefix.Contains("{"))
+                return controllerRoutePrefix;
+
+            return controllerRoutePrefix.EndsWith("/") ? controllerRoutePrefix : controllerRoutePrefix + "/";
         }
 
         public static string FixControllerRoutePrefix(string relativeUri)
