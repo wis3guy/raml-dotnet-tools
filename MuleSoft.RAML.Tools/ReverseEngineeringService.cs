@@ -110,7 +110,9 @@ namespace MuleSoft.RAML.Tools
             var sourceFilePaths = Directory.GetFiles(sourcePath);
             foreach (var sourceFilePath in sourceFilePaths)
             {
-                File.Copy(sourceFilePath, Path.Combine(destinationPath, Path.GetFileName(sourceFilePath)));
+                var destFileName = Path.Combine(destinationPath, Path.GetFileName(sourceFilePath));
+                if (!File.Exists(destFileName))
+                    File.Copy(sourceFilePath, destFileName, false);
             }
 
             // Copy sub folders
@@ -132,11 +134,13 @@ namespace MuleSoft.RAML.Tools
         private static void AddRamlController(string sourcePath, string destinationPath)
         {
             var controllersFolder = "Controllers";
-            var controllersPath = Path.Combine(sourcePath, controllersFolder);
-            if (!Directory.Exists(controllersPath))
-                Directory.CreateDirectory(controllersPath);
 
-            var ramlControllerDest = Path.Combine(destinationPath, controllersFolder + Path.DirectorySeparatorChar + "RamlController.cs");
+            var controllersDestPath = Path.Combine(destinationPath, controllersFolder + Path.DirectorySeparatorChar);
+            if (!Directory.Exists(controllersDestPath))
+                Directory.CreateDirectory(controllersDestPath);
+
+            var controllersPath = Path.Combine(sourcePath, controllersFolder);
+            var ramlControllerDest = Path.Combine(controllersDestPath, "RamlController.cs");
             File.Copy(Path.Combine(controllersPath, "RamlController.class"), ramlControllerDest);
         }
 
@@ -183,7 +187,7 @@ namespace MuleSoft.RAML.Tools
         {
             var appUsestaticfiles = "            app.UseStaticFiles();";
 
-            if (!lines.Any(l => l.Contains("app.UseStaticFiles();")))
+            if (lines.Any(l => l.Contains("app.UseStaticFiles();")))
                 return;
 
             var line = FindLineWith(lines, "public void Configure(IApplicationBuilder app");
