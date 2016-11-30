@@ -821,7 +821,7 @@ namespace Raml.Tools.Tests
             var obj = parser.Parse("name", schema, objects, warnings, enums, new Dictionary<string, ApiObject>(), new Dictionary<string, ApiObject>());
 
             var us = new CultureInfo("en-US");
-            var minValue = double.MinValue;
+
             Assert.AreEqual("        [Range(double.MinValue,100.00)]", obj.Properties.First(c => c.Name == "Weight").CustomAttributes);
             Assert.AreEqual("        [Required]" + Environment.NewLine + "        [Range(18,int.MaxValue)]", obj.Properties.First(c => c.Name == "Age").CustomAttributes);
         }
@@ -907,7 +907,7 @@ namespace Raml.Tools.Tests
             var obj = parser.Parse("name", schema, objects, warnings, enums, new Dictionary<string, ApiObject>(), new Dictionary<string, ApiObject>());
 
             var us = new CultureInfo("en-US");
-            var minValue = double.MinValue;
+
             Assert.AreEqual("        [Range(double.MinValue,100.00)]", obj.Properties.First(c => c.Name == "Weight").CustomAttributes);
             Assert.AreEqual("        [Required]" + Environment.NewLine + "        [Range(18,int.MaxValue)]", obj.Properties.First(c => c.Name == "Age").CustomAttributes);
         }
