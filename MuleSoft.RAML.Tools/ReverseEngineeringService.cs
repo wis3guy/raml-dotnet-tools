@@ -15,26 +15,29 @@ namespace MuleSoft.RAML.Tools
 {
     public class ReverseEngineeringService
     {
-        private readonly string nugetPackagesSource = Settings.Default.NugetPackagesSource;
-        private readonly string ramlWebApiExplorerPackageId = Settings.Default.RAMLWebApiExplorerPackageId;
-        private readonly string ramlWebApiExplorerPackageVersion = Settings.Default.RAMLWebApiExplorerPackageVersion;
-        private readonly string ramlParserPackageId = Settings.Default.RAMLParserPackageId;
-        private readonly string ramlParserPackageVersion = Settings.Default.RAMLParserPackageVersion;
-        private readonly string ramlApiCorePackageId = Settings.Default.RAMLApiCorePackageId;
-        private readonly string ramlApiCorePackageVersion = Settings.Default.RAMLApiCorePackageVersion;
-        private readonly string newtonsoftJsonPackageId = Settings.Default.NewtonsoftJsonPackageId;
-        private readonly string newtonsoftJsonPackageVersion = Settings.Default.NewtonsoftJsonPackageVersion;
-        private readonly string edgePackageId = Settings.Default.EdgePackageId;
-        private readonly string edgePackageVersion = Settings.Default.EdgePackageVersion;
+        private static readonly string NugetPackagesSource = Settings.Default.NugetPackagesSource;
+        private static readonly string RamlWebApiExplorerPackageId = Settings.Default.RAMLWebApiExplorerPackageId;
+        private static readonly string RamlWebApiExplorerPackageVersion = Settings.Default.RAMLWebApiExplorerPackageVersion;
+        private static readonly string RamlParserPackageId = Settings.Default.RAMLParserPackageId;
+        private static readonly string RamlParserPackageVersion = Settings.Default.RAMLParserPackageVersion;
+        private static readonly string RamlApiCorePackageId = Settings.Default.RAMLApiCorePackageId;
+        private static readonly string RamlApiCorePackageVersion = Settings.Default.RAMLApiCorePackageVersion;
+        private static readonly string NewtonsoftJsonPackageId = Settings.Default.NewtonsoftJsonPackageId;
+        private static readonly string NewtonsoftJsonPackageVersion = Settings.Default.NewtonsoftJsonPackageVersion;
+        private static readonly string EdgePackageId = Settings.Default.EdgePackageId;
+        private static readonly string EdgePackageVersion = Settings.Default.EdgePackageVersion;
+        private static readonly string RamlParserExpressionsPackageId = Settings.Default.RamlParserExpressionsPackageId;
+        private static readonly string RamlParserExpressionsPackageVersion = Settings.Default.RamlParserExpressionsPackageVersion;
+        private static readonly string RamlNetCoreApiExplorerPackageId = Settings.Default.RamlNetCoreApiExplorerPackageId;
+        private static readonly string RamlNetCoreApiExplorerPackageVersion = Settings.Default.RamlNetCoreApiExplorerPackageVersion;
 
         private readonly IServiceProvider serviceProvider;
-        
+
 
         public ReverseEngineeringService(IServiceProvider serviceProvider)
         {
             this.serviceProvider = serviceProvider;
         }
-
 
         public void AddReverseEngineering()
         {
@@ -264,7 +267,7 @@ namespace MuleSoft.RAML.Tools
         private static int FindLineWith(IReadOnlyList<string> lines, string find)
         {
             var line = -1;
-            for (var i = 0; i < lines.Count(); i++)
+            for (var i = 0; i < lines.Count; i++)
             {
                 if (lines[i].Contains(find))
                     line = i;
@@ -279,8 +282,6 @@ namespace MuleSoft.RAML.Tools
             var prop = configProps.Item("DocumentationFile");
             prop.Value = string.Format("bin\\{0}.XML", proj.Name);
         }
-
-
 
         private void InstallNugetAndDependencies(Project proj)
         {
@@ -306,48 +307,48 @@ namespace MuleSoft.RAML.Tools
                             "1.0.0", Settings.Default.NugetExternalPackagesSource);
 
             // RAML.Parser
-            if (!installerServices.IsPackageInstalled(proj, "RAML.Parser.Expressions"))
+            if (!installerServices.IsPackageInstalled(proj, RamlParserExpressionsPackageId))
             {
-                installer.InstallPackage(nugetPackagesSource, proj, "RAML.Parser.Expressions", "1.0.0", false);
+                installer.InstallPackage(NugetPackagesSource, proj, RamlParserExpressionsPackageId, RamlParserExpressionsPackageVersion, false);
             }
 
             // RAML.NetCoreApiExplorer
-            if (!installerServices.IsPackageInstalled(proj, "RAML.NetCoreApiExplorer"))
+            if (!installerServices.IsPackageInstalled(proj, RamlNetCoreApiExplorerPackageId))
             {
-                installer.InstallPackage(nugetPackagesSource, proj, "RAML.NetCoreApiExplorer", "1.0.0", false);
+                installer.InstallPackage(NugetPackagesSource, proj, RamlNetCoreApiExplorerPackageId, RamlNetCoreApiExplorerPackageVersion, false);
             }
         }
 
         private void InstallWebApiDependencies(Project proj, IVsPackageMetadata[] packs, IVsPackageInstaller installer,
             IVsPackageInstallerServices installerServices)
         {
-            NugetInstallerHelper.InstallPackageIfNeeded(proj, packs, installer, newtonsoftJsonPackageId,
-                newtonsoftJsonPackageVersion, Settings.Default.NugetExternalPackagesSource);
-            NugetInstallerHelper.InstallPackageIfNeeded(proj, packs, installer, edgePackageId, edgePackageVersion,
+            NugetInstallerHelper.InstallPackageIfNeeded(proj, packs, installer, NewtonsoftJsonPackageId,
+                NewtonsoftJsonPackageVersion, Settings.Default.NugetExternalPackagesSource);
+            NugetInstallerHelper.InstallPackageIfNeeded(proj, packs, installer, EdgePackageId, EdgePackageVersion,
                 Settings.Default.NugetExternalPackagesSource);
             NugetInstallerHelper.InstallPackageIfNeeded(proj, packs, installer, "System.ComponentModel.Annotations",
                 "4.0.0", Settings.Default.NugetExternalPackagesSource);
 
             // RAML.Parser
-            if (!installerServices.IsPackageInstalled(proj, ramlParserPackageId))
+            if (!installerServices.IsPackageInstalled(proj, RamlParserPackageId))
             {
-                installer.InstallPackage(nugetPackagesSource, proj, ramlParserPackageId, ramlParserPackageVersion,
+                installer.InstallPackage(NugetPackagesSource, proj, RamlParserPackageId, RamlParserPackageVersion,
                     false);
             }
 
             // RAML.Api.Core
-            if (!installerServices.IsPackageInstalled(proj, ramlApiCorePackageId))
+            if (!installerServices.IsPackageInstalled(proj, RamlApiCorePackageId))
             {
                 //installer.InstallPackage(nugetPackagesSource, proj, ramlApiCorePackageId, ramlApiCorePackageVersion, false);
-                installer.InstallPackage(nugetPackagesSource, proj, ramlApiCorePackageId, ramlApiCorePackageVersion,
+                installer.InstallPackage(NugetPackagesSource, proj, RamlApiCorePackageId, RamlApiCorePackageVersion,
                     false);
             }
 
             // RAML.WebApiExplorer
-            if (!installerServices.IsPackageInstalled(proj, ramlWebApiExplorerPackageId))
+            if (!installerServices.IsPackageInstalled(proj, RamlWebApiExplorerPackageId))
             {
-                installer.InstallPackage(nugetPackagesSource, proj, ramlWebApiExplorerPackageId,
-                    ramlWebApiExplorerPackageVersion, false);
+                installer.InstallPackage(NugetPackagesSource, proj, RamlWebApiExplorerPackageId,
+                    RamlWebApiExplorerPackageVersion, false);
             }
         }
 
@@ -394,15 +395,15 @@ namespace MuleSoft.RAML.Tools
             var installer = componentModel.GetService<IVsPackageUninstaller>();
 
             // Uninstall RAML.WebApiExplorer
-            if (installerServices.IsPackageInstalled(proj, ramlWebApiExplorerPackageId))
+            if (installerServices.IsPackageInstalled(proj, RamlWebApiExplorerPackageId))
             {
-                installer.UninstallPackage(proj, ramlWebApiExplorerPackageId, false);
+                installer.UninstallPackage(proj, RamlWebApiExplorerPackageId, false);
             }
 
             // RAML.NetCoreApiExplorer
-            if (installerServices.IsPackageInstalled(proj, "RAML.NetCoreApiExplorer"))
+            if (installerServices.IsPackageInstalled(proj, RamlNetCoreApiExplorerPackageId))
             {
-                installer.UninstallPackage(proj, "RAML.NetCoreApiExplorer", false);
+                installer.UninstallPackage(proj, RamlNetCoreApiExplorerPackageId, false);
             }
         }
 

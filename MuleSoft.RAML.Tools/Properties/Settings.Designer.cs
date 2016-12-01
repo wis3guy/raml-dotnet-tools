@@ -12,7 +12,7 @@ namespace MuleSoft.RAML.Tools.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "12.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "14.0.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -281,6 +281,42 @@ namespace MuleSoft.RAML.Tools.Properties {
         public string NewtonsoftJsonForCorePackageVersion {
             get {
                 return ((string)(this["NewtonsoftJsonForCorePackageVersion"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("RAML.NetCoreApiExplorer")]
+        public string RamlNetCoreApiExplorerPackageId {
+            get {
+                return ((string)(this["RamlNetCoreApiExplorerPackageId"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.0.1")]
+        public string RamlNetCoreApiExplorerPackageVersion {
+            get {
+                return ((string)(this["RamlNetCoreApiExplorerPackageVersion"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("RAML.Parser.Expressions")]
+        public string RamlParserExpressionsPackageId {
+            get {
+                return ((string)(this["RamlParserExpressionsPackageId"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.0.1")]
+        public string RamlParserExpressionsPackageVersion {
+            get {
+                return ((string)(this["RamlParserExpressionsPackageVersion"]));
             }
         }
     }
