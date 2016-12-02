@@ -17,7 +17,7 @@ Contents:
 * <<Supported Scenarios>>
 ** <<API Client Code from a RAML Definition>>
 ** <<ASP.NET Implementation from a RAML Definition>>
-** <<Extract a RAML definition from a Web API>>
+** <<Extract a RAML definition from an ASP.NET Core or WebApi 2 app>>
 * <<Prerequisites>>
 * <<Installation>>
 * <<Generating an API Client>>
@@ -34,7 +34,7 @@ Contents:
 ** <<Compatibility With New Versions of the Templates>>
 ** <<Customizing the Generated Code for the Client>>
 ** <<Customizing the Generated cCode for the Asp.Net Web API>>
-* <<Metadata - Extract a RAML definition from your Web API>>
+* <<Metadata - Extract a RAML definition from your Web app>>
 ** <<Api Console>>
 ** <<Viewing the Raw RAML>>
 ** <<Downloading the RAML>>
@@ -64,9 +64,9 @@ From within Visual Studio .NET, you can add a RAML definition from which the too
 
 In code, the controllers definition and implementation are logically separated. The generated code representing the definition is driven by the RAML definition allowing you to focus exclusively on the implementation classes. This separation of concerns allows iterative evolution of the API with non-destructive forward engineering of the code-based definition.
 
-=== Extract a RAML definition from a Web API
+=== Extract a RAML definition from an ASP.NET Core or WebApi 2 app
 
-You can generate a RAML 1 or 0.8 definition from your ASP .NET Web API 2 implementation.
+You can generate a RAML 1 or 0.8 definition from your ASP .NET Core or WebAPI 2 implementation.
 
 When enabling metadata, a local endpoint is registered to provide a browser-accessible API Console for the RAML-enabled implementation. This gives an easily navigable view of the API, including full documentation of routes, resource schema, and includes examples.
 
@@ -465,9 +465,9 @@ For the Web API there are a several templates under "Contracts/Templates":
 - *ApiModel.t4*: Template for the request and response content models.
 
 
-== Metadata - Extract a RAML definition from your Web API
+== Metadata - Extract a RAML definition from your Web app
 
-RAML metadata output lets you extract a RAML definition for your Web API app. To enable metadata output, right-click your project and choose the *Enable RAML metadata output* command.
+RAML metadata output lets you extract a RAML definition for your ASP.NET Core or WebAPI 2 app. To enable metadata output, right-click your project and choose the *Enable RAML metadata output* command.
 This adds a `RamlController`, start up configurations, a razor view and other required files (css, js, etc.).
 The next sections list the three ways you can access the information about your API.
 
@@ -492,9 +492,175 @@ image::./docimages/RAML_NET_RAML-v1.png[align="center"]
 If you wish to download the RAML as a file, run your web app and navigate to `/raml/download`. This prompts you to choose the location and file name.
 
 
-=== Customizing the Generated RAML
+=== Customizing the Generated RAML on your ASP.NET Core app
 
 Some aspects of your API-like security are not automatically detected. You can customize the RAML generation process and further adjust it to your API.
+
+To do this, create a class that inhertis from ApiExplorerDataFilter and override the GetRamlContents method.
+
+[source, c#]
+----
+
+   public class MyApiExplorerDataFilter : ApiExplorerDataFilter
+    {
+        public MyApiExplorerDataFilter(IApiDescriptionGroupCollectionProvider descriptionProvider) : base(descriptionProvider)
+        {
+        }
+
+        public override RamlDocument GetRamlContents(RAML.WebApiExplorer.ApiExplorerService apiExplorerService)
+        {
+            // TODO: write your customization code
+            return apiExplorerService.GetRaml();
+        }
+    }
+----
+
+Then replace *ApiExplorerDataFilter* on *StartUp.cs* for your class:
+
+[source, c#]
+----
+
+    public void ConfigureServices(IServiceCollection services)
+    {
+        // Add framework services.
+        services.AddApplicationInsightsTelemetry(Configuration);
+        services.AddScoped<MyApiExplorerDataFilter>();
+        services.AddMvc(options =>
+        {
+            options.Filters.AddService(typeof(MyApiExplorerDataFilter));
+            options.Conventions.Add(new RAML.WebApiExplorer.ApiExplorerVisibilityEnabledConvention());
+            options.Conventions.Add(new RAML.WebApiExplorer.ApiExplorerVisibilityDisabledConvention(typeof(RAML.WebApiExplorer.RamlController)));
+        });
+    }
+----
+
+You can set the security schemes of your API, this is an example for OAuth v2.
+First it creates a *SecuritySchemeDescriptor* where you can set the query parameters, headers, and responses.
+In this case it defines a single query parameter called "access_token".
+
+Then it calls the *UseOAuth2* method, which sets the endpoints, grants, scopes, and the previously created security scheme descriptor.
+
+In this example the authorization URL is `/oauth/authorize`, the access token URL is `/oauth/access_token`.
+There are two authorization grants *code* and *token*, and a single scope *all*.
+
+[source, c#]
+----
+    // Set OAuth security scheme descriptor:  headers, query parameters, and responses
+    var descriptor = new SecuritySchemeDescriptor
+    {
+        QueryParameters = new Dictionary<string, Parameter>
+          {
+              {
+                  "access_token",
+                  new Parameter
+                  {
+                      Type = "string",
+                      Required = true
+                  }
+              }
+          }
+    };
+
+    // Set OAuth v2 endpoints, grants, scopes and descriptor
+    apiExplorerService.UseOAuth2("/oauth/authorize", "/oauth/access_token",
+                new[] {"code", "token"}, new[] {"all"}, descriptor);
+
+----
+
+You can set the protocols for the web API by setting the *Protocols* property of the ApiExplorerService instance.
+For example for using HTTPS only in all of your API you would do this:
+
+[source, c#]
+----
+    apiExplorerService.Protocols = new[] { Protocol.HTTPS };
+----
+
+In a similar fashion if you want to set all of your resources to be accessed with OAuth v2, you can set the *SecuredBy* property of the ApiExplorerService instance.
+
+[source, c#]
+----
+    apiExplorerService.SecuredBy = new[] { "oauth_2_0" };
+----
+
+Combining all this together, your code should look like this:
+
+[source, c#]
+----
+
+   public class MyApiExplorerDataFilter : ApiExplorerDataFilter
+    {
+        public MyApiExplorerDataFilter(IApiDescriptionGroupCollectionProvider descriptionProvider) : base(descriptionProvider)
+        {
+        }
+
+        public override RamlDocument GetRamlContents(RAML.WebApiExplorer.ApiExplorerService apiExplorerService)
+        {
+            // Use HTTPS only
+            apiExplorerService.Protocols = new[] { Protocol.HTTPS };
+
+            // Use OAuth 2 for all resources
+            apiExplorerService.SecuredBy = new[] { "oauth_2_0" };
+
+            // Set OAuth security scheme descriptor: headers, query parameters, and responses
+            var descriptor = new SecuritySchemeDescriptor
+            {
+                QueryParameters = new Dictionary<string, Parameter>
+                {
+                    {
+                        "access_token",
+                        new Parameter
+                        {
+                            Type = "string",
+                            Required = true
+                        }
+                    }
+                }
+            };
+
+            // Set OAuth v2 endpoints, grants, scopes, and descriptor
+            apiExplorerService.UseOAuth2("https://api.movies.com/oauth/authorize",
+                "https://api.movies.com/oauth/access_token", new[] { "code", "token" }, new[] { "all" }, descriptor);
+            var ramlDocument = apiExplorerService.GetRaml();
+            return ramlDocument;
+        }
+    }
+----
+
+If using OAuth v1, you can use the *UseOAuth1* method. For other security schemes or further customization, you can use the *SetSecurityScheme* method or the *SecuritySchemes* property.
+
+Other global properties can be set using the *SetRamlProperties* action.
+For example, to set the root level documentation:
+
+[source, c#]
+----
+    apiExplorerService.SetRamlProperties = raml =>
+        {
+            raml.Documentation = "Documentation is availabe at http://documentation.org"
+        }
+----
+
+For customizing your RAML only for specific resources, you have three action available: *SetMethodProperties*, *SetResourceProperties*, *SetResourcePropertiesByAction*, and *SetResourcePropertiesByController*.
+
+For example for setting OAuth v2 for the movies POST action, you can do this:
+
+[source, c#]
+----
+apiExplorerService.SetMethodProperties = (apiDescription, method) =>
+    {
+      if (apiDescription.RelativePath == "movies" && method.Verb == "post")
+        {
+            method.SecuredBy = new [] {"oauth_2_0"};
+        }
+
+    };
+----
+
+You can also modify the Body or the Responses using the same strategy.
+
+More info https://github.com/mulesoft-labs/raml-dotnetcore-apiexplorer[here]
+
+
+=== Customizing the Generated RAML on your ASP.NET WebApi 2 app
 
 To do this, modify the GetRamlContents method of your RamlController class.
 
@@ -561,7 +727,7 @@ In a similar fashion if you want to set all of your resources to be accessed wit
     apiExplorerService.SecuredBy = new[] { "oauth_2_0" };
 ----
 
-Combining all this together, your RAML action should look like:
+Combining all this together, your code should look like this:
 
 [source, c#]
 ----
@@ -635,6 +801,7 @@ apiExplorerService.SetMethodProperties = (apiDescription, method) =>
 
 You can also modify the Body or the Responses using the same strategy.
 
+More info https://github.com/mulesoft-labs/raml-dotnet-apiexplorer[here]
 
 
 == XML Schemas
