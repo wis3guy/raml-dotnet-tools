@@ -131,37 +131,11 @@ namespace MuleSoft.RAML.Tools
             if(warnings.Count == 0)
                 return;
 
-            var fileName = "json-parsing-errors.txt";
             var targetFolderPath = GetTargetFolderPath(contractsFolderPath, ramlItem.FileNames[0], contractsFolderItem.ContainingProject);
-            var file = Path.Combine(targetFolderPath, fileName);
 
-            AddFileContents(warnings, file);
-
-            AddFileToProject(contractsFolderItem, fileName, file);
+            JsonSchemaMessagesManager.AddJsonParsingErrors(warnings, contractsFolderItem, targetFolderPath);
         }
 
-        private static void AddFileToProject(ProjectItem contractsFolderItem, string fileName, string file)
-        {
-            if (VisualStudioAutomationHelper.IsAVisualStudio2015Project(contractsFolderItem.ContainingProject))
-                return;
-
-            var fileItem = contractsFolderItem.ProjectItems.Cast<ProjectItem>().FirstOrDefault(i => i.Name == fileName);
-            if (fileItem != null) return;
-
-            contractsFolderItem.ProjectItems.AddFromFile(file);
-        }
-
-        private static void AddFileContents(IDictionary<string, string> warnings, string file)
-        {
-            using (var sw = File.AppendText(file))
-            {
-                sw.WriteLine("-------" + DateTime.Now.ToLongDateString() + " " + DateTime.Now.ToLongTimeString() + "-------");
-                foreach (var warning in warnings)
-                {
-                    sw.WriteLine(warning.Key + ": " + warning.Value + Environment.NewLine);
-                }
-            }
-        }
 
         public static void TriggerScaffoldOnRamlChanged(Document document)
         {
@@ -621,9 +595,5 @@ namespace MuleSoft.RAML.Tools
                            "title: " + title + Environment.NewLine;
             return contents;
         }
-
-
-
-
     }
 }

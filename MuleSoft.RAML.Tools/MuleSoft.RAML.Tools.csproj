@@ -204,6 +204,7 @@
     <Compile Include="CodeGenerator.cs" />
     <Compile Include="CodeGeneratorRegistrationAttribute.cs" />
     <Compile Include="ILogger.cs" />
+    <Compile Include="JsonSchemaMessagesManager.cs" />
     <Compile Include="NugetInstallerHelper.cs" />
     <Compile Include="NullLogger.cs" />
     <Content Include="MetadataPackage\Content\Controllers\RamlController.class">
