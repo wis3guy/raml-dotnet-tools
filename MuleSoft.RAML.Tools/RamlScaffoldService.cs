@@ -121,6 +121,46 @@ namespace MuleSoft.RAML.Tools
             AddOrUpdateControllerInterfaces(parameters, contractsFolderPath, ramlItem, model, contractsFolderItem, extensionPath);
 
             AddOrUpdateControllerImplementations(parameters, contractsFolderPath, proj, model, contractsFolderItem, extensionPath);
+
+            AddJsonSchemaParsingErrors(model.Warnings, contractsFolderPath, contractsFolderItem, ramlItem);
+        }
+
+        private void AddJsonSchemaParsingErrors(IDictionary<string, string> warnings, string contractsFolderPath, 
+            ProjectItem contractsFolderItem, ProjectItem ramlItem)
+        {
+            if(warnings.Count == 0)
+                return;
+
+            var fileName = "json-parsing-errors.txt";
+            var targetFolderPath = GetTargetFolderPath(contractsFolderPath, ramlItem.FileNames[0], contractsFolderItem.ContainingProject);
+            var file = Path.Combine(targetFolderPath, fileName);
+
+            AddFileContents(warnings, file);
+
+            AddFileToProject(contractsFolderItem, fileName, file);
+        }
+
+        private static void AddFileToProject(ProjectItem contractsFolderItem, string fileName, string file)
+        {
+            if (VisualStudioAutomationHelper.IsAVisualStudio2015Project(contractsFolderItem.ContainingProject))
+                return;
+
+            var fileItem = contractsFolderItem.ProjectItems.Cast<ProjectItem>().FirstOrDefault(i => i.Name == fileName);
+            if (fileItem != null) return;
+
+            contractsFolderItem.ProjectItems.AddFromFile(file);
+        }
+
+        private static void AddFileContents(IDictionary<string, string> warnings, string file)
+        {
+            using (var sw = File.AppendText(file))
+            {
+                sw.WriteLine("-------" + DateTime.Now.ToLongDateString() + " " + DateTime.Now.ToLongTimeString() + "-------");
+                foreach (var warning in warnings)
+                {
+                    sw.WriteLine(warning.Key + ": " + warning.Value + Environment.NewLine);
+                }
+            }
         }
 
         public static void TriggerScaffoldOnRamlChanged(Document document)
