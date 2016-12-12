@@ -76,6 +76,7 @@
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Guids.cs" />
     <Compile Include="ILogger.cs" />
+    <Compile Include="JsonSchemaMessagesManager.cs" />
     <Compile Include="NugetInstallerHelper.cs" />
     <Compile Include="NullLogger.cs" />
     <Compile Include="PkgCmdID.cs" />
