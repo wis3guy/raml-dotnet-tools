@@ -194,14 +194,6 @@ namespace MuleSoft.RAML.Tools
             var menuCommand = sender as OleMenuCommand;
             if (menuCommand == null) return;
 
-            ShowAndEnableCommand(menuCommand, false);
-
-            var dte = ServiceProvider.GlobalProvider.GetService(typeof(SDTE)) as DTE;
-            var proj = VisualStudioAutomationHelper.GetActiveProject(dte);
-
-            if (VisualStudioAutomationHelper.IsAVisualStudio2015Project(proj))
-                return;
-
             ShowAndEnableCommand(menuCommand, true);
         }
 
@@ -545,21 +537,15 @@ namespace MuleSoft.RAML.Tools
         {
             var folderName = Settings.Default.ApiReferencesFolderName;
 
-            ShowOrHideForFolderIfNotVs2015(sender, folderName);
+            ShowOrHideForFolder(sender, folderName);
         }
 
-        private static void ShowOrHideForFolderIfNotVs2015(object sender, string folderName)
+        private static void ShowOrHideForFolder(object sender, string folderName)
         {
             var menuCommand = sender as OleMenuCommand;
             if (menuCommand == null) return;
 
             ShowAndEnableCommand(menuCommand, false);
-
-            var dte = ServiceProvider.GlobalProvider.GetService(typeof (SDTE)) as DTE;
-            var proj = VisualStudioAutomationHelper.GetActiveProject(dte);
-
-            if (VisualStudioAutomationHelper.IsAVisualStudio2015Project(proj))
-                return;
 
             if (IsInFolder(folderName)) return;
 
@@ -607,7 +593,6 @@ namespace MuleSoft.RAML.Tools
             ShowAndEnableCommand(menuCommand, true);
         }
 
-
         private static void ShowOrHideUpdateRamlRefCommand(object sender, string containingFolderName)
         {
             // get the menu that fired the event
@@ -615,12 +600,6 @@ namespace MuleSoft.RAML.Tools
             if (menuCommand == null) return;
 
             ShowAndEnableCommand(menuCommand, false);
-
-            var dte = ServiceProvider.GlobalProvider.GetService(typeof(SDTE)) as DTE;
-            var proj = VisualStudioAutomationHelper.GetActiveProject(dte);
-
-            if (VisualStudioAutomationHelper.IsAVisualStudio2015Project(proj))
-                return;
 
             IVsHierarchy hierarchy;
             uint itemid;

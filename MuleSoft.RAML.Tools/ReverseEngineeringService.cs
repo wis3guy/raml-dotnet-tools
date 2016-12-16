@@ -193,7 +193,7 @@ namespace MuleSoft.RAML.Tools
             if (lines.Any(l => l.Contains("app.UseStaticFiles();")))
                 return;
 
-            var line = FindLineWith(lines, "public void Configure(IApplicationBuilder app");
+            var line = TextFileHelper.FindLineWith(lines, "public void Configure(IApplicationBuilder app");
             if (line > 0)
                 lines.Insert(line + 2, appUsestaticfiles);
         }
@@ -205,13 +205,13 @@ namespace MuleSoft.RAML.Tools
             int line;
             if (!lines.Any(l => l.Contains("services.AddMvc")))
             {
-                line = FindLineWith(lines, "public void ConfigureServices");
+                line = TextFileHelper.FindLineWith(lines, "public void ConfigureServices");
                 lines.Insert(line + 2, addService);
                 lines.Insert(line + 2, AddMvcWithOptions());
                 return;
             }
 
-            line = FindLineWith(lines, "services.AddMvc()");
+            line = TextFileHelper.FindLineWith(lines, "services.AddMvc()");
             if (line > 0)
             {
                 lines.Insert(line -1, addService);
@@ -220,7 +220,7 @@ namespace MuleSoft.RAML.Tools
                 return;
             }
 
-            line = FindLineWith(lines, "services.AddMvc(options =>");
+            line = TextFileHelper.FindLineWith(lines, "services.AddMvc(options =>");
             if (line > 0 && lines[line + 1] == "{")
             {
                 lines.Insert(line + 1, addService);
@@ -245,7 +245,7 @@ namespace MuleSoft.RAML.Tools
 
         private static void InsertLine(List<string> lines)
         {
-            var line = FindLineWith(lines, "Register(HttpConfiguration config)");
+            var line = TextFileHelper.FindLineWith(lines, "Register(HttpConfiguration config)");
             var inserted = false;
             if (line != -1)
             {
@@ -258,21 +258,10 @@ namespace MuleSoft.RAML.Tools
 
             if (!inserted)
             {
-                line = FindLineWith(lines, ".MapHttpAttributeRoutes();");
+                line = TextFileHelper.FindLineWith(lines, ".MapHttpAttributeRoutes();");
                 if (line != -1)
                     lines.Insert(line + 1, "\t\t\tRAML.WebApiExplorer.DocumentationProviderConfig.IncludeXmlComments();");
             }
-        }
-
-        private static int FindLineWith(IReadOnlyList<string> lines, string find)
-        {
-            var line = -1;
-            for (var i = 0; i < lines.Count; i++)
-            {
-                if (lines[i].Contains(find))
-                    line = i;
-            }
-            return line;
         }
 
         private static void ConfigureXmlDocumentationFileInProject(Project proj)
@@ -467,7 +456,7 @@ namespace MuleSoft.RAML.Tools
 
         private static void RemoveLine(List<string> lines, string content)
         {
-            var line = FindLineWith(lines, content);
+            var line = TextFileHelper.FindLineWith(lines, content);
             if (line > 0)
                 lines.RemoveAt(line);
         }

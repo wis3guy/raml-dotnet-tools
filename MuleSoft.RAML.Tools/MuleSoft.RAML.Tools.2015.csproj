@@ -94,6 +94,7 @@
     <Compile Include="TargetFolderResolver.cs" />
     <Compile Include="TemplateParams.cs" />
     <Compile Include="TemplatesManager.cs" />
+    <Compile Include="TextFileHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
