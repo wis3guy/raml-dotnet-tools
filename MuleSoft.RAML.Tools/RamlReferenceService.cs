@@ -4,10 +4,12 @@ using System.Linq;
 using System.Windows.Forms;
 using EnvDTE;
 using Microsoft.VisualStudio.ComponentModelHost;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using MuleSoft.RAML.Tools.Properties;
 using NuGet.VisualStudio;
 using Raml.Common;
+using Raml.Tools.ClientGenerator;
 
 namespace MuleSoft.RAML.Tools
 {
@@ -25,6 +27,9 @@ namespace MuleSoft.RAML.Tools
         public readonly static string ApiReferencesFolderName = Settings.Default.ApiReferencesFolderName;
         private readonly string microsoftNetHttpPackageId = Settings.Default.MicrosoftNetHttpPackageId;
         private readonly string microsoftNetHttpPackageVersion = Settings.Default.MicrosoftNetHttpPackageVersion;
+
+        private readonly string clientT4TemplateName = Settings.Default.ClientT4TemplateName;
+        private readonly TemplatesManager templatesManager = new TemplatesManager();
 
         public RamlReferenceService(IServiceProvider serviceProvider, ILogger logger)
         {
@@ -112,6 +117,8 @@ namespace MuleSoft.RAML.Tools
             {
                 NugetInstallerHelper.InstallPackageIfNeeded(proj, packs, installer, newtonsoftJsonPackageId, "9.0.1", Settings.Default.NugetExternalPackagesSource);
                 NugetInstallerHelper.InstallPackageIfNeeded(proj, packs, installer, "Microsoft.AspNet.WebApi.Client", "5.2.3", Settings.Default.NugetExternalPackagesSource);
+                NugetInstallerHelper.InstallPackageIfNeeded(proj, packs, installer, "System.Xml.XmlSerializer", "4.3.0", Settings.Default.NugetExternalPackagesSource);
+                NugetInstallerHelper.InstallPackageIfNeeded(proj, packs, installer, "System.Runtime.Serialization.Xml", "4.3.0", Settings.Default.NugetExternalPackagesSource);
             }
             else
             {
@@ -198,8 +205,43 @@ namespace MuleSoft.RAML.Tools
             var refFilePath = InstallerServices.AddRefFile(ramlSourceFile, destFolderPath, targetFileName, props);
             ramlProjItem.ProjectItems.AddFromFile(refFilePath);
 
-            ramlProjItem.Properties.Item("CustomTool").Value = string.Empty; // to cause a refresh when file already exists
-            ramlProjItem.Properties.Item("CustomTool").Value = "RamlClientTool";
+            if (VisualStudioAutomationHelper.IsAVisualStudio2015Project(proj))
+            {
+                templatesManager.CopyClientTemplateToProjectFolder(apiRefsFolderPath);
+
+                var ramlInfo = RamlInfoService.GetRamlInfo(ramlDestFile);
+                if (ramlInfo.HasErrors)
+                {
+                    ActivityLog.LogError(VisualStudioAutomationHelper.RamlVsToolsActivityLogSource, ramlInfo.ErrorMessage);
+                    MessageBox.Show(ramlInfo.ErrorMessage);
+                    return;
+                }
+
+                var model = new ClientGeneratorService(ramlInfo.RamlDocument, clientRootClassName, targetNamespace).BuildModel();
+                var directoryName = Path.GetDirectoryName(ramlDestFile).TrimEnd(Path.DirectorySeparatorChar);
+                var templateFolder = directoryName.Substring(0, directoryName.LastIndexOf(Path.DirectorySeparatorChar)) + Path.DirectorySeparatorChar + "Templates";
+
+                var templateFilePath = Path.Combine(templateFolder, clientT4TemplateName);
+                var extensionPath = Path.GetDirectoryName(GetType().Assembly.Location) + Path.DirectorySeparatorChar;
+                var t4Service = new T4Service(serviceProvider);
+                var res = t4Service.TransformText(templateFilePath, model, extensionPath, ramlDestFile, targetNamespace);
+
+                if (res.HasErrors)
+                {
+                    ActivityLog.LogError(VisualStudioAutomationHelper.RamlVsToolsActivityLogSource, res.Errors);
+                    MessageBox.Show(res.Errors);
+                    return;
+                }
+
+                var content = templatesManager.AddClientMetadataHeader(res.Content);
+                var csTargetFile = Path.Combine(destFolderPath, destFolderName + ".cs");
+                File.WriteAllText(csTargetFile, content);
+            }
+            else
+            {
+                ramlProjItem.Properties.Item("CustomTool").Value = string.Empty; // to cause a refresh when file already exists
+                ramlProjItem.Properties.Item("CustomTool").Value = "RamlClientTool";
+            }
         }
 
     }
