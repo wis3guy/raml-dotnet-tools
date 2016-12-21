@@ -28,6 +28,7 @@ using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Runtime.InteropServices;
+using System.Windows.Forms;
 using Caliburn.Micro;
 using Raml.Common.ViewModels;
 using Raml.Common.Views;
@@ -161,7 +162,7 @@ namespace MuleSoft.RAML.Tools
             var dte = ServiceProvider.GlobalProvider.GetService(typeof(SDTE)) as DTE;
             events = dte.Events;
             documentEvents = events.DocumentEvents;
-            documentEvents.DocumentSaved += RamlScaffoldService.TriggerScaffoldOnRamlChanged;
+            documentEvents.DocumentSaved += DocumentEventsOnDocumentSaved;
             //MuleSoft.RAML.Tools.Command1.Initialize(this);
 
             var bootstrapper = new Bootstrapper();
@@ -177,6 +178,13 @@ namespace MuleSoft.RAML.Tools
             }
 
             LoadSystemWindowsInteractivity();
+        }
+
+        private void DocumentEventsOnDocumentSaved(Document document)
+        {
+            RamlScaffoldService.TriggerScaffoldOnRamlChanged(document);
+
+            RamlClientTool.TriggerClientRegeneration(document, GetExtensionPath());
         }
 
         // workaround http://stackoverflow.com/questions/29362125/visual-studio-extension-could-not-find-a-required-assembly
@@ -299,20 +307,33 @@ namespace MuleSoft.RAML.Tools
             if (!templatesManager.ConfirmWhenIncompatibleClientTemplate(generatedFolderPath))
                 return;
 
-            //if (Unauthorized(ramlFilePath))
-            //{
-            //    var generationServices = new RamlReferenceService(ServiceProvider.GlobalProvider);
-            //    var ramlChooser = new RamlChooser(this, generationServices.AddRamlReference, "Update RAML Reference", false,
-            //        Settings.Default.RAMLExchangeUrl);
-            //    ramlChooser.ShowDialog();
-            //}
-            //else
-            //{
-            var dte = (DTE2)GetService(typeof(SDTE));
-            dte.ExecuteCommand("Project.RunCustomTool");
-            //}
-
+            RegenerateClientCode(ramlFilePath);
+            
             ChangeCommandStatus(updateReferenceCmdId, true);
+        }
+
+        private void RegenerateClientCode(string ramlFilePath)
+        {
+            if (IsAVisualStudio2015Project())
+            {
+                var result = RamlClientTool.RegenerateCode(ramlFilePath, GetExtensionPath());
+                if (!result.IsSuccess)
+                {
+                    ActivityLog.LogError(VisualStudioAutomationHelper.RamlVsToolsActivityLogSource, result.ErrorMessage);
+                    MessageBox.Show(result.ErrorMessage);
+                }
+            }
+            else
+            {
+                var dte = (DTE2) GetService(typeof (SDTE));
+                dte.ExecuteCommand("Project.RunCustomTool");
+            }
+        }
+
+        private string GetExtensionPath()
+        {
+            var extensionPath = Path.GetDirectoryName(GetType().Assembly.Location) + Path.DirectorySeparatorChar;
+            return extensionPath;
         }
 
         private void EditRamlPropertiesCallback(object sender, EventArgs e)
@@ -352,8 +373,7 @@ namespace MuleSoft.RAML.Tools
                     if (!templatesManager.ConfirmWhenIncompatibleClientTemplate(generatedFolderPath))
                         return;
 
-                    var dte = (DTE2)GetService(typeof(SDTE));
-                    dte.ExecuteCommand("Project.RunCustomTool");
+                    RegenerateClientCode(ramlFilePath);
                 }
             }
 
@@ -497,10 +517,18 @@ namespace MuleSoft.RAML.Tools
             var dte = ServiceProvider.GlobalProvider.GetService(typeof(SDTE)) as DTE;
             var proj = VisualStudioAutomationHelper.GetActiveProject(dte);
 
-            if (VisualStudioAutomationHelper.IsAVisualStudio2015Project(proj))
+            if (IsAVisualStudio2015Project())
                 return IsAspNet5MvcInstalled(proj);
 
             return IsWebApiCoreInstalled(proj);
+        }
+
+        private static bool IsAVisualStudio2015Project()
+        {
+            var dte = ServiceProvider.GlobalProvider.GetService(typeof(SDTE)) as DTE;
+            var proj = VisualStudioAutomationHelper.GetActiveProject(dte);
+
+            return VisualStudioAutomationHelper.IsAVisualStudio2015Project(proj);
         }
 
         private static bool IsWebApiCoreInstalled(Project proj)

@@ -203,10 +203,12 @@
     <Compile Include="ActivityLogger.cs" />
     <Compile Include="CodeGenerator.cs" />
     <Compile Include="CodeGeneratorRegistrationAttribute.cs" />
+    <Compile Include="CodeRegenerationResult.cs" />
     <Compile Include="ILogger.cs" />
     <Compile Include="JsonSchemaMessagesManager.cs" />
     <Compile Include="NugetInstallerHelper.cs" />
     <Compile Include="NullLogger.cs" />
+    <Compile Include="TextFileHelper.cs" />
     <Content Include="MetadataPackage\Content\Controllers\RamlController.class">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>

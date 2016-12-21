@@ -57,7 +57,11 @@ namespace MuleSoft.RAML.Tools
             catch (Exception ex)
             {
                 logger.LogError(ex);
-                MessageBox.Show("Error when trying to add the RAML reference. " + ex.Message);
+                var errorMessage = "Error when trying to add the RAML reference. " + ex.Message;
+                if (ex.InnerException != null)
+                    errorMessage += " - " + ex.InnerException;
+
+                MessageBox.Show(errorMessage);
                 throw;
             }
         }
@@ -133,45 +137,6 @@ namespace MuleSoft.RAML.Tools
             }
         }
 
-        private void InstallPackageIfNeeded(Project proj, string packageId, string packageVersion)
-        {
-            var projectFile = GetProjectFilePath(proj);
-            var lines = File.ReadAllLines(projectFile).ToList();
-            var packageString = string.Format("\"{0}\": \"{1}\",", packageId, packageVersion);
-            if (!lines.Any(l => l.Contains(packageId)))
-            {
-                var index = TextFileHelper.FindLineWith(lines, "dependencies");
-                lines.Insert(index + 1, packageString);
-            }
-            else
-            {
-                var index = TextFileHelper.FindLineWith(lines, packageId);
-                if (IsVersionLesser(lines[index], packageId, packageVersion))
-                {
-                    lines.RemoveAt(index);
-                    lines.Insert(index, packageString);
-                }
-            }
-        }
-
-        private bool IsVersionLesser(string line, string packageId, string packageVersion)
-        {
-            var version = line.Replace(packageId, string.Empty);
-            version = version.Replace(":", string.Empty);
-            version = version.Replace("\"", string.Empty);
-
-            var installedVersionNumbers = version.Split(new []{"."}, StringSplitOptions.RemoveEmptyEntries);
-            var toInstallVersionNumbers = packageVersion.Split(new[] { "." }, StringSplitOptions.RemoveEmptyEntries);
-            for (int index = 0; index < installedVersionNumbers.Length; index++)
-            {
-                var installedNumber = int.Parse(installedVersionNumbers[index]);
-                var toInstallNumber = int.Parse(toInstallVersionNumbers[index]);
-                if (installedNumber > toInstallNumber)
-                    return false;
-            }
-            return true;
-        }
-
         private void AddFilesToProject(string ramlSourceFile, Project proj, string targetNamespace, string ramlOriginalSource, string targetFileName, string clientRootClassName)
         {
             if(!File.Exists(ramlSourceFile))
@@ -188,7 +153,7 @@ namespace MuleSoft.RAML.Tools
             var destFolderItem = VisualStudioAutomationHelper.AddFolderIfNotExists(apiRefsFolderItem, destFolderName, destFolderPath);
 
             var includesManager = new RamlIncludesManager();
-            var result = includesManager.Manage(ramlOriginalSource, destFolderPath, ramlSourceFile);
+            var result = includesManager.Manage(ramlOriginalSource, destFolderPath + Path.DirectorySeparatorChar + InstallerServices.IncludesFolderName, destFolderPath + Path.DirectorySeparatorChar);
 
             var ramlDestFile = Path.Combine(destFolderPath, targetFileName);
             if (File.Exists(ramlDestFile))
@@ -208,34 +173,7 @@ namespace MuleSoft.RAML.Tools
             if (VisualStudioAutomationHelper.IsAVisualStudio2015Project(proj))
             {
                 templatesManager.CopyClientTemplateToProjectFolder(apiRefsFolderPath);
-
-                var ramlInfo = RamlInfoService.GetRamlInfo(ramlDestFile);
-                if (ramlInfo.HasErrors)
-                {
-                    ActivityLog.LogError(VisualStudioAutomationHelper.RamlVsToolsActivityLogSource, ramlInfo.ErrorMessage);
-                    MessageBox.Show(ramlInfo.ErrorMessage);
-                    return;
-                }
-
-                var model = new ClientGeneratorService(ramlInfo.RamlDocument, clientRootClassName, targetNamespace).BuildModel();
-                var directoryName = Path.GetDirectoryName(ramlDestFile).TrimEnd(Path.DirectorySeparatorChar);
-                var templateFolder = directoryName.Substring(0, directoryName.LastIndexOf(Path.DirectorySeparatorChar)) + Path.DirectorySeparatorChar + "Templates";
-
-                var templateFilePath = Path.Combine(templateFolder, clientT4TemplateName);
-                var extensionPath = Path.GetDirectoryName(GetType().Assembly.Location) + Path.DirectorySeparatorChar;
-                var t4Service = new T4Service(serviceProvider);
-                var res = t4Service.TransformText(templateFilePath, model, extensionPath, ramlDestFile, targetNamespace);
-
-                if (res.HasErrors)
-                {
-                    ActivityLog.LogError(VisualStudioAutomationHelper.RamlVsToolsActivityLogSource, res.Errors);
-                    MessageBox.Show(res.Errors);
-                    return;
-                }
-
-                var content = templatesManager.AddClientMetadataHeader(res.Content);
-                var csTargetFile = Path.Combine(destFolderPath, destFolderName + ".cs");
-                File.WriteAllText(csTargetFile, content);
+                GenerateCode(targetNamespace, clientRootClassName, ramlDestFile, destFolderPath, destFolderName);
             }
             else
             {
@@ -244,5 +182,37 @@ namespace MuleSoft.RAML.Tools
             }
         }
 
+        private void GenerateCode(string targetNamespace, string clientRootClassName, string ramlDestFile, string destFolderPath,
+            string destFolderName)
+        {
+            var ramlInfo = RamlInfoService.GetRamlInfo(ramlDestFile);
+            if (ramlInfo.HasErrors)
+            {
+                ActivityLog.LogError(VisualStudioAutomationHelper.RamlVsToolsActivityLogSource, ramlInfo.ErrorMessage);
+                MessageBox.Show(ramlInfo.ErrorMessage);
+                return;
+            }
+
+            var model = new ClientGeneratorService(ramlInfo.RamlDocument, clientRootClassName, targetNamespace).BuildModel();
+            var directoryName = Path.GetDirectoryName(ramlDestFile).TrimEnd(Path.DirectorySeparatorChar);
+            var templateFolder = directoryName.Substring(0, directoryName.LastIndexOf(Path.DirectorySeparatorChar)) +
+                                 Path.DirectorySeparatorChar + "Templates";
+
+            var templateFilePath = Path.Combine(templateFolder, clientT4TemplateName);
+            var extensionPath = Path.GetDirectoryName(GetType().Assembly.Location) + Path.DirectorySeparatorChar;
+            var t4Service = new T4Service(serviceProvider);
+            var res = t4Service.TransformText(templateFilePath, model, extensionPath, ramlDestFile, targetNamespace);
+
+            if (res.HasErrors)
+            {
+                ActivityLog.LogError(VisualStudioAutomationHelper.RamlVsToolsActivityLogSource, res.Errors);
+                MessageBox.Show(res.Errors);
+                return;
+            }
+
+            var content = templatesManager.AddClientMetadataHeader(res.Content);
+            var csTargetFile = Path.Combine(destFolderPath, destFolderName + ".cs");
+            File.WriteAllText(csTargetFile, content);
+        }
     }
 }

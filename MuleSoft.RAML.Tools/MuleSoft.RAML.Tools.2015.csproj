@@ -73,6 +73,7 @@
     <Compile Include="ActivityLogger.cs" />
     <Compile Include="CodeGenerator.cs" />
     <Compile Include="CodeGeneratorRegistrationAttribute.cs" />
+    <Compile Include="CodeRegenerationResult.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Guids.cs" />
     <Compile Include="ILogger.cs" />

@@ -29,8 +29,8 @@ namespace MuleSoft.RAML.Tools
         private object site;
         private CodeDomProvider codeDomProvider;
         private ServiceProvider serviceProvider;
-        private readonly string ClientT4TemplateName = Settings.Default.ClientT4TemplateName;
-        private readonly TemplatesManager templatesManager = new TemplatesManager();
+        private static readonly string ClientT4TemplateName = Settings.Default.ClientT4TemplateName;
+        private static readonly TemplatesManager TemplatesManager = new TemplatesManager();
 
         private CodeDomProvider CodeProvider
         {
@@ -75,54 +75,18 @@ namespace MuleSoft.RAML.Tools
                 if (bstrInputFileContents == null)
                     throw new ArgumentNullException("bstrInputFileContents");
 
-                var containingFolder = Path.GetDirectoryName(wszInputFilePath);
-                var refFilePath = InstallerServices.GetRefFilePath(wszInputFilePath);
-                
-                var ramlSource = RamlReferenceReader.GetRamlSource(refFilePath);
-                if (string.IsNullOrWhiteSpace(ramlSource))
-                    ramlSource = wszInputFilePath;
+                var extensionPath = Path.GetDirectoryName(GetType().Assembly.Location) + Path.DirectorySeparatorChar;
 
-                var clientRootClassName = RamlReferenceReader.GetClientRootClassName(refFilePath);
-
-                var globalProvider = ServiceProvider.GlobalProvider;
-                var destFolderItem = GetDestinationFolderItem(wszInputFilePath, globalProvider);
-                var result = UpdateRamlAndIncludedFiles(wszInputFilePath, destFolderItem, ramlSource, containingFolder);
+                var result = RegenerateCode(wszInputFilePath, extensionPath);
                 if (!result.IsSuccess)
                 {
-                    MessageBox.Show("Error when tryng to download " + ramlSource + " - Status Code: " + Enum.GetName(typeof(HttpStatusCode), result.StatusCode));
                     pcbOutput = 0;
+                    ActivityLog.LogError(VisualStudioAutomationHelper.RamlVsToolsActivityLogSource, result.ErrorMessage);
+                    MessageBox.Show(result.ErrorMessage);
                     return VSConstants.E_ABORT;
                 }
 
-                var dte = ServiceProvider.GlobalProvider.GetService(typeof(SDTE)) as DTE;
-                var proj = VisualStudioAutomationHelper.GetActiveProject(dte);
-                var apiRefsFolderPath = Path.GetDirectoryName(proj.FullName) + Path.DirectorySeparatorChar +
-                                        RamlReferenceService.ApiReferencesFolderName + Path.DirectorySeparatorChar;
-
-                templatesManager.CopyClientTemplateToProjectFolder(apiRefsFolderPath);
-
-                var ramlInfo = RamlInfoService.GetRamlInfo(wszInputFilePath);
-                if (ramlInfo.HasErrors)
-                {
-                    MessageBox.Show(ramlInfo.ErrorMessage);
-                    pcbOutput = 0;
-                    return VSConstants.E_ABORT;
-                }
-
-                var res = GenerateCodeUsingTemplate(wszInputFilePath, ramlInfo, globalProvider, refFilePath, clientRootClassName);
-
-                if (res.HasErrors)
-                {
-                    ActivityLog.LogError(VisualStudioAutomationHelper.RamlVsToolsActivityLogSource, res.Errors);
-                    MessageBox.Show(res.Errors);
-                    pcbOutput = 0;
-                    return VSConstants.E_ABORT;
-                }
-
-
-                var content = templatesManager.AddClientMetadataHeader(res.Content);
-
-                var bytes = Encoding.UTF8.GetBytes(content);
+                var bytes = Encoding.UTF8.GetBytes(result.Content);
                 rgbOutputFileContents[0] = Marshal.AllocCoTaskMem(bytes.Length);
                 Marshal.Copy(bytes, 0, rgbOutputFileContents[0], bytes.Length);
                 pcbOutput = (uint) bytes.Length;
@@ -143,14 +107,72 @@ namespace MuleSoft.RAML.Tools
             }
         }
 
-		private Result GenerateCodeUsingTemplate(string wszInputFilePath, RamlInfo ramlInfo, System.IServiceProvider globalProvider,
-            string refFilePath, string clientRootClassName)
+        public static void TriggerClientRegeneration(Document document, string extensionPath)
+        {
+            // if is client RAML regenerate code...
+            if (!document.Path.Contains(RamlReferenceService.ApiReferencesFolderName))
+                return;
+
+            if (!document.Path.EndsWith("includes"))
+            {
+                RegenerateCode(document.FullName, extensionPath);
+            }
+            else
+            {
+                var mainRamlPath = document.Path.TrimEnd(Path.DirectorySeparatorChar).TrimEnd('\\').TrimEnd('/').Replace("includes", string.Empty);
+                var ramlFile = mainRamlPath.Substring(mainRamlPath.LastIndexOf(Path.DirectorySeparatorChar)) + ".raml";
+                mainRamlPath = mainRamlPath + ramlFile;
+                RegenerateCode(mainRamlPath, extensionPath);
+            }
+        }
+
+        public static CodeRegenerationResult RegenerateCode(string ramlFilePath, string extensionPath)
+        {
+            var containingFolder = Path.GetDirectoryName(ramlFilePath);
+            var refFilePath = InstallerServices.GetRefFilePath(ramlFilePath);
+
+            var ramlSource = RamlReferenceReader.GetRamlSource(refFilePath);
+            if (string.IsNullOrWhiteSpace(ramlSource))
+                ramlSource = ramlFilePath;
+
+            var clientRootClassName = RamlReferenceReader.GetClientRootClassName(refFilePath);
+
+            var globalProvider = ServiceProvider.GlobalProvider;
+            var destFolderItem = GetDestinationFolderItem(ramlFilePath, globalProvider);
+            var result = UpdateRamlAndIncludedFiles(ramlFilePath, destFolderItem, ramlSource, containingFolder);
+            if (!result.IsSuccess)
+                return CodeRegenerationResult.Error("Error when tryng to download " + ramlSource + " - Status Code: " + Enum.GetName(typeof(HttpStatusCode), result.StatusCode));
+
+
+            var dte = ServiceProvider.GlobalProvider.GetService(typeof(SDTE)) as DTE;
+            var proj = VisualStudioAutomationHelper.GetActiveProject(dte);
+            var apiRefsFolderPath = Path.GetDirectoryName(proj.FullName) + Path.DirectorySeparatorChar +
+                                    RamlReferenceService.ApiReferencesFolderName + Path.DirectorySeparatorChar;
+
+            TemplatesManager.CopyClientTemplateToProjectFolder(apiRefsFolderPath);
+
+            var ramlInfo = RamlInfoService.GetRamlInfo(ramlFilePath);
+            if (ramlInfo.HasErrors)
+                return CodeRegenerationResult.Error(ramlInfo.ErrorMessage);
+
+            var res = GenerateCodeUsingTemplate(ramlFilePath, ramlInfo, globalProvider, refFilePath, clientRootClassName, extensionPath);
+
+            if (res.HasErrors)
+                return CodeRegenerationResult.Error(res.Errors);
+
+
+            var content = TemplatesManager.AddClientMetadataHeader(res.Content);
+            return CodeRegenerationResult.Success(content);
+        }
+
+
+        private static Result GenerateCodeUsingTemplate(string wszInputFilePath, RamlInfo ramlInfo, System.IServiceProvider globalProvider,
+            string refFilePath, string clientRootClassName, string extensionPath)
         {
             var targetNamespace = RamlReferenceReader.GetRamlNamespace(refFilePath);
             var model = GetGeneratorModel(clientRootClassName, ramlInfo, targetNamespace);
             var templateFolder = GetTemplateFolder(wszInputFilePath);
             var templateFilePath = Path.Combine(templateFolder, ClientT4TemplateName);
-            var extensionPath = Path.GetDirectoryName(GetType().Assembly.Location) + Path.DirectorySeparatorChar;
             var t4Service = new T4Service(globalProvider);
             var res = t4Service.TransformText(templateFilePath, model, extensionPath, wszInputFilePath, targetNamespace);
             return res;
@@ -193,8 +215,6 @@ namespace MuleSoft.RAML.Tools
             File.WriteAllText(ramlFilePath, contents);
             new FileInfo(ramlFilePath).IsReadOnly = true;
         }
-
-
 
         private static ProjectItem GetDestinationFolderItem(string wszInputFilePath, System.IServiceProvider globalProvider)
         {
