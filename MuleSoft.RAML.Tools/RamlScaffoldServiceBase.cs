@@ -401,19 +401,7 @@ namespace MuleSoft.RAML.Tools
             var includesManager = new RamlIncludesManager();
             var result = includesManager.Manage(parameters.RamlSource, includesFolderPath, confirmOverrite: true, rootRamlPath: folderPath + Path.DirectorySeparatorChar);
 
-            var includesFolderItem = folderItem.ProjectItems.Cast<ProjectItem>().FirstOrDefault(i => i.Name == InstallerServices.IncludesFolderName);
-            if (includesFolderItem == null && !VisualStudioAutomationHelper.IsAVisualStudio2015Project(folderItem.ContainingProject))
-                includesFolderItem = folderItem.ProjectItems.AddFolder(InstallerServices.IncludesFolderName);
-
-            foreach (var file in result.IncludedFiles)
-            {
-                if(!VisualStudioAutomationHelper.IsAVisualStudio2015Project(folderItem.ContainingProject) || !File.Exists(file))
-                    includesFolderItem.ProjectItems.AddFromFile(file);
-            }
-
-            //var existingIncludeItems = includesFolderItem.ProjectItems.Cast<ProjectItem>();
-            //var oldIncludedFiles = existingIncludeItems.Where(item => !result.IncludedFiles.Contains(item.FileNames[0]));
-            //InstallerServices.RemoveSubItemsAndAssociatedFiles(oldIncludedFiles);
+            ManageIncludes(folderItem, result);
 
             var ramlProjItem = AddOrUpdateRamlFile(result.ModifiedContents, folderItem, folderPath, parameters.TargetFileName);
             InstallerServices.RemoveSubItemsAndAssociatedFiles(ramlProjItem);
@@ -426,6 +414,8 @@ namespace MuleSoft.RAML.Tools
 
             Scaffold(ramlProjItem.FileNames[0], parameters);
         }
+
+        protected abstract void ManageIncludes(ProjectItem folderItem, RamlIncludesManagerResult result);
 
         private RamlProperties Map(RamlChooserActionParams parameters)
         {

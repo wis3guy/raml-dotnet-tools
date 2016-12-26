@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Windows.Forms;
 using EnvDTE;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Shell;
@@ -9,7 +8,6 @@ using Microsoft.VisualStudio.Shell.Interop;
 using MuleSoft.RAML.Tools.Properties;
 using NuGet.VisualStudio;
 using Raml.Common;
-using Raml.Tools.ClientGenerator;
 
 namespace MuleSoft.RAML.Tools
 {
@@ -27,8 +25,8 @@ namespace MuleSoft.RAML.Tools
         private readonly string microsoftNetHttpPackageId = Settings.Default.MicrosoftNetHttpPackageId;
         private readonly string microsoftNetHttpPackageVersion = Settings.Default.MicrosoftNetHttpPackageVersion;
 
-        protected readonly string clientT4TemplateName = Settings.Default.ClientT4TemplateName;
-        protected readonly TemplatesManager templatesManager = new TemplatesManager();
+        protected readonly string ClientT4TemplateName = Settings.Default.ClientT4TemplateName;
+        protected readonly TemplatesManager TemplatesManager = new TemplatesManager();
 
         protected RamlReferenceServiceBase(IServiceProvider serviceProvider, ILogger logger)
         {

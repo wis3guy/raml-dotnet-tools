@@ -210,7 +210,7 @@ namespace MuleSoft.RAML.Tools
 
             StartProgressBar("Disable RAML metadata output", "Uninstalling...", "Processing...");
 
-            var service = new ReverseEngineeringService(ServiceProvider.GlobalProvider);
+            var service = ReverseEngineeringServiceBase.GetReverseEngineeringService(ServiceProvider.GlobalProvider);
             service.RemoveReverseEngineering();
 
             StopProgressBar();
@@ -222,7 +222,7 @@ namespace MuleSoft.RAML.Tools
         {
             ChangeCommandStatus(extractRAMLCommandId, false);
 
-            var service = new ReverseEngineeringService(ServiceProvider.GlobalProvider);
+            var service = ReverseEngineeringServiceBase.GetReverseEngineeringService(ServiceProvider.GlobalProvider);
             service.ExtractRAML();
 
             ChangeCommandStatus(extractRAMLCommandId, true);
@@ -234,7 +234,7 @@ namespace MuleSoft.RAML.Tools
 
             StartProgressBar("Enable RAML metadata output", "Installing...", "Processing...");
 
-            var service = new ReverseEngineeringService(ServiceProvider.GlobalProvider);
+            var service = ReverseEngineeringServiceBase.GetReverseEngineeringService(ServiceProvider.GlobalProvider);
             service.AddReverseEngineering();
 
             StopProgressBar();
@@ -254,7 +254,7 @@ namespace MuleSoft.RAML.Tools
             string ramlFilePath;
             ((IVsProject)hierarchy).GetMkDocument(itemid, out ramlFilePath);
 
-            var ramlScaffoldUpdater = RamlScaffoldServiceBase.GetRamlScaffoldService(Microsoft.VisualStudio.Shell.ServiceProvider.GlobalProvider);
+            var ramlScaffoldUpdater = RamlScaffoldServiceBase.GetRamlScaffoldService(ServiceProvider.GlobalProvider);
             ramlScaffoldUpdater.UpdateRaml(ramlFilePath);
 
             ChangeCommandStatus(updateRamlContractCommandId, true);
@@ -262,7 +262,7 @@ namespace MuleSoft.RAML.Tools
 
         private void AddRamlContractCallback(object sender, EventArgs e)
         {
-            var ramlScaffoldUpdater = RamlScaffoldServiceBase.GetRamlScaffoldService(Microsoft.VisualStudio.Shell.ServiceProvider.GlobalProvider);
+            var ramlScaffoldUpdater = RamlScaffoldServiceBase.GetRamlScaffoldService(ServiceProvider.GlobalProvider);
             var ramlChooserViewModel = new RamlChooserViewModel();
             ramlChooserViewModel.Load(ServiceProvider.GlobalProvider, ramlScaffoldUpdater.AddContract, "Add RAML Contract", true, Settings.Default.RAMLExchangeUrl);
             dynamic settings = new ExpandoObject();
@@ -356,7 +356,7 @@ namespace MuleSoft.RAML.Tools
 
                 if (IsServerSide(ramlFilePath))
                 {
-                    var ramlScaffoldUpdater = RamlScaffoldServiceBase.GetRamlScaffoldService(Microsoft.VisualStudio.Shell.ServiceProvider.GlobalProvider);
+                    var ramlScaffoldUpdater = RamlScaffoldServiceBase.GetRamlScaffoldService(ServiceProvider.GlobalProvider);
                     ramlScaffoldUpdater.UpdateRaml(ramlFilePath);
                 }
                 else

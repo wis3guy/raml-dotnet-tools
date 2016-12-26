@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using EnvDTE;
 using Microsoft.VisualStudio.Shell.Interop;
 using MuleSoft.RAML.Tools.Properties;
@@ -45,6 +46,10 @@ namespace MuleSoft.RAML.Tools
         protected override string GetTargetFolderPath(string folderPath, string targetFilename)
         {
             return folderPath + Path.GetFileNameWithoutExtension(targetFilename) + Path.DirectorySeparatorChar;
+        }
+
+        protected override void ManageIncludes(ProjectItem folderItem, RamlIncludesManagerResult result)
+        {
         }
     }
 }

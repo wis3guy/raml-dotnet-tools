@@ -57,7 +57,7 @@ namespace MuleSoft.RAML.Tools
         protected override void GenerateCode(Project proj, string targetNamespace, string clientRootClassName, string apiRefsFolderPath,
             string ramlDestFile, string destFolderPath, string destFolderName, ProjectItem ramlProjItem)
         {
-            templatesManager.CopyClientTemplateToProjectFolder(apiRefsFolderPath);
+            TemplatesManager.CopyClientTemplateToProjectFolder(apiRefsFolderPath);
             GenerateCode(targetNamespace, clientRootClassName, ramlDestFile, destFolderPath, destFolderName);
         }
 
@@ -77,7 +77,7 @@ namespace MuleSoft.RAML.Tools
             var templateFolder = directoryName.Substring(0, directoryName.LastIndexOf(Path.DirectorySeparatorChar)) +
                                  Path.DirectorySeparatorChar + "Templates";
 
-            var templateFilePath = Path.Combine(templateFolder, clientT4TemplateName);
+            var templateFilePath = Path.Combine(templateFolder, ClientT4TemplateName);
             var extensionPath = Path.GetDirectoryName(GetType().Assembly.Location) + Path.DirectorySeparatorChar;
             var t4Service = new T4Service(ServiceProvider);
             var res = t4Service.TransformText(templateFilePath, model, extensionPath, ramlDestFile, targetNamespace);
@@ -89,7 +89,7 @@ namespace MuleSoft.RAML.Tools
                 return;
             }
 
-            var content = templatesManager.AddClientMetadataHeader(res.Content);
+            var content = TemplatesManager.AddClientMetadataHeader(res.Content);
             var csTargetFile = Path.Combine(destFolderPath, destFolderName + ".cs");
             File.WriteAllText(csTargetFile, content);
         }

@@ -212,6 +212,8 @@
     <Compile Include="RamlReferenceServiceNetFramework.cs" />
     <Compile Include="RamlScaffoldServiceAspNetCore.cs" />
     <Compile Include="RamlScaffoldServiceWebApi.cs" />
+    <Compile Include="ReverseEngineeringAspNetCore.cs" />
+    <Compile Include="ReverseEngineeringServiceWebApi.cs" />
     <Compile Include="TextFileHelper.cs" />
     <Content Include="MetadataPackage\Content\Controllers\RamlController.class">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
