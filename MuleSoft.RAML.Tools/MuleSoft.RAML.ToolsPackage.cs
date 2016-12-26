@@ -6,11 +6,6 @@
 
 
 using System.Diagnostics.CodeAnalysis;
-
-using Microsoft.VisualStudio.OLE.Interop;
-
-using Microsoft.Win32;
-
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio;
@@ -31,7 +26,6 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Caliburn.Micro;
 using Raml.Common.ViewModels;
-using Raml.Common.Views;
 
 namespace MuleSoft.RAML.Tools
 {
@@ -182,7 +176,7 @@ namespace MuleSoft.RAML.Tools
 
         private void DocumentEventsOnDocumentSaved(Document document)
         {
-            RamlScaffoldService.TriggerScaffoldOnRamlChanged(document);
+            RamlScaffoldServiceBase.TriggerScaffoldOnRamlChanged(document);
 
             RamlClientTool.TriggerClientRegeneration(document, GetExtensionPath());
         }
@@ -260,7 +254,7 @@ namespace MuleSoft.RAML.Tools
             string ramlFilePath;
             ((IVsProject)hierarchy).GetMkDocument(itemid, out ramlFilePath);
 
-            var ramlScaffoldUpdater = new RamlScaffoldService(new T4Service(ServiceProvider.GlobalProvider), ServiceProvider.GlobalProvider);
+            var ramlScaffoldUpdater = RamlScaffoldServiceBase.GetRamlScaffoldService(Microsoft.VisualStudio.Shell.ServiceProvider.GlobalProvider);
             ramlScaffoldUpdater.UpdateRaml(ramlFilePath);
 
             ChangeCommandStatus(updateRamlContractCommandId, true);
@@ -268,7 +262,7 @@ namespace MuleSoft.RAML.Tools
 
         private void AddRamlContractCallback(object sender, EventArgs e)
         {
-            var ramlScaffoldUpdater = new RamlScaffoldService(new T4Service(ServiceProvider.GlobalProvider), ServiceProvider.GlobalProvider);
+            var ramlScaffoldUpdater = RamlScaffoldServiceBase.GetRamlScaffoldService(Microsoft.VisualStudio.Shell.ServiceProvider.GlobalProvider);
             var ramlChooserViewModel = new RamlChooserViewModel();
             ramlChooserViewModel.Load(ServiceProvider.GlobalProvider, ramlScaffoldUpdater.AddContract, "Add RAML Contract", true, Settings.Default.RAMLExchangeUrl);
             dynamic settings = new ExpandoObject();
@@ -280,7 +274,7 @@ namespace MuleSoft.RAML.Tools
 
         private void AddRamlReferenceCallback(object sender, EventArgs e)
         {
-            var generationServices = new RamlReferenceService(ServiceProvider.GlobalProvider, new ActivityLogger());
+            var generationServices = RamlReferenceServiceBase.GetRamlReferenceService(ServiceProvider.GlobalProvider, new ActivityLogger());
             var ramlChooserViewModel = new RamlChooserViewModel();
             ramlChooserViewModel.Load(this, generationServices.AddRamlReference, "Add RAML Reference", false, Settings.Default.RAMLExchangeUrl);
             dynamic settings = new ExpandoObject();
@@ -362,7 +356,7 @@ namespace MuleSoft.RAML.Tools
 
                 if (IsServerSide(ramlFilePath))
                 {
-                    var ramlScaffoldUpdater = new RamlScaffoldService(new T4Service(ServiceProvider.GlobalProvider), ServiceProvider.GlobalProvider);
+                    var ramlScaffoldUpdater = RamlScaffoldServiceBase.GetRamlScaffoldService(Microsoft.VisualStudio.Shell.ServiceProvider.GlobalProvider);
                     ramlScaffoldUpdater.UpdateRaml(ramlFilePath);
                 }
                 else
@@ -549,7 +543,7 @@ namespace MuleSoft.RAML.Tools
 
         private void UpdateRamlRefCommand_BeforeQueryStatus(object sender, EventArgs e)
         {
-            ShowOrHideUpdateRamlRefCommand(sender, RamlReferenceService.ApiReferencesFolderName);
+            ShowOrHideUpdateRamlRefCommand(sender, RamlReferenceServiceBase.ApiReferencesFolderName);
         }
 
         private void ChangeCommandStatus(CommandID commandId, bool enable)
@@ -699,7 +693,7 @@ namespace MuleSoft.RAML.Tools
             // if not leave the menu hidden
             if (!endsWithExtension) return;
 
-            if (itemFullPath.Contains(RamlReferenceService.ApiReferencesFolderName))
+            if (itemFullPath.Contains(RamlReferenceServiceBase.ApiReferencesFolderName))
                 return;
 
             var folder = Path.GetDirectoryName(itemFullPath);

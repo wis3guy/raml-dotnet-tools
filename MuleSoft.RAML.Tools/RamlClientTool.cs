@@ -110,7 +110,7 @@ namespace MuleSoft.RAML.Tools
         public static void TriggerClientRegeneration(Document document, string extensionPath)
         {
             // if is client RAML regenerate code...
-            if (!document.Path.Contains(RamlReferenceService.ApiReferencesFolderName))
+            if (!document.Path.Contains(RamlReferenceServiceBase.ApiReferencesFolderName))
                 return;
 
             if (!document.Path.EndsWith("includes"))
@@ -147,7 +147,7 @@ namespace MuleSoft.RAML.Tools
             var dte = ServiceProvider.GlobalProvider.GetService(typeof(SDTE)) as DTE;
             var proj = VisualStudioAutomationHelper.GetActiveProject(dte);
             var apiRefsFolderPath = Path.GetDirectoryName(proj.FullName) + Path.DirectorySeparatorChar +
-                                    RamlReferenceService.ApiReferencesFolderName + Path.DirectorySeparatorChar;
+                                    RamlReferenceServiceBase.ApiReferencesFolderName + Path.DirectorySeparatorChar;
 
             TemplatesManager.CopyClientTemplateToProjectFolder(apiRefsFolderPath);
 
@@ -222,7 +222,7 @@ namespace MuleSoft.RAML.Tools
             var dte = globalProvider.GetService(typeof (SDTE)) as DTE;
             var proj = VisualStudioAutomationHelper.GetActiveProject(dte);
             var apiRefsFolderItem =
-                proj.ProjectItems.Cast<ProjectItem>().First(i => i.Name == RamlReferenceService.ApiReferencesFolderName);
+                proj.ProjectItems.Cast<ProjectItem>().First(i => i.Name == RamlReferenceServiceBase.ApiReferencesFolderName);
             var destFolderItem = apiRefsFolderItem.ProjectItems.Cast<ProjectItem>().First(i => i.Name == destFolderName);
             return destFolderItem;
         }
