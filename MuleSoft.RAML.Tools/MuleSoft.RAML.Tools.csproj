@@ -203,15 +203,24 @@
     <Compile Include="ActivityLogger.cs" />
     <Compile Include="CodeGenerator.cs" />
     <Compile Include="CodeGeneratorRegistrationAttribute.cs" />
+    <Compile Include="CodeRegenerationResult.cs" />
     <Compile Include="ILogger.cs" />
     <Compile Include="JsonSchemaMessagesManager.cs" />
     <Compile Include="NugetInstallerHelper.cs" />
     <Compile Include="NullLogger.cs" />
+    <Compile Include="RamlReferenceServiceNetCore.cs" />
+    <Compile Include="RamlReferenceServiceNetFramework.cs" />
+    <Compile Include="RamlScaffoldServiceAspNetCore.cs" />
+    <Compile Include="RamlScaffoldServiceWebApi.cs" />
+    <Compile Include="ReverseEngineeringAspNetCore.cs" />
+    <Compile Include="ReverseEngineeringServiceBase.cs" />
+    <Compile Include="ReverseEngineeringServiceWebApi.cs" />
+    <Compile Include="TextFileHelper.cs" />
     <Content Include="MetadataPackage\Content\Controllers\RamlController.class">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Compile Include="RamlReferenceService.cs" />
+    <Compile Include="RamlReferenceServiceBase.cs" />
     <Compile Include="Guids.cs" />
     <None Include="node_modules\raml-1-0-parser\node_modules\amdefine\package.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -2191,7 +2200,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="RamlClientTool.cs" />
-    <Compile Include="RamlScaffoldService.cs" />
+    <Compile Include="RamlScaffoldServiceBase.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -2201,7 +2210,6 @@
     <Compile Include="MuleSoft.RAML.ToolsPackage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PkgCmdID.cs" />
-    <Compile Include="ReverseEngineeringService.cs" />
     <Compile Include="TargetFolderResolver.cs" />
     <Compile Include="TemplateParams.cs" />
     <Compile Include="TemplatesManager.cs" />

@@ -1,9 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using EnvDTE;
-using MuleSoft.RAML.Tools.Properties;
 using Raml.Common;
 using Raml.Tools.WebApiGenerator;
 
@@ -20,7 +18,7 @@ namespace MuleSoft.RAML.Tools
             this.t4Service = t4Service;
         }
 
-        public void GenerateCodeFromTemplate<T>(RamlScaffoldService.TemplateParams<T> templateParams) where T : IHasName
+        public void GenerateCodeFromTemplate<T>(TemplateParams<T> templateParams) where T : IHasName
         {
             if (!Directory.Exists(templateParams.TargetFolder))
                 Directory.CreateDirectory(templateParams.TargetFolder);
@@ -105,35 +103,6 @@ namespace MuleSoft.RAML.Tools
             if (folder == null)
                 return false;
             return PossibleDirectorySeparatorChars.Any(folder.Contains);
-        }
-
-        private static bool IsAlreadyIncludedInProject(string folderPath, ProjectItem folderItem, string generatedFileName, ProjectItem fileItem)
-        {
-            if (VisualStudioAutomationHelper.IsAVisualStudio2015Project(fileItem.ContainingProject))
-                return File.Exists(Path.Combine(folderPath, generatedFileName));
-
-            var otherRamlFiles = GetOtherRamlFilesInProject(folderPath, fileItem);
-            var alreadyIncludedInProj = false;
-            foreach (var ramlFile in otherRamlFiles)
-            {
-                var fileName = Path.GetFileName(ramlFile);
-                var otherRamlFileItem =
-                    folderItem.ProjectItems.Cast<ProjectItem>().FirstOrDefault(i => i.Name == fileName);
-
-                if (otherRamlFileItem == null) continue;
-                var item = otherRamlFileItem.ProjectItems.Cast<ProjectItem>().FirstOrDefault(i => i.Name == generatedFileName);
-                alreadyIncludedInProj = alreadyIncludedInProj || (item != null);
-            }
-            return alreadyIncludedInProj;
-        }
-
-        private static IEnumerable<string> GetOtherRamlFilesInProject(string folderPath, ProjectItem fileItem)
-        {
-            var ramlFiles = Directory.EnumerateFiles(folderPath, "*.raml").ToArray();
-            var currentRamlFile = fileItem.FileNames[0];
-            var otherRamlFiles =
-                ramlFiles.Where(f => !String.Equals(f, currentRamlFile, StringComparison.InvariantCultureIgnoreCase));
-            return otherRamlFiles;
         }
 
         private static string GetGeneratedFileName<T>(string suffix, string prefix, T parameter) where T : IHasName
