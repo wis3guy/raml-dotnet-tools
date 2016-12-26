@@ -89,9 +89,15 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="RamlClientTool.cs" />
-    <Compile Include="RamlReferenceService.cs" />
-    <Compile Include="RamlScaffoldService.cs" />
-    <Compile Include="ReverseEngineeringService.cs" />
+    <Compile Include="RamlReferenceServiceBase.cs" />
+    <Compile Include="RamlReferenceServiceNetCore.cs" />
+    <Compile Include="RamlReferenceServiceNetFramework.cs" />
+    <Compile Include="RamlScaffoldServiceAspNetCore.cs" />
+    <Compile Include="RamlScaffoldServiceBase.cs" />
+    <Compile Include="RamlScaffoldServiceWebApi.cs" />
+    <Compile Include="ReverseEngineeringAspNetCore.cs" />
+    <Compile Include="ReverseEngineeringServiceBase.cs" />
+    <Compile Include="ReverseEngineeringServiceWebApi.cs" />
     <Compile Include="TargetFolderResolver.cs" />
     <Compile Include="TemplateParams.cs" />
     <Compile Include="TemplatesManager.cs" />
