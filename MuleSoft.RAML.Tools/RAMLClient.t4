@@ -1081,7 +1081,7 @@ foreach (var apiEnum in model.Enums)
 
 	if (model.Warnings.Any()){
 #>
-    // Unable to parse the following Schemas. Please note that JSON Schema version 4 is not supported
+    // Unable to parse the following Schemas. Please note that JSON Schema version 4 is partially supported
 <#
 		foreach (var warning in model.Warnings)
 		{

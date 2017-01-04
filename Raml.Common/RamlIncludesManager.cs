@@ -125,9 +125,9 @@ namespace Raml.Common
 
                 File.WriteAllText(writeToFilePath, string.Join(Environment.NewLine, lines).Trim());
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                
+                // This is intentional
             }
             ManageIncludedFiles(destinationFolder, includedFiles, path, relativePath, confirmOvewrite, scopeIncludedFiles, rootRamlPath);
         }

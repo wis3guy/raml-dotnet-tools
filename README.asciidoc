@@ -17,7 +17,7 @@ Contents:
 * <<Supported Scenarios>>
 ** <<API Client Code from a RAML Definition>>
 ** <<ASP.NET Implementation from a RAML Definition>>
-** <<Extract a RAML definition from a Web API>>
+** <<Extract a RAML definition from an ASP.NET Core or WebApi 2 app>>
 * <<Prerequisites>>
 * <<Installation>>
 * <<Generating an API Client>>
@@ -34,7 +34,7 @@ Contents:
 ** <<Compatibility With New Versions of the Templates>>
 ** <<Customizing the Generated Code for the Client>>
 ** <<Customizing the Generated cCode for the Asp.Net Web API>>
-* <<Metadata - Extract a RAML definition from your Web API>>
+* <<Metadata - Extract a RAML definition from your Web app>>
 ** <<Api Console>>
 ** <<Viewing the Raw RAML>>
 ** <<Downloading the RAML>>
@@ -43,6 +43,7 @@ Contents:
 * <<Fine tuning generated .NET primitive types>>
 ** <<Numeric types>>
 ** <<Date types>>
+* <<Internal dependencies>>
 * <<FAQ>>
 
 == Supported Scenarios
@@ -63,9 +64,9 @@ From within Visual Studio .NET, you can add a RAML definition from which the too
 
 In code, the controllers definition and implementation are logically separated. The generated code representing the definition is driven by the RAML definition allowing you to focus exclusively on the implementation classes. This separation of concerns allows iterative evolution of the API with non-destructive forward engineering of the code-based definition.
 
-=== Extract a RAML definition from a Web API
+=== Extract a RAML definition from an ASP.NET Core or WebApi 2 app
 
-You can generate a RAML 1 or 0.8 definition from your ASP .NET Web API 2 implementation.
+You can generate a RAML 1 or 0.8 definition from your ASP .NET Core or WebAPI 2 implementation.
 
 When enabling metadata, a local endpoint is registered to provide a browser-accessible API Console for the RAML-enabled implementation. This gives an easily navigable view of the API, including full documentation of routes, resource schema, and includes examples.
 
@@ -274,6 +275,14 @@ image::docimages/RAML_NETAddRAMLContractScreen.png[align="center", width=550]
 
 The tool also supports updating the generated ASP.NET MVC 6 or Web API when a change is made to the RAML definition. This lets you keep the contract definition in a RAML file with the implementation, so that both stay in sync. The classes get re-generated when you save changes made to any the RAML files in your project. This only affects the existing .NET contract interfaces and adds ASP.NET MVC 6 or Web API controller implementations for any new resource in the RAML definition. The existing controller implementations remain untouched.
 
+If new resources or methods have been added, the implementation controller won't match the interface. You will have to implement those methods manually.
+
+In a similar fashion if changes are made to a resource or method and this produces changes in the signature of a method, the interface will be updated but the implementation not. You will have to manually update the signature (and the implementation code).
+
+In the case of deletions the base controllers will no longer route to the implementation method, so it in this case is not absolutely necessary because it will still compile (obsolete implementation code should be removed manually).
+
+In short, interfaces and base controllers will be updated automatically, but existing controller implementations are not changed so they must be updated or deleted manually.
+
 
 == Implementing a Controller in ASP.NET Web API
 
@@ -464,9 +473,9 @@ For the Web API there are a several templates under "Contracts/Templates":
 - *ApiModel.t4*: Template for the request and response content models.
 
 
-== Metadata - Extract a RAML definition from your Web API
+== Metadata - Extract a RAML definition from your Web app
 
-RAML metadata output lets you extract a RAML definition for your Web API app. To enable metadata output, right-click your project and choose the *Enable RAML metadata output* command.
+RAML metadata output lets you extract a RAML definition for your ASP.NET Core or WebAPI 2 app. To enable metadata output, right-click your project and choose the *Enable RAML metadata output* command.
 This adds a `RamlController`, start up configurations, a razor view and other required files (css, js, etc.).
 The next sections list the three ways you can access the information about your API.
 
@@ -490,149 +499,113 @@ image::./docimages/RAML_NET_RAML-v1.png[align="center"]
 
 If you wish to download the RAML as a file, run your web app and navigate to `/raml/download`. This prompts you to choose the location and file name.
 
+=== Asp.Net Core configuration
 
-=== Customizing the Generated RAML
-
-Some aspects of your API-like security are not automatically detected. You can customize the RAML generation process and further adjust it to your API.
-
-To do this, modify the GetRamlContents method of your RamlController class.
-
-[source, c#]
-----
-    private static string GetRamlContents()
-        {
-            var config = GlobalConfiguration.Configuration;
-            var apiExplorer = config.Services.GetApiExplorer();
-            var apiExplorerService = new ApiExplorerService(apiExplorer, config.VirtualPathRoot);
-            var ramlDocument = apiExplorerService.GetRaml();
-            var ramlContents = new RamlSerializer().Serialize(ramlDocument);
-
-            return ramlContents;
-        }
-----
-
-
-You can set the security schemes of your API, this is an example for OAuth v2.
-First it creates a *SecuritySchemeDescriptor* where you can set the query parameters, headers, and responses.
-In this case it defines a single query parameter called "access_token".
-
-Then it calls the *UseOAuth2* method, which sets the endpoints, grants, scopes, and the previously created security scheme descriptor.
-
-In this example the authorization URL is `/oauth/authorize`, the access token URL is `/oauth/access_token`.
-There are two authorization grants *code* and *token*, and a single scope *all*.
+On Asp.Net core controllers **must use attribute routing** to be able to use the functionality.
+If some of your controllers use conventional routing you will need to avoid the filter to include this controllers. You can do so by modifying the configuration in the start up.
+For example to remove the controller *DefaultRoutingController* from the filter you need to add an *ApiExplorerVisibilityDisabledConvention* specifying the type to the set of conventions.
+This is done with the following line of code:
 
 [source, c#]
 ----
-    // Set OAuth security scheme descriptor:  headers, query parameters, and responses
-    var descriptor = new SecuritySchemeDescriptor
+options.Conventions.Add(new RAML.WebApiExplorer.ApiExplorerVisibilityDisabledConvention(typeof(DefaultRoutingController)));
+----
+
+You will need to add it to the *ConfigureServices* method of your *StartUp.cs* class:
+
+[source, c#]
+----
+    public void ConfigureServices(IServiceCollection services)
     {
-        QueryParameters = new Dictionary<string, Parameter>
-          {
-              {
-                  "access_token",
-                  new Parameter
-                  {
-                      Type = "string",
-                      Required = true
-                  }
-              }
-          }
-    };
-
-    // Set OAuth v2 endpoints, grants, scopes and descriptor
-    apiExplorerService.UseOAuth2("/oauth/authorize", "/oauth/access_token",
-                new[] {"code", "token"}, new[] {"all"}, descriptor);
-
-----
-
-You can set the protocols for the web API by setting the *Protocols* property of the ApiExplorerService instance.
-For example for using HTTPS only in all of your API you would do this:
-
-[source, c#]
-----
-    apiExplorerService.Protocols = new[] { Protocol.HTTPS };
-----
-
-In a similar fashion if you want to set all of your resources to be accessed with OAuth v2, you can set the *SecuredBy* property of the ApiExplorerService instance.
-
-[source, c#]
-----
-    apiExplorerService.SecuredBy = new[] { "oauth_2_0" };
-----
-
-Combining all this together, your RAML action should look like:
-
-[source, c#]
-----
-    private static string GetRamlContents()
-    {
-        var config = GlobalConfiguration.Configuration;
-        var apiExplorer = config.Services.GetApiExplorer();
-        var apiExplorerService = new ApiExplorerService(apiExplorer, config.VirtualPathRoot);
-
-        // Use HTTPS only
-        apiExplorerService.Protocols = new[] { Protocol.HTTPS };
-
-        // Use OAuth 2 for all resources
-        apiExplorerService.SecuredBy = new[] { "oauth_2_0" };
-
-        // Set OAuth security scheme descriptor: headers, query parameters, and responses
-        var descriptor = new SecuritySchemeDescriptor
-        {
-            QueryParameters = new Dictionary<string, Parameter>
-                {
-                    {
-                        "access_token",
-                        new Parameter
-                        {
-                            Type = "string",
-                            Required = true
-                        }
-                    }
-                }
-        };
-
-        // Set OAuth v2 endpoints, grants, scopes, and descriptor
-        apiExplorerService.UseOAuth2("https://api.movies.com/oauth/authorize",
-            "https://api.movies.com/oauth/access_token", new[] {"code", "token"}, new[] {"all"}, descriptor);
-
-        var ramlDocument = apiExplorerService.GetRaml();
-        var ramlContents = new RamlSerializer().Serialize(ramlDocument);
-
-        return ramlContents;
+        // Add framework services.
+        services.AddScoped<MyApiExplorerDataFilter>();
+        services.AddMvc(options =>
+            {
+                options.Filters.AddService(typeof(RAML.WebApiExplorer.ApiExplorerDataFilter));
+                options.Conventions.Add(new RAML.WebApiExplorer.ApiExplorerVisibilityEnabledConvention());
+				options.Conventions.Add(new RAML.WebApiExplorer.ApiExplorerVisibilityDisabledConvention(typeof(DefaultRoutingController)));
+            });
     }
 ----
 
-If using OAuth v1, you can use the *UseOAuth1* method. For other security schemes or further customization, you can use the *SetSecurityScheme* method or the *SecuritySchemes* property.
+=== Specifying Response Type in Asp.Net Core
 
-Other global properties can be set using the *SetRamlProperties* action.
-For example, to set the root level documentation:
+*ResponseTypeStatusAttribute* class is used to specify the response type of a controller's action, associated to a status code.
+For example:
+
 
 [source, c#]
 ----
-    apiExplorerService.SetRamlProperties = raml =>
+        [HttpGet("{id}")]
+        [ResponseTypeStatus(typeof(Movie), HttpStatusCode.OK)]
+        [ResponseTypeStatus(typeof(NotFoundError), HttpStatusCode.NotFound)]
+        public IActionResult Get(int id)
         {
-            raml.Documentation = "Documentation is availabe at http://documentation.org"
+            var movie = Repositories.Movies.FindById(id);
+            if (movie == null)
+                return NotFound(new NotFoundError("Movie not found", id));
+
+            return Ok(movie);
         }
 ----
 
-For customizing your RAML only for specific resources, you have three action available: *SetMethodProperties*, *SetResourceProperties*, *SetResourcePropertiesByAction*, and *SetResourcePropertiesByController*.
 
-For example for setting OAuth v2 for the movies POST action, you can do this:
+=== Customizing the Generated RAML on your ASP.NET Core app
+
+Some aspects of your API-like security are not automatically detected. You can customize the RAML generation process and further adjust it to your API.
+To see how check the *Customizing the Generated RAML* section https://github.com/mulesoft-labs/raml-dotnetcore-apiexplorer[here]
+
+
+=== Adding XML Comments to the documentation in Asp.Net WebApi 2
+
+If you use XML comments in the headers of your controller actions, these can be included into your RAML model.
+
+You need to generate the XML documentation, for this right click your WebApi project properties and click on the *Build* tab and select the *XML documentation file* check.
+
++
+image::./docimages/XmlCommentsDocumentation.png[align="center"]
++
+
+You will also need to add in the Register method of your WebApi configuration a call to the *IncludeXmlComments* method of *DocumentationProviderConfig* class.
+
+**Note:** The default name of the XML file matches the name of the project, if you change this or the location you will need to provide the path in the *IncludeXmlComments* method. If you left the default location then there's no need to specify any parameters.
 
 [source, c#]
 ----
-apiExplorerService.SetMethodProperties = (apiDescription, method) =>
+    public static class WebApiConfig
     {
-      if (apiDescription.RelativePath == "movies" && method.Verb == "post")
+        public static void Register(HttpConfiguration config)
         {
-            method.SecuredBy = new [] {"oauth_2_0"};
-        }
+            // Web API routes
+            config.MapHttpAttributeRoutes();
 
-    };
+            RAML.WebApiExplorer.DocumentationProviderConfig.IncludeXmlComments();
+        }
+    }
 ----
 
-You can also modify the Body or the Responses using the same strategy.
+
+== Specifying Response Type  in Asp.Net WebApi 2
+
+*ResponseTypeAttribute* class is used to specify the main response type of a controller's action.
+For example:
+
+[source, c#]
+----
+        [HttpGet("{id}")]
+        [ResponseType(typeof(Movie)]
+        public IActionResult Get(int id)
+        {
+            var movie = Repositories.Movies.FindById(id);
+            return Ok(movie);
+        }
+----
+
+
+=== Customizing the Generated RAML on your ASP.NET WebApi 2 app
+
+Some aspects of your API-like security are not automatically detected. You can customize the RAML generation process and further adjust it to your API.
+To see how check the *Customizing the Generated RAML* section https://github.com/mulesoft-labs/raml-dotnet-apiexplorer[here]
 
 
 
@@ -719,6 +692,11 @@ RAML 0.8:
 |======================
 
 
+== Internal dependencies
+
+. https://github.com/raml-org/raml-dotnet-parser-2[RAML .Net Parser]
+. https://github.com/mulesoft-labs/raml-dotnet-apicore[RAML API Core]
+. https://github.com/mulesoft-labs/raml-dotnet-apiexplorer[RAML ApiExplorer]
 
 
 == FAQ

@@ -6,11 +6,6 @@
 
 
 using System.Diagnostics.CodeAnalysis;
-
-using Microsoft.VisualStudio.OLE.Interop;
-
-using Microsoft.Win32;
-
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio;
@@ -28,9 +23,9 @@ using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Runtime.InteropServices;
+using System.Windows.Forms;
 using Caliburn.Micro;
 using Raml.Common.ViewModels;
-using Raml.Common.Views;
 
 namespace MuleSoft.RAML.Tools
 {
@@ -161,7 +156,7 @@ namespace MuleSoft.RAML.Tools
             var dte = ServiceProvider.GlobalProvider.GetService(typeof(SDTE)) as DTE;
             events = dte.Events;
             documentEvents = events.DocumentEvents;
-            documentEvents.DocumentSaved += RamlScaffoldService.TriggerScaffoldOnRamlChanged;
+            documentEvents.DocumentSaved += DocumentEventsOnDocumentSaved;
             //MuleSoft.RAML.Tools.Command1.Initialize(this);
 
             var bootstrapper = new Bootstrapper();
@@ -179,6 +174,13 @@ namespace MuleSoft.RAML.Tools
             LoadSystemWindowsInteractivity();
         }
 
+        private void DocumentEventsOnDocumentSaved(Document document)
+        {
+            RamlScaffoldServiceBase.TriggerScaffoldOnRamlChanged(document);
+
+            RamlClientTool.TriggerClientRegeneration(document, GetExtensionPath());
+        }
+
         // workaround http://stackoverflow.com/questions/29362125/visual-studio-extension-could-not-find-a-required-assembly
         private static void LoadSystemWindowsInteractivity()
         {
@@ -194,14 +196,6 @@ namespace MuleSoft.RAML.Tools
             var menuCommand = sender as OleMenuCommand;
             if (menuCommand == null) return;
 
-            ShowAndEnableCommand(menuCommand, false);
-
-            var dte = ServiceProvider.GlobalProvider.GetService(typeof(SDTE)) as DTE;
-            var proj = VisualStudioAutomationHelper.GetActiveProject(dte);
-
-            if (VisualStudioAutomationHelper.IsAVisualStudio2015Project(proj))
-                return;
-
             ShowAndEnableCommand(menuCommand, true);
         }
 
@@ -216,7 +210,7 @@ namespace MuleSoft.RAML.Tools
 
             StartProgressBar("Disable RAML metadata output", "Uninstalling...", "Processing...");
 
-            var service = new ReverseEngineeringService(ServiceProvider.GlobalProvider);
+            var service = ReverseEngineeringServiceBase.GetReverseEngineeringService(ServiceProvider.GlobalProvider);
             service.RemoveReverseEngineering();
 
             StopProgressBar();
@@ -228,7 +222,7 @@ namespace MuleSoft.RAML.Tools
         {
             ChangeCommandStatus(extractRAMLCommandId, false);
 
-            var service = new ReverseEngineeringService(ServiceProvider.GlobalProvider);
+            var service = ReverseEngineeringServiceBase.GetReverseEngineeringService(ServiceProvider.GlobalProvider);
             service.ExtractRAML();
 
             ChangeCommandStatus(extractRAMLCommandId, true);
@@ -240,7 +234,7 @@ namespace MuleSoft.RAML.Tools
 
             StartProgressBar("Enable RAML metadata output", "Installing...", "Processing...");
 
-            var service = new ReverseEngineeringService(ServiceProvider.GlobalProvider);
+            var service = ReverseEngineeringServiceBase.GetReverseEngineeringService(ServiceProvider.GlobalProvider);
             service.AddReverseEngineering();
 
             StopProgressBar();
@@ -260,7 +254,7 @@ namespace MuleSoft.RAML.Tools
             string ramlFilePath;
             ((IVsProject)hierarchy).GetMkDocument(itemid, out ramlFilePath);
 
-            var ramlScaffoldUpdater = new RamlScaffoldService(new T4Service(ServiceProvider.GlobalProvider), ServiceProvider.GlobalProvider);
+            var ramlScaffoldUpdater = RamlScaffoldServiceBase.GetRamlScaffoldService(ServiceProvider.GlobalProvider);
             ramlScaffoldUpdater.UpdateRaml(ramlFilePath);
 
             ChangeCommandStatus(updateRamlContractCommandId, true);
@@ -268,7 +262,7 @@ namespace MuleSoft.RAML.Tools
 
         private void AddRamlContractCallback(object sender, EventArgs e)
         {
-            var ramlScaffoldUpdater = new RamlScaffoldService(new T4Service(ServiceProvider.GlobalProvider), ServiceProvider.GlobalProvider);
+            var ramlScaffoldUpdater = RamlScaffoldServiceBase.GetRamlScaffoldService(ServiceProvider.GlobalProvider);
             var ramlChooserViewModel = new RamlChooserViewModel();
             ramlChooserViewModel.Load(ServiceProvider.GlobalProvider, ramlScaffoldUpdater.AddContract, "Add RAML Contract", true, Settings.Default.RAMLExchangeUrl);
             dynamic settings = new ExpandoObject();
@@ -280,7 +274,7 @@ namespace MuleSoft.RAML.Tools
 
         private void AddRamlReferenceCallback(object sender, EventArgs e)
         {
-            var generationServices = new RamlReferenceService(ServiceProvider.GlobalProvider, new ActivityLogger());
+            var generationServices = RamlReferenceServiceBase.GetRamlReferenceService(ServiceProvider.GlobalProvider, new ActivityLogger());
             var ramlChooserViewModel = new RamlChooserViewModel();
             ramlChooserViewModel.Load(this, generationServices.AddRamlReference, "Add RAML Reference", false, Settings.Default.RAMLExchangeUrl);
             dynamic settings = new ExpandoObject();
@@ -307,20 +301,33 @@ namespace MuleSoft.RAML.Tools
             if (!templatesManager.ConfirmWhenIncompatibleClientTemplate(generatedFolderPath))
                 return;
 
-            //if (Unauthorized(ramlFilePath))
-            //{
-            //    var generationServices = new RamlReferenceService(ServiceProvider.GlobalProvider);
-            //    var ramlChooser = new RamlChooser(this, generationServices.AddRamlReference, "Update RAML Reference", false,
-            //        Settings.Default.RAMLExchangeUrl);
-            //    ramlChooser.ShowDialog();
-            //}
-            //else
-            //{
-            var dte = (DTE2)GetService(typeof(SDTE));
-            dte.ExecuteCommand("Project.RunCustomTool");
-            //}
-
+            RegenerateClientCode(ramlFilePath);
+            
             ChangeCommandStatus(updateReferenceCmdId, true);
+        }
+
+        private void RegenerateClientCode(string ramlFilePath)
+        {
+            if (IsAVisualStudio2015Project())
+            {
+                var result = RamlClientTool.RegenerateCode(ramlFilePath, GetExtensionPath());
+                if (!result.IsSuccess)
+                {
+                    ActivityLog.LogError(VisualStudioAutomationHelper.RamlVsToolsActivityLogSource, result.ErrorMessage);
+                    MessageBox.Show(result.ErrorMessage);
+                }
+            }
+            else
+            {
+                var dte = (DTE2) GetService(typeof (SDTE));
+                dte.ExecuteCommand("Project.RunCustomTool");
+            }
+        }
+
+        private string GetExtensionPath()
+        {
+            var extensionPath = Path.GetDirectoryName(GetType().Assembly.Location) + Path.DirectorySeparatorChar;
+            return extensionPath;
         }
 
         private void EditRamlPropertiesCallback(object sender, EventArgs e)
@@ -349,7 +356,7 @@ namespace MuleSoft.RAML.Tools
 
                 if (IsServerSide(ramlFilePath))
                 {
-                    var ramlScaffoldUpdater = new RamlScaffoldService(new T4Service(ServiceProvider.GlobalProvider), ServiceProvider.GlobalProvider);
+                    var ramlScaffoldUpdater = RamlScaffoldServiceBase.GetRamlScaffoldService(ServiceProvider.GlobalProvider);
                     ramlScaffoldUpdater.UpdateRaml(ramlFilePath);
                 }
                 else
@@ -360,8 +367,7 @@ namespace MuleSoft.RAML.Tools
                     if (!templatesManager.ConfirmWhenIncompatibleClientTemplate(generatedFolderPath))
                         return;
 
-                    var dte = (DTE2)GetService(typeof(SDTE));
-                    dte.ExecuteCommand("Project.RunCustomTool");
+                    RegenerateClientCode(ramlFilePath);
                 }
             }
 
@@ -414,10 +420,10 @@ namespace MuleSoft.RAML.Tools
             var dte = ServiceProvider.GlobalProvider.GetService(typeof(SDTE)) as DTE;
             var proj = VisualStudioAutomationHelper.GetActiveProject(dte);
 
-            if (VisualStudioAutomationHelper.IsAVisualStudio2015Project(proj))
+            if (!VisualStudioAutomationHelper.IsAVisualStudio2015Project(proj) && !IsWebApiCoreInstalled(proj))
                 return;
 
-            if (!IsWebApiCoreInstalled(proj))
+            if (VisualStudioAutomationHelper.IsAVisualStudio2015Project(proj) && !IsAspNet5MvcInstalled(proj))
                 return;
 
             ShowAndEnableCommand(menuCommand, true);
@@ -433,13 +439,10 @@ namespace MuleSoft.RAML.Tools
             var dte = ServiceProvider.GlobalProvider.GetService(typeof(SDTE)) as DTE;
             var proj = VisualStudioAutomationHelper.GetActiveProject(dte);
 
-            if (VisualStudioAutomationHelper.IsAVisualStudio2015Project(proj))
+            if (!VisualStudioAutomationHelper.IsAVisualStudio2015Project(proj) && (!IsWebApiCoreInstalled(proj) || IsWebApiExplorerInstalled()))
                 return;
 
-            if (!IsWebApiCoreInstalled(proj))
-                return;
-
-            if (IsWebApiExplorerInstalled())
+            if (VisualStudioAutomationHelper.IsAVisualStudio2015Project(proj) && (!IsAspNet5MvcInstalled(proj) || IsNetCoreApiExplorerInstalled()))
                 return;
 
             ShowAndEnableCommand(menuCommand, true);
@@ -483,6 +486,16 @@ namespace MuleSoft.RAML.Tools
             ShowOrHideCommandRaml(sender);
         }
 
+        private bool IsNetCoreApiExplorerInstalled()
+        {
+            var dte = ServiceProvider.GlobalProvider.GetService(typeof(SDTE)) as DTE;
+            var proj = VisualStudioAutomationHelper.GetActiveProject(dte);
+            var componentModel = (IComponentModel)ServiceProvider.GlobalProvider.GetService(typeof(SComponentModel));
+            var installerServices = componentModel.GetService<IVsPackageInstallerServices>();
+            var isWebApiCoreInstalled = installerServices.IsPackageInstalled(proj, "RAML.NetCoreApiExplorer");
+            return isWebApiCoreInstalled;
+        }
+
         private bool IsWebApiExplorerInstalled()
         {
             var dte = ServiceProvider.GlobalProvider.GetService(typeof(SDTE)) as DTE;
@@ -498,10 +511,18 @@ namespace MuleSoft.RAML.Tools
             var dte = ServiceProvider.GlobalProvider.GetService(typeof(SDTE)) as DTE;
             var proj = VisualStudioAutomationHelper.GetActiveProject(dte);
 
-            if (VisualStudioAutomationHelper.IsAVisualStudio2015Project(proj))
+            if (IsAVisualStudio2015Project())
                 return IsAspNet5MvcInstalled(proj);
 
             return IsWebApiCoreInstalled(proj);
+        }
+
+        private static bool IsAVisualStudio2015Project()
+        {
+            var dte = ServiceProvider.GlobalProvider.GetService(typeof(SDTE)) as DTE;
+            var proj = VisualStudioAutomationHelper.GetActiveProject(dte);
+
+            return VisualStudioAutomationHelper.IsAVisualStudio2015Project(proj);
         }
 
         private static bool IsWebApiCoreInstalled(Project proj)
@@ -522,7 +543,7 @@ namespace MuleSoft.RAML.Tools
 
         private void UpdateRamlRefCommand_BeforeQueryStatus(object sender, EventArgs e)
         {
-            ShowOrHideUpdateRamlRefCommand(sender, RamlReferenceService.ApiReferencesFolderName);
+            ShowOrHideUpdateRamlRefCommand(sender, RamlReferenceServiceBase.ApiReferencesFolderName);
         }
 
         private void ChangeCommandStatus(CommandID commandId, bool enable)
@@ -538,21 +559,15 @@ namespace MuleSoft.RAML.Tools
         {
             var folderName = Settings.Default.ApiReferencesFolderName;
 
-            ShowOrHideForFolderIfNotVs2015(sender, folderName);
+            ShowOrHideForFolder(sender, folderName);
         }
 
-        private static void ShowOrHideForFolderIfNotVs2015(object sender, string folderName)
+        private static void ShowOrHideForFolder(object sender, string folderName)
         {
             var menuCommand = sender as OleMenuCommand;
             if (menuCommand == null) return;
 
             ShowAndEnableCommand(menuCommand, false);
-
-            var dte = ServiceProvider.GlobalProvider.GetService(typeof (SDTE)) as DTE;
-            var proj = VisualStudioAutomationHelper.GetActiveProject(dte);
-
-            if (VisualStudioAutomationHelper.IsAVisualStudio2015Project(proj))
-                return;
 
             if (IsInFolder(folderName)) return;
 
@@ -600,7 +615,6 @@ namespace MuleSoft.RAML.Tools
             ShowAndEnableCommand(menuCommand, true);
         }
 
-
         private static void ShowOrHideUpdateRamlRefCommand(object sender, string containingFolderName)
         {
             // get the menu that fired the event
@@ -608,12 +622,6 @@ namespace MuleSoft.RAML.Tools
             if (menuCommand == null) return;
 
             ShowAndEnableCommand(menuCommand, false);
-
-            var dte = ServiceProvider.GlobalProvider.GetService(typeof(SDTE)) as DTE;
-            var proj = VisualStudioAutomationHelper.GetActiveProject(dte);
-
-            if (VisualStudioAutomationHelper.IsAVisualStudio2015Project(proj))
-                return;
 
             IVsHierarchy hierarchy;
             uint itemid;
@@ -685,7 +693,7 @@ namespace MuleSoft.RAML.Tools
             // if not leave the menu hidden
             if (!endsWithExtension) return;
 
-            if (itemFullPath.Contains(RamlReferenceService.ApiReferencesFolderName))
+            if (itemFullPath.Contains(RamlReferenceServiceBase.ApiReferencesFolderName))
                 return;
 
             var folder = Path.GetDirectoryName(itemFullPath);

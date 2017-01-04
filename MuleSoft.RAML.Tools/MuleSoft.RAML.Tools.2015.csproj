@@ -73,9 +73,11 @@
     <Compile Include="ActivityLogger.cs" />
     <Compile Include="CodeGenerator.cs" />
     <Compile Include="CodeGeneratorRegistrationAttribute.cs" />
+    <Compile Include="CodeRegenerationResult.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Guids.cs" />
     <Compile Include="ILogger.cs" />
+    <Compile Include="JsonSchemaMessagesManager.cs" />
     <Compile Include="NugetInstallerHelper.cs" />
     <Compile Include="NullLogger.cs" />
     <Compile Include="PkgCmdID.cs" />
@@ -87,12 +89,19 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="RamlClientTool.cs" />
-    <Compile Include="RamlReferenceService.cs" />
-    <Compile Include="RamlScaffoldService.cs" />
-    <Compile Include="ReverseEngineeringService.cs" />
+    <Compile Include="RamlReferenceServiceBase.cs" />
+    <Compile Include="RamlReferenceServiceNetCore.cs" />
+    <Compile Include="RamlReferenceServiceNetFramework.cs" />
+    <Compile Include="RamlScaffoldServiceAspNetCore.cs" />
+    <Compile Include="RamlScaffoldServiceBase.cs" />
+    <Compile Include="RamlScaffoldServiceWebApi.cs" />
+    <Compile Include="ReverseEngineeringAspNetCore.cs" />
+    <Compile Include="ReverseEngineeringServiceBase.cs" />
+    <Compile Include="ReverseEngineeringServiceWebApi.cs" />
     <Compile Include="TargetFolderResolver.cs" />
     <Compile Include="TemplateParams.cs" />
     <Compile Include="TemplatesManager.cs" />
+    <Compile Include="TextFileHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -114,6 +123,32 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="edge\x86\node.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="MetadataPackage\Content\wwwroot\authentication\oauth1.html" />
+    <Content Include="MetadataPackage\Content\wwwroot\authentication\oauth2.html" />
+    <Content Include="MetadataPackage\Content\wwwroot\favicon.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="MetadataPackage\Content\wwwroot\img\spinner.gif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="MetadataPackage\Content\wwwroot\scripts\api-console-vendor.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="MetadataPackage\Content\wwwroot\scripts\api-console.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="MetadataPackage\Content\wwwroot\styles\api-console-dark-theme.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="MetadataPackage\Content\wwwroot\styles\api-console-light-theme.css">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -11820,6 +11855,148 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="MetadataPackage\Content\Controllers\RamlController.class">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="MetadataPackage\Content\Views\Raml\Index.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="MetadataPackage\Content\Views\Raml\oauth1.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="MetadataPackage\Content\Views\Raml\oauth2.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <None Include="MetadataPackage\Content\wwwroot\examples\array.raml" />
+    <None Include="MetadataPackage\Content\wwwroot\examples\box.raml" />
+    <None Include="MetadataPackage\Content\wwwroot\examples\discriminator.raml" />
+    <None Include="MetadataPackage\Content\wwwroot\examples\documentation.raml" />
+    <None Include="MetadataPackage\Content\wwwroot\examples\example.json" />
+    <None Include="MetadataPackage\Content\wwwroot\examples\example.raml" />
+    <None Include="MetadataPackage\Content\wwwroot\examples\examples.raml" />
+    <None Include="MetadataPackage\Content\wwwroot\examples\extensions.raml" />
+    <None Include="MetadataPackage\Content\wwwroot\examples\facets.raml" />
+    <None Include="MetadataPackage\Content\wwwroot\examples\github.raml" />
+    <None Include="MetadataPackage\Content\wwwroot\examples\includes.raml" />
+    <None Include="MetadataPackage\Content\wwwroot\examples\inline-schema.raml" />
+    <None Include="MetadataPackage\Content\wwwroot\examples\instagram.raml" />
+    <None Include="MetadataPackage\Content\wwwroot\examples\leagues.raml" />
+    <None Include="MetadataPackage\Content\wwwroot\examples\libraries\another-types.raml" />
+    <None Include="MetadataPackage\Content\wwwroot\examples\libraries\file-type.raml" />
+    <None Include="MetadataPackage\Content\wwwroot\examples\libraries\person-schema.raml" />
+    <None Include="MetadataPackage\Content\wwwroot\examples\libraries\security.raml" />
+    <None Include="MetadataPackage\Content\wwwroot\examples\libraries\type.raml" />
+    <None Include="MetadataPackage\Content\wwwroot\examples\library-security.raml" />
+    <None Include="MetadataPackage\Content\wwwroot\examples\library.raml" />
+    <None Include="MetadataPackage\Content\wwwroot\examples\linkedin.raml" />
+    <None Include="MetadataPackage\Content\wwwroot\examples\mini-library.raml" />
+    <None Include="MetadataPackage\Content\wwwroot\examples\person.json" />
+    <None Include="MetadataPackage\Content\wwwroot\examples\properties-08.raml" />
+    <None Include="MetadataPackage\Content\wwwroot\examples\properties.raml" />
+    <None Include="MetadataPackage\Content\wwwroot\examples\simple.raml" />
+    <None Include="MetadataPackage\Content\wwwroot\examples\stripe.raml" />
+    <None Include="MetadataPackage\Content\wwwroot\examples\twitter.raml" />
+    <None Include="MetadataPackage\Content\wwwroot\examples\types.raml" />
+    <Content Include="MetadataPackage\Content\wwwroot\fonts\Lato-Black.woff2">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="MetadataPackage\Content\wwwroot\fonts\Lato-Black2.woff2">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="MetadataPackage\Content\wwwroot\fonts\Lato-BlackItalic.woff2">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="MetadataPackage\Content\wwwroot\fonts\Lato-BlackItalic2.woff2">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="MetadataPackage\Content\wwwroot\fonts\Lato-Blak.woff2">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="MetadataPackage\Content\wwwroot\fonts\Lato-Blak2.woff2">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="MetadataPackage\Content\wwwroot\fonts\Lato-Bold.woff2">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="MetadataPackage\Content\wwwroot\fonts\Lato-Bold2.woff2">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="MetadataPackage\Content\wwwroot\fonts\Lato-BoldItalic.woff2">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="MetadataPackage\Content\wwwroot\fonts\Lato-BoldItalic2.woff2">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="MetadataPackage\Content\wwwroot\fonts\Lato-Hairline-Italic.woff2">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="MetadataPackage\Content\wwwroot\fonts\Lato-Hairline-Italic2.woff2">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="MetadataPackage\Content\wwwroot\fonts\Lato-Hairline.woff2">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="MetadataPackage\Content\wwwroot\fonts\Lato-Hairline2.woff2">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="MetadataPackage\Content\wwwroot\fonts\Lato-Italic.woff2">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="MetadataPackage\Content\wwwroot\fonts\Lato-Italic2.woff2">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="MetadataPackage\Content\wwwroot\fonts\Lato-Light.woff2">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="MetadataPackage\Content\wwwroot\fonts\Lato-Light2.woff2">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="MetadataPackage\Content\wwwroot\fonts\Lato-LightItalic.woff2">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="MetadataPackage\Content\wwwroot\fonts\Lato-LightItalic2.woff2">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="MetadataPackage\Content\wwwroot\fonts\Lato-Regular.woff2">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="MetadataPackage\Content\wwwroot\fonts\Lato-Regular2.woff2">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="MetadataPackage\Content\wwwroot\fonts\Source-Code-Pro-2.woff2">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="MetadataPackage\Content\wwwroot\fonts\Source-Code-Pro.woff2">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -11891,6 +12068,18 @@
     <Content Include="stylesheet.css" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Caliburn.Micro, Version=3.0.1.0, Culture=neutral, PublicKeyToken=8e5891231f2ed21f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Caliburn.Micro.Core.3.0.1\lib\net45\Caliburn.Micro.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Caliburn.Micro.Platform, Version=3.0.1.0, Culture=neutral, PublicKeyToken=8e5891231f2ed21f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Caliburn.Micro.3.0.1\lib\net45\Caliburn.Micro.Platform.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Caliburn.Micro.Platform.Core, Version=3.0.1.0, Culture=neutral, PublicKeyToken=8e5891231f2ed21f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Caliburn.Micro.3.0.1\lib\net45\Caliburn.Micro.Platform.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="EdgeJs, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Edge.js.0.9.0\lib\EdgeJs.dll</HintPath>
       <Private>True</Private>
@@ -12019,6 +12208,10 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Caliburn.Micro.3.0.1\lib\net45\System.Windows.Interactivity.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />

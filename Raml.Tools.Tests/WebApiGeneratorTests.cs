@@ -398,6 +398,15 @@ namespace Raml.Tools.Tests
             Assert.AreEqual("Color1", model.Objects.First(o => o.Name == "ThingResult").Properties.First(p => p.IsEnum).Type);
         }
 
+        [Test]
+        public async Task ShouldHandleSimilarSchemas()
+        {
+            var model = await BuildModel("files/similar-schemas-ignored.raml");
+            Assert.AreEqual(2, model.Objects.Count());
+            Assert.AreEqual("Thing", model.Controllers.First(o => o.Name == "Things").Methods.First().ReturnType);
+            Assert.AreEqual("Thingy", model.Controllers.First(o => o.Name == "Thingys").Methods.First().ReturnType);
+        }
+
         private static string GetXml(string comment)
         {
             if (string.IsNullOrWhiteSpace(comment))

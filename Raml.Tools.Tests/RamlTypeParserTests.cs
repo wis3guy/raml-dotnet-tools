@@ -10,7 +10,7 @@ namespace Raml.Tools.Tests
     public class RamlTypeParserTests
     {
         [Test]
-        public void ShouldParseRquiredAttribute()
+        public void ShouldParseRequiredAttribute()
         {
             var ramlTypesOrderedDictionary = new RamlTypesOrderedDictionary();
             var ramlType = new RamlType
@@ -43,6 +43,106 @@ namespace Raml.Tools.Tests
 
             typeParser.Parse();
             Assert.AreEqual(true, objects.First().Value.Properties.First().Required);
+        }
+
+        [Test]
+        public void ShouldParseStringArrayProperty()
+        {
+            var ramlTypesOrderedDictionary = new RamlTypesOrderedDictionary();
+            var ramlType = new RamlType
+            {
+                Type = "object",
+                Object = new ObjectType
+                {
+                    Properties = new Dictionary<string, RamlType>()
+                }
+
+            };
+            var messages = new RamlType
+            {
+                Type = "string[]",
+                Array = new ArrayType()
+            };
+
+            ramlType.Object.Properties.Add("Messages", messages);
+            ramlTypesOrderedDictionary.Add("Test", ramlType);
+
+            var objects = new Dictionary<string, ApiObject>();
+            var typeParser = new RamlTypeParser(ramlTypesOrderedDictionary,
+                objects, "SomeNamespace", new Dictionary<string, ApiEnum>(),
+                new Dictionary<string, string>());
+
+            typeParser.Parse();
+            Assert.AreEqual("Messages", objects.First().Value.Properties.First().Name);
+        }
+
+        [Test]
+        public void ShouldParseOptionalStringArrayProperty()
+        {
+            var ramlTypesOrderedDictionary = new RamlTypesOrderedDictionary();
+            var ramlType = new RamlType
+            {
+                Type = "object",
+                Object = new ObjectType
+                {
+                    Properties = new Dictionary<string, RamlType>()
+                }
+
+            };
+            var messages = new RamlType
+            {
+                Type = "string[]",
+                Array = new ArrayType()
+            };
+
+            ramlType.Object.Properties.Add("Messages?", messages);
+            ramlTypesOrderedDictionary.Add("Test", ramlType);
+
+            var objects = new Dictionary<string, ApiObject>();
+            var typeParser = new RamlTypeParser(ramlTypesOrderedDictionary,
+                objects, "SomeNamespace", new Dictionary<string, ApiEnum>(),
+                new Dictionary<string, string>());
+
+            typeParser.Parse();
+            Assert.AreEqual("Messages", objects.First().Value.Properties.First().Name);
+            Assert.AreEqual(false, objects.First().Value.Properties.First().Required);
+        }
+
+        [Test]
+        public void ShouldParseStringArrayPropertyLongFormat()
+        {
+            var ramlTypesOrderedDictionary = new RamlTypesOrderedDictionary();
+            var ramlType = new RamlType
+            {
+                Type = "object",
+                Object = new ObjectType
+                {
+                    Properties = new Dictionary<string, RamlType>()
+                }
+
+            };
+            var messages = new RamlType
+            {
+                Type = "array",
+                Array = new ArrayType
+                {
+                    Items = new RamlType
+                    {
+                        Type = "string"
+                    }
+                }
+            };
+
+            ramlType.Object.Properties.Add("Messages", messages);
+            ramlTypesOrderedDictionary.Add("Test", ramlType);
+
+            var objects = new Dictionary<string, ApiObject>();
+            var typeParser = new RamlTypeParser(ramlTypesOrderedDictionary,
+                objects, "SomeNamespace", new Dictionary<string, ApiEnum>(),
+                new Dictionary<string, string>());
+
+            typeParser.Parse();
+            Assert.AreEqual("Messages", objects.First().Value.Properties.First().Name);
         }
     }
 }

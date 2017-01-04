@@ -341,6 +341,34 @@ namespace Raml.Tools.Tests
             Assert.AreEqual(3, model.Controllers.First(c => c.Name == "Users").Methods.First(m => m.Verb == "Get").QueryParameters.Count);
         }
 
+        [Test]
+        public async Task StringArrayTest()
+        {
+            var model = await BuildModel("files/raml1/string-array.raml");
+            Assert.AreEqual(2, model.Objects.Count());
+            Assert.AreEqual("Messages", model.Objects.First(o => o.Name == "Other").Properties.First().Name);
+            Assert.AreEqual("Messages", model.Objects.First(o => o.Name == "Some").Properties.First().Name);
+            Assert.AreEqual("Some", model.Controllers.First(c => c.Name == "Messages").Methods.First(m => m.Verb == "Post").Parameter.Type);
+            Assert.AreEqual("Other", model.Controllers.First(c => c.Name == "Messages").Methods.First(m => m.Verb == "Get").ReturnType);
+        }
+
+        [Test]
+        public async Task ShouldHandleSimilarSchemas()
+        {
+            var model = await BuildModel("files/raml1/similar-schemas-ignored.raml");
+            Assert.AreEqual(2, model.Objects.Count());
+            Assert.AreEqual("Thing", model.Controllers.First(o => o.Name == "Things").Methods.First().ReturnType);
+            Assert.AreEqual("Thingy", model.Controllers.First(o => o.Name == "Thingys").Methods.First().ReturnType);
+        }
+
+        [Test]
+        public async Task ShouldHandleRouteNameContainedInUriParam()
+        {
+            var model = await BuildModel("files/raml1/applicationId.raml");
+            Assert.AreEqual("{applicationId}", model.Controllers.First().Methods.First(m => m.UriParameters.Any()).Url);
+            Assert.AreEqual("{applicationId}", model.Controllers.First().Methods.Last(m => m.UriParameters.Any()).Url);
+        }
+
         private static async Task<WebApiGeneratorModel> GetAnnotationTargetsModel()
         {
             return await BuildModel("files/raml1/annotations-targets.raml");

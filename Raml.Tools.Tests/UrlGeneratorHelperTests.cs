@@ -25,6 +25,12 @@ namespace Raml.Tools.Tests
         }
 
         [Test]
+        public void should_avoid_replacing_route_contained_in_uri()
+        {
+            Assert.AreEqual("{applicationId}", UrlGeneratorHelper.GetRelativeUri("/application/{applicationId}", "application"));
+        }
+
+        [Test]
         public void should_fix_controller_uri()
         {
             Assert.AreEqual("movies/{id}", UrlGeneratorHelper.FixControllerRoutePrefix("/movies/{id}{mediaTypeExtension}"));

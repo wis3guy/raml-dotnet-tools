@@ -199,6 +199,8 @@ namespace Raml.Tools
 
         public static bool IsPrimitiveType(string type)
         {
+            type = type.Trim();
+
             if (type.EndsWith("?"))
                 type = type.Substring(0, type.Length - 1);
 
