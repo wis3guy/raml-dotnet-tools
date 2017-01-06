@@ -458,10 +458,10 @@ namespace MuleSoft.RAML.Tools
             var dte = ServiceProvider.GlobalProvider.GetService(typeof(SDTE)) as DTE;
             var proj = VisualStudioAutomationHelper.GetActiveProject(dte);
 
-            if (VisualStudioAutomationHelper.IsAVisualStudio2015Project(proj))
+            if (VisualStudioAutomationHelper.IsAVisualStudio2015Project(proj) && !IsNetCoreApiExplorerInstalled())
                 return;
 
-            if (!IsWebApiExplorerInstalled())
+            if (!VisualStudioAutomationHelper.IsAVisualStudio2015Project(proj) && !IsWebApiExplorerInstalled())
                 return;
 
             ShowAndEnableCommand(menuCommand, true);
