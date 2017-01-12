@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -114,7 +115,8 @@ namespace Raml.Common
 
                 ManageInclude(lines, destinationFolder, includedFiles, path, relativePath, confirmOvewrite, i, scopeIncludedFiles, rootRamlPath, isRootFile, useLine);
 
-                if (lines[i].Contains("uses:") || lines[i].Contains("uses :"))
+                var usesRegex = new Regex("^uses\\s*:");
+                if (usesRegex.IsMatch(lines[i]))
                     useLine = true;
             }
 
