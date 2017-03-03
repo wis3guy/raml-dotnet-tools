@@ -448,8 +448,8 @@ namespace Raml.Common.ViewModels
                 {
                     parameters.UseAsyncMethods = UseAsyncMethods;
                     parameters.IncludeApiVersionInRoutePrefix = UseApiVersion;
-                    parameters.ImplementationControllersFolder = ImplementationControllersFolder;
-                    parameters.ModelsFolder = ModelsFolder;
+                    parameters.ImplementationControllersFolder = GetCorrectPath(ImplementationControllersFolder);
+                    parameters.ModelsFolder = GetCorrectPath(ModelsFolder);
                     parameters.AddGeneratedSuffixToFiles = AddSuffixToGeneratedCode;
                 }
 
@@ -470,6 +470,14 @@ namespace Raml.Common.ViewModels
 
                 ActivityLog.LogError(VisualStudioAutomationHelper.RamlVsToolsActivityLogSource, VisualStudioAutomationHelper.GetExceptionInfo(ex));
             }
+        }
+
+        private string GetCorrectPath(string folder)
+        {
+            if (string.IsNullOrWhiteSpace(folder))
+                return folder;
+
+            return folder.TrimStart('/', '\\');
         }
 
         public bool WasImported { get; set; }
