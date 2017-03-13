@@ -76,7 +76,6 @@ namespace Raml.Common
             foreach (var file in result.IncludedFiles)
             {
                 includesFolderItem.ProjectItems.AddFromFile(file);
-                new FileInfo(file).IsReadOnly = true;
             }
         }
 
@@ -97,8 +96,6 @@ namespace Raml.Common
 
             if (ramlSourceFile != ramlDestFile)
                 File.Copy(ramlSourceFile, ramlDestFile, true);
-
-            new FileInfo(ramlDestFile).IsReadOnly = true;
         }
 
         public static MessageBoxResult ShowConfirmationDialog(string fileName)
