@@ -192,6 +192,9 @@ namespace Raml.Tools
 
         public static string Map(string type)
         {
+            if (type != null)
+                type = type.Trim();
+
             return !TypeStringConversion.ContainsKey(type) ? null : TypeStringConversion[type];
         }
 

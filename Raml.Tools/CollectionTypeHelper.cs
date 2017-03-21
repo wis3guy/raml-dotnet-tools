@@ -15,6 +15,8 @@ namespace Raml.Tools
 
             type = type.Replace(CollectionType, string.Empty);
             type = type.Substring(1, type.Length - 2);
+            type = type.Replace("<", string.Empty);
+            type = type.Replace(">", string.Empty);
             return type;
         }
 
