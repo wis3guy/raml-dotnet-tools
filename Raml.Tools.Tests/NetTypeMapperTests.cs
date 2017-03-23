@@ -137,5 +137,17 @@ namespace Raml.Tools.Tests
         {
             Assert.AreEqual("double", NetTypeMapper.GetNetType("number", "double"));
         }
+
+        [Test]
+        public void ShouldTrimBeforeConvertingString()
+        {
+            Assert.AreEqual("string", NetTypeMapper.Map(" string "));
+        }
+
+        [Test]
+        public void ShouldTrimBeforeConvertingInt()
+        {
+            Assert.AreEqual("int", NetTypeMapper.Map(" integer "));
+        }
     }
 }
