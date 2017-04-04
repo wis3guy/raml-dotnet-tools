@@ -534,9 +534,6 @@
     <None Include="node_modules\raml-1-0-parser\node_modules\duplexify\node_modules\readable-stream\.travis.yml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="node_modules\raml-1-0-parser\node_modules\duplexify\node_modules\readable-stream\doc\stream.markdown">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="node_modules\raml-1-0-parser\node_modules\duplexify\node_modules\readable-stream\doc\stream.md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -2001,9 +1998,6 @@
     <None Include="node_modules\raml-1-0-parser\node_modules\xmlhttprequest\README.md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="node_modules\raml-1-0-parser\node_modules\xmllint-hack2\package.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="node_modules\raml-1-0-parser\node_modules\xtend\package.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -2038,6 +2032,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="node_modules\raml-1-0-parser\README.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="node_modules\raml-1-0-parser\resources\errorMessages.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="node_modules\raml-1-0-parser\test\raml-specs\XKCD\api.raml">
@@ -2277,6 +2274,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="node_modules\raml-1-0-parser\dist\devUtil\mainDTSLinkRemover.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="node_modules\raml-1-0-parser\dist\expanderStub.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -2341,6 +2341,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="node_modules\raml-1-0-parser\dist\raml1\ast.core\expanderHL.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="node_modules\raml-1-0-parser\dist\raml1\ast.core\linter.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -2357,6 +2360,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="node_modules\raml-1-0-parser\dist\raml1\ast.core\namespaceResolver.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="node_modules\raml-1-0-parser\dist\raml1\ast.core\overloadingValidator.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -2365,9 +2371,8 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="node_modules\raml-1-0-parser\dist\raml1\ast.core\search.js">
+    <Content Include="node_modules\raml-1-0-parser\dist\raml1\ast.core\referencePatcher.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="node_modules\raml-1-0-parser\dist\raml1\ast.core\typeBuilder.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -2434,14 +2439,6 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="node_modules\raml-1-0-parser\dist\raml1\test\extensionsApiTests.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="node_modules\raml-1-0-parser\dist\raml1\test\findUsagesTests.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="node_modules\raml-1-0-parser\dist\raml1\test\gotoDeclarationTests.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -2669,6 +2666,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="node_modules\raml-1-0-parser\dist\raml1\wrapped-ast\helpersHL.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="node_modules\raml-1-0-parser\dist\raml1\wrapped-ast\parserCore.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -2689,10 +2689,17 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="node_modules\raml-1-0-parser\dist\searchProxy.js">
+    <Content Include="node_modules\raml-1-0-parser\dist\search\search-implementation.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="node_modules\raml-1-0-parser\dist\search\search-interface.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="node_modules\raml-1-0-parser\dist\search\sourceFinder.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="node_modules\raml-1-0-parser\dist\search\test\findUsagesTests.js" />
+    <Content Include="node_modules\raml-1-0-parser\dist\search\test\gotoDeclarationTests.js" />
     <Content Include="node_modules\raml-1-0-parser\dist\stubProxy.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -2780,6 +2787,9 @@
     <Content Include="node_modules\raml-1-0-parser\dist\util\TCKDumper.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="node_modules\raml-1-0-parser\dist\util\tckDumperHL.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="node_modules\raml-1-0-parser\dist\util\textutil.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -5581,6 +5591,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\conformsTo.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\constant.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -5626,6 +5640,10 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\defaultsDeep.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\defaultTo.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -8377,6 +8395,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_arrayLikeKeys.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_arrayMap.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -8393,13 +8414,27 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_arraySample.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_arraySampleSize.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_arrayShuffle.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_arraySome.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_assignInDefaults.js">
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_asciiSize.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_asciiToArray.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_asciiWords.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_assignMergeValue.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -8421,6 +8456,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_baseAssignIn.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_baseAssignValue.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_baseAt.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -8436,6 +8477,9 @@
     <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_baseConforms.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_baseConformsTo.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_baseCreate.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -8513,6 +8557,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_baseGetTag.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_baseGt.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -8549,6 +8597,18 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_baseIsArguments.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_baseIsArrayBuffer.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_baseIsDate.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_baseIsEqual.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -8557,11 +8617,31 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_baseIsMap.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_baseIsMatch.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_baseIsNaN.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_baseIsNative.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_baseIsRegExp.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_baseIsSet.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_baseIsTypedArray.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -8633,6 +8713,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_basePropertyOf.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_basePullAll.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -8657,11 +8741,31 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_baseRest.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_baseSample.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_baseSampleSize.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_baseSet.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_baseSetData.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_baseSetToString.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_baseShuffle.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -8761,6 +8865,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_castRest.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_castSlice.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -8770,10 +8878,6 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_charsStartIndex.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_checkGlobal.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -8837,6 +8941,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_copySymbolsIn.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_coreJsData.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -8861,7 +8969,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_createBaseWrapper.js">
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_createBind.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -8873,11 +8981,11 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_createCtorWrapper.js">
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_createCtor.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_createCurryWrapper.js">
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_createCurry.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -8889,7 +8997,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_createHybridWrapper.js">
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_createHybrid.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -8909,7 +9017,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_createPartialWrapper.js">
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_createPartial.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -8917,7 +9025,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_createRecurryWrapper.js">
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_createRecurry.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -8937,7 +9045,19 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_createWrapper.js">
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_createWrap.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_customDefaultsAssignIn.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_customDefaultsMerge.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_customOmitClone.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -8946,6 +9066,10 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_deburrLetter.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_defineProperty.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -8969,6 +9093,14 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_flatRest.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_freeGlobal.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_getAllKeys.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -8989,10 +9121,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_getLength.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
     <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_getMapData.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -9006,6 +9134,10 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_getPrototype.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_getRawTag.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -9026,6 +9158,10 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_getView.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_getWrapDetails.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -9057,11 +9193,11 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_indexKeys.js">
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_hasUnicode.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_indexOfNaN.js">
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_hasUnicodeWord.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -9077,15 +9213,11 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_insertWrapDetails.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_isFlattenable.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_isFlattenableIteratee.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_isHostObject.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -9209,11 +9341,11 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_mergeData.js">
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_memoizeCapped.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_mergeDefaults.js">
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_mergeData.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -9222,6 +9354,30 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_nativeCreate.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_nativeKeys.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_nativeKeysIn.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_nodeUtil.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_objectToString.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_overArg.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_overRest.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -9242,14 +9398,6 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_reEvaluate.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_Reflect.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_reHasComplexSymbol.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -9297,6 +9445,22 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_setToString.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_setWrapToString.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_shortOut.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_shuffleSelf.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_Stack.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -9318,6 +9482,14 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_stackSet.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_strictIndexOf.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_strictLastIndexOf.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -9350,6 +9522,22 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_unescapeHtmlChar.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_unicodeSize.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_unicodeToArray.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_unicodeWords.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="node_modules\raml-1-0-parser\node_modules\lodash\_updateWrapDetails.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -12411,10 +12599,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="node_modules\raml-1-0-parser\node_modules\xmllint-hack2\xmllint.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
     <Content Include="node_modules\raml-1-0-parser\node_modules\xtend\.jshintrc">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -12612,10 +12796,6 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="node_modules\raml-1-0-parser\node_modules\xmlbuilder\README.md">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="node_modules\raml-1-0-parser\node_modules\xmllint-hack2\package.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>

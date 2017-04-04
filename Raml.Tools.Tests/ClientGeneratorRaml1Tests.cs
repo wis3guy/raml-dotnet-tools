@@ -37,9 +37,10 @@ namespace Raml.Tools.Tests
         public async Task ShouldBuildUriParameter_WhenCustomScalar()
         {
             var model = await GetCustomScalarModel();
-            Assert.IsNotNull(model.Objects.First(o => o.Name == "Id"));
-            Assert.IsTrue(model.Objects.First(o => o.Name == "Id").IsScalar);
-            Assert.AreEqual("long", model.Root.Methods.First().UriParameters.First().Type);
+            Assert.IsNotNull(model.Objects.First(o => o.Name == "CustomDate"));
+            Assert.IsNotNull(model.Objects.First(o => o.Name == "Mydate"));
+            Assert.IsTrue(model.Objects.First(o => o.Name == "CustomDate").IsScalar);
+            Assert.AreEqual("DateTime", model.Classes.First().Methods.First().UriParameters.First().Type);
         }
 
         [Test]
@@ -109,8 +110,8 @@ namespace Raml.Tools.Tests
         {
             var model = await GetTypeExpressionsModel();
             Assert.AreEqual(CollectionTypeHelper.GetCollectionType("Movie"), model.Classes.First().Methods.First(m => m.Verb == "Get").OkReturnType);
-            Assert.AreEqual("string", model.Classes.First().Methods.First(m => m.Verb == "Post").Parameter.Type);
             Assert.AreEqual("string", model.Classes.First().Methods.First(m => m.Verb == "Put").Parameter.Type);
+            Assert.AreEqual("string", model.Classes.First().Methods.First(m => m.Verb == "Post").Parameter.Type);
         }
 
         [Test]
