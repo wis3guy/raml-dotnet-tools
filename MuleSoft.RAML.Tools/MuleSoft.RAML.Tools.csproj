@@ -15018,6 +15018,22 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="node_modules\raml-1-0-parser\node_modules\raml-definition-system\node_modules\raml-typesystem\src\" />
+    <Folder Include="node_modules\raml-1-0-parser\node_modules\raml-definition-system\node_modules\raml-typesystem\typings\browser\ambient\chai\" />
+    <Folder Include="node_modules\raml-1-0-parser\node_modules\raml-definition-system\node_modules\raml-typesystem\typings\browser\ambient\mocha\" />
+    <Folder Include="node_modules\raml-1-0-parser\node_modules\raml-definition-system\node_modules\raml-typesystem\typings\browser\ambient\node\" />
+    <Folder Include="node_modules\raml-1-0-parser\node_modules\raml-definition-system\node_modules\raml-typesystem\typings\browser\ambient\typescript\" />
+    <Folder Include="node_modules\raml-1-0-parser\node_modules\raml-definition-system\node_modules\raml-typesystem\typings\browser\ambient\underscore\" />
+    <Folder Include="node_modules\raml-1-0-parser\node_modules\raml-definition-system\node_modules\raml-typesystem\typings\browser\ambient\xml2js\" />
+    <Folder Include="node_modules\raml-1-0-parser\node_modules\raml-definition-system\node_modules\raml-typesystem\typings\main\ambient\chai\" />
+    <Folder Include="node_modules\raml-1-0-parser\node_modules\raml-definition-system\node_modules\raml-typesystem\typings\main\ambient\mocha\" />
+    <Folder Include="node_modules\raml-1-0-parser\node_modules\raml-definition-system\node_modules\raml-typesystem\typings\main\ambient\node\" />
+    <Folder Include="node_modules\raml-1-0-parser\node_modules\raml-definition-system\node_modules\raml-typesystem\typings\main\ambient\typescript\" />
+    <Folder Include="node_modules\raml-1-0-parser\node_modules\raml-definition-system\node_modules\raml-typesystem\typings\main\ambient\underscore\" />
+    <Folder Include="node_modules\raml-1-0-parser\node_modules\raml-definition-system\node_modules\raml-typesystem\typings\main\ambient\xml2js\" />
+    <Folder Include="node_modules\raml-1-0-parser\node_modules\raml-xml-validation\src\" />
+  </ItemGroup>  
+  <ItemGroup>
     <None Include="Key.snk" />
   </ItemGroup>
   <ItemGroup>
