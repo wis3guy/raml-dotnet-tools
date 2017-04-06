@@ -42,7 +42,7 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
     <DeployVSTemplates Condition="'$(DeployVSTemplates)' == ''">true</DeployVSTemplates>
     <GetVsixItemsToBundleDependsOn>$(GetVsixItemsToBundleDependsOn);Compile</GetVsixItemsToBundleDependsOn>
     <DeployVsixExtensionFilesDependsOn>$(DeployVsixExtensionFilesDependsOn);Compile</DeployVsixExtensionFilesDependsOn>
-    <ExtensionsDeploymentSubPath Condition="'$(ExtensionsDeploymentSubPath)' == ''">Microsoft\VisualStudio\$(VSSDKTargetPlatformVersion)$(VSSDKTargetPlatformRegRootSuffix)\Extensions\</ExtensionsDeploymentSubPath>
+    <ExtensionsDeploymentSubPath Condition="'$(ExtensionsDeploymentSubPath)' == ''">$(VSSDKTargetPlatformVersion)$(VSSDKTargetPlatformRegRootSuffix)\</ExtensionsDeploymentSubPath>
     <TargetVSVersion Condition="'$(TargetVSVersion)' == ''">$(VSSDKTargetPlatformVersion)</TargetVSVersion>
     <DeployExtension Condition="'$(DeployExtension)' == ''">true</DeployExtension>
     <CopyVsixExtensionFiles Condition="'$(CopyVsixExtensionFiles)'==''">false</CopyVsixExtensionFiles>
