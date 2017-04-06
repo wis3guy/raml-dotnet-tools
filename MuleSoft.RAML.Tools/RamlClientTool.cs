@@ -113,17 +113,22 @@ namespace MuleSoft.RAML.Tools
             if (!document.Path.Contains(RamlReferenceServiceBase.ApiReferencesFolderName))
                 return;
 
-            if (!document.Path.EndsWith("includes"))
+            if (IsAnIncludedFile(document.Path))
             {
-                RegenerateCode(document.FullName, extensionPath);
-            }
-            else
-            {
-                var mainRamlPath = document.Path.TrimEnd(Path.DirectorySeparatorChar).TrimEnd('\\').TrimEnd('/').Replace("includes", string.Empty);
+                var mainRamlPath = document.Path.TrimEnd(Path.DirectorySeparatorChar).TrimEnd('\\').TrimEnd('/').Replace("includes", string.Empty).TrimEnd('\\');
                 var ramlFile = mainRamlPath.Substring(mainRamlPath.LastIndexOf(Path.DirectorySeparatorChar)) + ".raml";
                 mainRamlPath = mainRamlPath + ramlFile;
                 RegenerateCode(mainRamlPath, extensionPath);
             }
+            else
+            {
+                RegenerateCode(document.FullName, extensionPath);
+            }
+        }
+
+        private static bool IsAnIncludedFile(string path)
+        {
+            return path.EndsWith("includes") || path.EndsWith("includes\\") || path.EndsWith("includes" + Environment.NewLine);
         }
 
         public static CodeRegenerationResult RegenerateCode(string ramlFilePath, string extensionPath)
@@ -213,7 +218,6 @@ namespace MuleSoft.RAML.Tools
         {
             new FileInfo(ramlFilePath).IsReadOnly = false;
             File.WriteAllText(ramlFilePath, contents);
-            new FileInfo(ramlFilePath).IsReadOnly = true;
         }
 
         private static ProjectItem GetDestinationFolderItem(string wszInputFilePath, System.IServiceProvider globalProvider)

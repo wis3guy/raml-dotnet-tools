@@ -378,7 +378,8 @@ namespace Raml.Tools
                         else
                         {
                             var obj = ParseArray(kv.Key, kv.Value);
-                            type = CollectionTypeHelper.GetCollectionType(obj.Type);
+                            // type = CollectionTypeHelper.GetCollectionType(obj.Type);
+                            type = obj.Type;
                         }
                     }
                     if (type.EndsWith("[]"))

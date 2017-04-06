@@ -55,7 +55,7 @@ namespace MuleSoft.RAMLGen
 
         private static async Task<RamlDocument> GetRamlDocument(Options opts, string destinationFolder, string targetFileName)
         {
-            var result = new RamlIncludesManager().Manage(opts.Source, destinationFolder, targetFileName, opts.Overwrite);
+            var result = new RamlIncludesManager().Manage(opts.Source, destinationFolder, destinationFolder, opts.Overwrite);
             if(!result.IsSuccess && result.StatusCode != HttpStatusCode.OK)
                 throw new HttpSourceErrorException("Error trying to get " + opts.Source + " - status code: " + result.StatusCode);
 

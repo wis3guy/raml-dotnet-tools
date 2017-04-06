@@ -5,13 +5,9 @@ types:
     type: datetime
   customDate:
     type: mydate
-    format: 'dd.mm.yyyy'
-  id:
-    type: integer
-    format: int64
-    minimum: 1
-/{exampleId}:
-    uriParameters:
-        exampleId:
-            type: id
-    get:
+    format: 'rfc3339'
+/foo:
+  uriParameters:
+      bar:
+        type: customDate
+  get:

@@ -239,7 +239,7 @@ namespace MuleSoft.RAML.Tools
 
             StopProgressBar();
 
-            System.Diagnostics.Process.Start("https://github.com/mulesoft-labs/raml-dotnet-tools#metadata");
+            System.Diagnostics.Process.Start("https://github.com/mulesoft-labs/raml-dotnet-tools#metadata-extract-a-raml-definition-from-your-web-app");
             ChangeCommandStatus(enableRamlMetadataOutputCommandId, true);
         }
 
