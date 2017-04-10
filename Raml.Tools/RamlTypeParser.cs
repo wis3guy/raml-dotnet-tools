@@ -372,7 +372,7 @@ namespace Raml.Tools
                     {
                         var newApiObject = GetApiObjectFromObject(prop, name);
                         schemaObjects.Add(name, newApiObject);
-                        props.Add(new Property { Name = name, Type = name, Required = prop.Required, OriginalName = kv.Key.TrimEnd('?') });
+                        props.Add(new Property {Name = name, Type = name, Required = prop.Required, OriginalName = kv.Key.TrimEnd('?')});
                     }
                     else
                     {
@@ -382,34 +382,48 @@ namespace Raml.Tools
                         else
                             apiObject = schemaObjects[name];
 
-                        props.Add(new Property { Name = name, Type = apiObject.Name, Required = prop.Required, OriginalName = kv.Key.TrimEnd('?') });
+                        props.Add(new Property {Name = name, Type = apiObject.Name, Required = prop.Required, OriginalName = kv.Key.TrimEnd('?')});
                     }
-                    
+
                     continue;
                 }
 
-	            if (prop.Array != null)
-	            {
-		            var name = NetNamingMapper.GetPropertyName(kv.Key);
-		            var type = kv.Value.Type;
+                if (prop.Array != null)
+                {
+                    var name = NetNamingMapper.GetPropertyName(kv.Key);
+                    var type = kv.Value.Type;
 
-					if (kv.Value.Array.Items != null)
-					{
-						type = NetTypeMapper.IsPrimitiveType(kv.Value.Array.Items.Type) 
-							? CollectionTypeHelper.GetCollectionType(NetTypeMapper.Map(kv.Value.Array.Items.Type)) 
-							: ParseArray(kv.Key, kv.Value).Type;
-					}
+                    if (kv.Value.Array.Items != null)
+                    {
+                        type = NetTypeMapper.IsPrimitiveType(kv.Value.Array.Items.Type)
+                            ? CollectionTypeHelper.GetCollectionType(NetTypeMapper.Map(kv.Value.Array.Items.Type))
+                            : ParseArray(kv.Key, kv.Value).Type;
+                    }
 
-		            if (type.EndsWith("[]"))
-		            {
-			            type = type.Substring(0, type.Length - 2);
-			            if (!NetTypeMapper.IsPrimitiveType(type))
-				            type = NetNamingMapper.GetObjectName(type);
+                    if (type.EndsWith("[]"))
+                    {
+                        type = type.Substring(0, type.Length - 2);
+                        if (!NetTypeMapper.IsPrimitiveType(type))
+                            type = NetNamingMapper.GetObjectName(type);
 
-			            type = CollectionTypeHelper.GetCollectionType(type);
-		            }
+                        type = CollectionTypeHelper.GetCollectionType(type);
+                    }
 
-		            props.Add(new Property { Name = name, Type = type, Required = prop.Required, OriginalName = kv.Key.TrimEnd('?') });
+                    props.Add(new Property {Name = name, Type = type, Required = prop.Required, OriginalName = kv.Key.TrimEnd('?')});
+                    continue;
+                }
+
+                if (prop.Type != null)
+                {
+                    var name = NetNamingMapper.GetPropertyName(kv.Key);
+
+                    ApiObject apiObject;
+                    if (schemaObjects.ContainsKey(prop.Type))
+                        apiObject = schemaObjects[prop.Type];
+                    else
+                        apiObject = schemaObjects[name];
+
+                    props.Add(new Property {Name = name, Type = apiObject.Name, Required = prop.Required, OriginalName = kv.Key.TrimEnd('?')});
                 }
             }
 
