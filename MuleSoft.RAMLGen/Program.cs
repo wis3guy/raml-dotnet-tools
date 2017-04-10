@@ -16,6 +16,9 @@ namespace MuleSoft.RAMLGen
                     (ServerOptions opts) => RunContractAndReturnExitCode(opts),
                     (ModelsOptions opts) => RunModelsAndReturnExitCode(opts),
                     errors => HandleError(errors, args));
+
+	        Console.ReadLine();
+
             return 0;
         }
 
