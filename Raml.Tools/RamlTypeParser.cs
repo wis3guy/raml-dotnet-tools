@@ -388,13 +388,13 @@ namespace Raml.Tools
                     continue;
                 }
 
-                if (prop.Array != null)
-                {
-                    var name = NetNamingMapper.GetPropertyName(kv.Key);
-                    var type = kv.Value.Type;
+	            if (prop.Array != null)
+	            {
+		            var name = NetNamingMapper.GetPropertyName(kv.Key);
+		            var type = kv.Value.Type;
 
-                    if (kv.Value.Array.Items != null)
-                    {
+					if (kv.Value.Array.Items != null)
+					{
                         type = NetTypeMapper.IsPrimitiveType(kv.Value.Array.Items.Type)
                             ? CollectionTypeHelper.GetCollectionType(NetTypeMapper.Map(kv.Value.Array.Items.Type))
                             : ParseArray(kv.Key, kv.Value).Type;
