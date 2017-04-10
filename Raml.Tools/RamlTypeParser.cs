@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using Raml.Common;
 using Raml.Parser.Expressions;
@@ -320,18 +321,39 @@ namespace Raml.Tools
             if (string.IsNullOrWhiteSpace(name))
                 name = "Type" + DateTime.Now.Ticks;
 
-            return new ApiObject
+	        return new ApiObject
             {
                 Type = NetNamingMapper.GetObjectName(name),
                 Name = NetNamingMapper.GetObjectName(name),
                 BaseClass = ramlType.Type != "object" ? NetNamingMapper.GetObjectName(ramlType.Type) : string.Empty,
                 Description = ramlType.Description,
                 Example = GetExample(ramlType.Example, ramlType.Examples),
-                Properties = GetProperties(ramlType.Object.Properties)
+                Properties = GetProperties(FixArrayProperties(ramlType, ramlType.Object.Properties))
             };
         }
 
-        private IList<Property> GetProperties(IDictionary<string, RamlType> properties)
+	    private static IDictionary<string, RamlType> FixArrayProperties(RamlType ramlType, IDictionary<string, RamlType> source)
+	    {
+		    var properties = (ExpandoObject)ramlType.OtherProperties["properties"];
+
+			foreach (var type in source.Where(x => x.Value.Array != null).Select(x => x.Value))
+			{
+				// The type should have been set at this point (assuming it was specified in the RAML document) ...
+
+				var property = (ExpandoObject) properties.Single(x => x.Key == type.Name).Value;
+				var value = property.Single(x => x.Key == "items").Value;
+
+				// Parser inconsistency:
+				// - In case of implicit array specification, value is an object
+				// - In case of explicit array specification, value is an object[]
+
+				type.Array.Items.Type = type.Array.Items.Type ?? value as string ?? (value as object[])?.FirstOrDefault() as string;
+			}
+
+		    return source;
+	    }
+
+		private IList<Property> GetProperties(IDictionary<string, RamlType> properties)
         {
             var props = new List<Property>();
             foreach (var kv in properties)
@@ -365,35 +387,32 @@ namespace Raml.Tools
                     
                     continue;
                 }
-                if (prop.Array != null)
-                {
-                    var name = NetNamingMapper.GetPropertyName(kv.Key);
-                    var type = kv.Value.Type;
-                    if (kv.Value.Array.Items != null)
-                    {
-                        if (NetTypeMapper.IsPrimitiveType(kv.Value.Array.Items.Type))
-                        {
-                            type = NetTypeMapper.Map(kv.Value.Array.Items.Type);
-                        }
-                        else
-                        {
-                            var obj = ParseArray(kv.Key, kv.Value);
-                            // type = CollectionTypeHelper.GetCollectionType(obj.Type);
-                            type = obj.Type;
-                        }
-                    }
-                    if (type.EndsWith("[]"))
-                    {
-                        type = type.Substring(0, type.Length - 2);
-                        if (!NetTypeMapper.IsPrimitiveType(type))
-                            type = NetNamingMapper.GetObjectName(type);
 
-                        type = CollectionTypeHelper.GetCollectionType(type);
-                    }
+	            if (prop.Array != null)
+	            {
+		            var name = NetNamingMapper.GetPropertyName(kv.Key);
+		            var type = kv.Value.Type;
 
-                    props.Add(new Property { Name = name, Type = type, Required = prop.Required, OriginalName = kv.Key.TrimEnd('?') });
+					if (kv.Value.Array.Items != null)
+					{
+						type = NetTypeMapper.IsPrimitiveType(kv.Value.Array.Items.Type) 
+							? CollectionTypeHelper.GetCollectionType(NetTypeMapper.Map(kv.Value.Array.Items.Type)) 
+							: ParseArray(kv.Key, kv.Value).Type;
+					}
+
+		            if (type.EndsWith("[]"))
+		            {
+			            type = type.Substring(0, type.Length - 2);
+			            if (!NetTypeMapper.IsPrimitiveType(type))
+				            type = NetNamingMapper.GetObjectName(type);
+
+			            type = CollectionTypeHelper.GetCollectionType(type);
+		            }
+
+		            props.Add(new Property { Name = name, Type = type, Required = prop.Required, OriginalName = kv.Key.TrimEnd('?') });
                 }
             }
+
             return props;
         }
 
