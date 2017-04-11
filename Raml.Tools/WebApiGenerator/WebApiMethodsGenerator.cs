@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Net.Http;
 using Raml.Common;
 using Raml.Parser.Expressions;
 using Raml.Tools.WebApiGenerator;
@@ -21,9 +23,19 @@ namespace Raml.Tools
 
         public IEnumerable<ControllerMethod> GetMethods(Resource resource, string url, ControllerObject parent, string objectName, IDictionary<string, Parameter> parentUriParameters)
         {
-            var methodsNames = new List<string>();
-            if (parent != null && parent.Methods != null)
-                methodsNames = parent.Methods.Select(m => m.Name).ToList();
+	        var methodsNames = new List<string>
+	        {
+		        HttpMethod.Delete.ToString(),
+		        HttpMethod.Get.ToString(),
+		        HttpMethod.Head.ToString(),
+		        HttpMethod.Options.ToString(),
+		        HttpMethod.Post.ToString(),
+		        HttpMethod.Put.ToString(),
+		        HttpMethod.Trace.ToString()
+	        };
+
+	        if (parent != null && parent.Methods != null)
+                methodsNames.AddRange(parent.Methods.Select(m => m.Name));
 
             var generatorMethods = new Collection<ControllerMethod>();
             if (resource.Methods == null)
@@ -35,7 +47,7 @@ namespace Raml.Tools
 
                 if (IsVerbForMethod(method))
                 {
-                    if (methodsNames.Contains(generatedMethod.Name))
+                    if (methodsNames.Contains(generatedMethod.Name, StringComparer.OrdinalIgnoreCase))
                         generatedMethod.Name = GetUniqueName(methodsNames, generatedMethod.Name, resource.RelativeUri);
 
                     if (method.QueryParameters != null && method.QueryParameters.Any())
