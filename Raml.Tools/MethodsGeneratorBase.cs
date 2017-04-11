@@ -140,19 +140,19 @@ namespace Raml.Tools
         protected string GetUniqueName(ICollection<string> methodsNames, string methodName, string relativeUri)
         {
             var nameWithResource = NetNamingMapper.GetMethodName(methodName + relativeUri);
-            if (!methodsNames.Contains(nameWithResource))
+            if (!methodsNames.Contains(nameWithResource, StringComparer.OrdinalIgnoreCase))
                 return nameWithResource;
 
             for (var i = 0; i < 7; i++)
             {
                 var unique = methodName + suffixes[i];
-                if (!methodsNames.Contains(unique))
+                if (!methodsNames.Contains(unique, StringComparer.OrdinalIgnoreCase))
                     return unique;
             }
             for (var i = 0; i < 100; i++)
             {
                 var unique = methodName + i;
-                if (!methodsNames.Contains(unique))
+                if (!methodsNames.Contains(unique, StringComparer.OrdinalIgnoreCase))
                     return unique;
             }
             throw new InvalidOperationException("Could not find a unique name for method " + methodName);
