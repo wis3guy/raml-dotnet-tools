@@ -31,7 +31,8 @@ namespace Raml.Tools
 		        HttpMethod.Options.ToString(),
 		        HttpMethod.Post.ToString(),
 		        HttpMethod.Put.ToString(),
-		        HttpMethod.Trace.ToString()
+		        HttpMethod.Trace.ToString(),
+				"PATCH" // for some reason this is not defined in the HttpMethod class ...
 	        };
 
 	        if (parent != null && parent.Methods != null)

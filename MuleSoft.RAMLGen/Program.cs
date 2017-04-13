@@ -17,7 +17,7 @@ namespace MuleSoft.RAMLGen
                     (ModelsOptions opts) => RunModelsAndReturnExitCode(opts),
                     errors => HandleError(errors, args));
 
-	        Console.ReadLine();
+	        //Console.ReadLine();
 
             return 0;
         }
