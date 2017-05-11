@@ -46,6 +46,7 @@ namespace Raml.Tools
             {
                 var generatedMethod = BuildControllerMethod(url, method, resource, parent, parentUriParameters);
 
+	            var name = generatedMethod.Name;
                 if (IsVerbForMethod(method))
                 {
                     if (methodsNames.Contains(generatedMethod.Name, StringComparer.OrdinalIgnoreCase))
@@ -67,13 +68,12 @@ namespace Raml.Tools
 
         private ControllerMethod BuildControllerMethod(string url, Method method, Resource resource, ControllerObject parent, IDictionary<string, Parameter> parentUriParameters)
         {
-            var relativeUri = UrlGeneratorHelper.GetRelativeUri(url, parent.PrefixUri);
-
+			var relativeUri = UrlGeneratorHelper.GetRelativeUri(url, parent.PrefixUri);
             var parentUrl = UrlGeneratorHelper.GetParentUri(url, resource.RelativeUri);
 
             return new ControllerMethod
             {
-                Name = NetNamingMapper.GetMethodName(method.Verb ?? "Get" + resource.RelativeUri),
+                Name = GetMethodName(method, url),
                 Parameter = GetParameter(GeneratorServiceHelper.GetKeyForResource(method, resource, parentUrl), method, resource, url),
                 UriParameters = uriParametersGenerator.GetUriParameters(resource, url, parentUriParameters),
                 ReturnType = GetReturnType(GeneratorServiceHelper.GetKeyForResource(method, resource, parentUrl), method, resource, url),
@@ -88,7 +88,49 @@ namespace Raml.Tools
             };
         }
 
-        private IEnumerable<Property> GetSecurityParameters(RamlDocument ramlDocument, Method method)
+	    private static string GetMethodName(Method method, string url)
+	    {
+		    var parts = url.Split('/').Reverse().ToArray();
+		    var name = method.Verb ?? "Get";
+		    var resource = string.Empty;
+		    var bySegments = new List<string>();
+		    var forSegments = new List<string>();
+
+		    foreach (var part in parts)
+		    {
+			    if (string.IsNullOrEmpty(resource))
+			    {
+				    if (part.StartsWith("{"))
+					    bySegments.Insert(0, part.Substring(1, part.Length - 2));
+				    else
+					    resource = part;
+			    }
+			    else if (part.StartsWith("{"))
+			    {
+				    forSegments.Insert(0, part.Substring(1, part.Length - 2));
+			    }
+		    }
+
+		    if (!string.IsNullOrEmpty(resource))
+			    name += CapitalizeFirstChar(resource);
+
+		    if (forSegments.Any())
+			    name += $"For{string.Join("And", forSegments.Select(CapitalizeFirstChar))}";
+
+		    if (bySegments.Any())
+			    name += $"By{string.Join("And", bySegments.Select(CapitalizeFirstChar))}";
+
+		    return NetNamingMapper.GetMethodName(name); // deals with special chars etc ...
+	    }
+
+	    private static string CapitalizeFirstChar(string input)
+	    {
+		    var chars = input.ToCharArray();
+		    chars[0] = char.ToUpperInvariant(chars[0]);
+			return new string(chars);
+	    }
+
+	    private IEnumerable<Property> GetSecurityParameters(RamlDocument ramlDocument, Method method)
         {
             var securityParams = new Collection<Property>();
             if (ramlDocument.SecuritySchemes == null || !ramlDocument.SecuritySchemes.Any())
