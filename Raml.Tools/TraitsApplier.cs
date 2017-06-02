@@ -6,10 +6,23 @@ namespace Raml.Tools
 {
     public class TraitsApplier
     {
+		/// <summary>
+		/// Strips the (optional) alias of the include file (uses statement in RAML) from the trait name
+		/// NOTE: THIS IS A BAND-AID, SEE: https://github.com/mulesoft-labs/raml-dotnet-tools/issues/159
+		/// </summary>
+		private static string StripIncludeFileAlias(string @is)
+		{
+			var idx = @is.LastIndexOf('.');
+
+			return idx > 0 
+				? @is.Substring(idx + 1) 
+				: @is;
+		}
+
         public static void ApplyTraitsToMethods(ICollection<Method> methods, IEnumerable<IDictionary<string, Method>> traits, IEnumerable<string> isArray)
         {
-            foreach (var @is in isArray)
-            {
+            foreach (var @is in isArray.Select(StripIncludeFileAlias)) // NOTE: THIS IS A BAND-AID, SEE: https://github.com/mulesoft-labs/raml-dotnet-tools/issues/159
+			{
                 if (traits.Any(t => t.ContainsKey(@is)))
                 {
                     var trait = traits.First(t => t.ContainsKey(@is))[@is];
@@ -20,8 +33,8 @@ namespace Raml.Tools
 
         public static void ApplyTraitsToMethod(Method method, IEnumerable<IDictionary<string, Method>> traits, IEnumerable<string> isArray)
         {
-            foreach (var @is in isArray)
-            {
+			foreach (var @is in isArray.Select(StripIncludeFileAlias)) // NOTE: THIS IS A BAND-AID, SEE: https://github.com/mulesoft-labs/raml-dotnet-tools/issues/159
+			{
                 if (traits.Any(t => t.ContainsKey(@is)))
                 {
                     var trait = traits.First(t => t.ContainsKey(@is))[@is];
