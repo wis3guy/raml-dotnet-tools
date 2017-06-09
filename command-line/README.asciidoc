@@ -11,10 +11,14 @@ This is provided as a command line tool.
 == Prerequisites
 
 * .NET Framework 4.5 or higher
-* Supported languages: C# (other languages indirectly)
+*[Visual C++ 2013 and Visual C++ Redistributable Package x86](https://support.microsoft.com/en-us/help/3179560/update-for-visual-c-2013-and-visual-c-redistributable-package) [download](http://download.microsoft.com/download/0/5/6/056dcda9-d667-4e27-8001-8a0c6971d6b1/vcredist_x86.exe)
+
+- Supported languages: C# (other languages indirectly)
 
 == Installation
 
+* Install "Visual C++ 2013 and Visual C++ Redistributable Package 32 bits (x86)"
+* Install .NET Framework 4.5 or higher if not present
 * Unzip the file and use from the command line.
 
 == Supported Scenarios
