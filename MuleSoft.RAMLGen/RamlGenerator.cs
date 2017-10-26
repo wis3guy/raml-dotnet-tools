@@ -1,6 +1,11 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Net;
+using System.Runtime.Versioning;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Raml.Common;
 using Raml.Parser;
 using Raml.Parser.Expressions;
@@ -23,22 +28,51 @@ namespace MuleSoft.RAMLGen
             generator.Generate(ramlDoc, targetFileName, targetNamespace, opts.TemplatesFolder, destinationFolder);
         }
 
-        public async Task HandleContract(ServerOptions opts)
-        {
-            string destinationFolder;
-            string targetFileName;
-            string targetNamespace;
-            HandleParameters(opts, out destinationFolder, out targetFileName, out targetNamespace);
+	    public async Task HandleContract(ServerOptions opts)
+	    {
+		    string destinationFolder;
+		    string targetFileName;
+		    string targetNamespace;
+		    HandleParameters(opts, out destinationFolder, out targetFileName, out targetNamespace);
 
-            var ramlDoc = await GetRamlDocument(opts, destinationFolder, targetFileName);
+		    var ramlDoc = await GetRamlDocument(opts, destinationFolder, targetFileName);
+		    var json = JsonConvert.SerializeObject(ramlDoc);
 
-            var generator = new RamlServerGenerator(ramlDoc, targetNamespace, opts.TemplatesFolder, targetFileName,
-                destinationFolder, opts.UseAsyncMethods, opts.WebApi);
+		    FindAnnotations(ramlDoc.Resources);
 
-            generator.Generate();
-        }
+		    var generator = new RamlServerGenerator(ramlDoc, targetNamespace, opts.TemplatesFolder, targetFileName,
+			    destinationFolder, opts.UseAsyncMethods, opts.WebApi);
 
-        public async Task HandleModels(ModelsOptions opts)
+		    generator.Generate();
+	    }
+
+	    private static bool FindAnnotations(ICollection<Resource> resources)
+	    {
+		    if (resources != null)
+		    {
+			    foreach (var resource in resources)
+			    {
+					if (resource.Annotations != null && resource.Annotations.Any())
+				    {
+						Console.WriteLine("Found on resource!");
+					    return true;
+				    }
+
+					if (resource.Methods != null && resource.Methods.Any(m => m.Annotations != null && m.Annotations.Any()))
+					{
+						Console.WriteLine("Found on method!");
+						return true;
+					}
+
+					if (FindAnnotations(resource.Resources))
+					    return true;
+			    }
+		    }
+
+			return false;
+	    }
+
+	    public async Task HandleModels(ModelsOptions opts)
         {
             string destinationFolder;
             string targetFileName;

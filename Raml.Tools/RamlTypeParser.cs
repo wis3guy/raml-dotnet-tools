@@ -372,7 +372,7 @@ namespace Raml.Tools
                     {
                         var newApiObject = GetApiObjectFromObject(prop, name);
                         schemaObjects.Add(name, newApiObject);
-                        props.Add(new Property { Name = name, Type = name, Required = prop.Required, OriginalName = kv.Key.TrimEnd('?') });
+                        props.Add(new Property {Name = name, Type = name, Required = prop.Required, OriginalName = kv.Key.TrimEnd('?')});
                     }
                     else
                     {
@@ -382,9 +382,9 @@ namespace Raml.Tools
                         else
                             apiObject = schemaObjects[name];
 
-                        props.Add(new Property { Name = name, Type = apiObject.Name, Required = prop.Required, OriginalName = kv.Key.TrimEnd('?') });
+                        props.Add(new Property {Name = name, Type = apiObject.Name, Required = prop.Required, OriginalName = kv.Key.TrimEnd('?')});
                     }
-                    
+
                     continue;
                 }
 
@@ -398,7 +398,7 @@ namespace Raml.Tools
 						type = NetTypeMapper.IsPrimitiveType(kv.Value.Array.Items.Type) 
 							? CollectionTypeHelper.GetCollectionType(NetTypeMapper.Map(kv.Value.Array.Items.Type)) 
 							: ParseArray(kv.Key, kv.Value).Type;
-					}
+                        }
 
 		            if (type.EndsWith("[]"))
 		            {
@@ -409,7 +409,21 @@ namespace Raml.Tools
 			            type = CollectionTypeHelper.GetCollectionType(type);
 		            }
 
-		            props.Add(new Property { Name = name, Type = type, Required = prop.Required, OriginalName = kv.Key.TrimEnd('?') });
+                    props.Add(new Property { Name = name, Type = type, Required = prop.Required, OriginalName = kv.Key.TrimEnd('?') });
+                    continue;
+                }
+
+                if (prop.Type != null)
+                {
+                    var name = NetNamingMapper.GetPropertyName(kv.Key);
+
+                    ApiObject apiObject;
+                    if (schemaObjects.ContainsKey(prop.Type))
+                        apiObject = schemaObjects[prop.Type];
+                    else
+                        apiObject = schemaObjects[name];
+
+                    props.Add(new Property {Name = name, Type = apiObject.Name, Required = prop.Required, OriginalName = kv.Key.TrimEnd('?')});
                 }
             }
 
@@ -473,6 +487,13 @@ namespace Raml.Tools
 
                 return obj.Type;
             }
+
+			if (enums.ContainsKey(prop.Type))
+			{
+				var obj = enums[prop.Type];
+
+				return obj.Name;
+			}
 
             return "object";
         }
