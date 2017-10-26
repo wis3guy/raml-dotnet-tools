@@ -52,9 +52,7 @@ namespace MuleSoft.RAMLGen
 		    {
 			    foreach (var resource in resources)
 			    {
-					Console.WriteLine(resource.RelativeUri);
-
-				    if (resource.Annotations != null && resource.Annotations.Any())
+					if (resource.Annotations != null && resource.Annotations.Any())
 				    {
 						Console.WriteLine("Found on resource!");
 					    return true;
@@ -65,7 +63,6 @@ namespace MuleSoft.RAMLGen
 						Console.WriteLine("Found on method!");
 						return true;
 					}
-
 
 					if (FindAnnotations(resource.Resources))
 					    return true;

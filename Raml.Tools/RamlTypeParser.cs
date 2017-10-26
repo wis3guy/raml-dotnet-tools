@@ -488,6 +488,13 @@ namespace Raml.Tools
                 return obj.Type;
             }
 
+			if (enums.ContainsKey(prop.Type))
+			{
+				var obj = enums[prop.Type];
+
+				return obj.Name;
+			}
+
             return "object";
         }
 
