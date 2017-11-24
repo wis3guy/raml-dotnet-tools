@@ -84,7 +84,8 @@ namespace Raml.Tools
 				UseSecurity =
 					raml.SecuredBy != null && raml.SecuredBy.Any() ||
 					resource.Methods.Any(m => m.Verb == method.Verb && m.SecuredBy != null && m.SecuredBy.Any()),
-				SecurityParameters = GetSecurityParameters(raml, method)
+				SecurityParameters = GetSecurityParameters(raml, method),
+				FromForm = method.Body.Keys.Any(x => x.Contains("form"))
 			};
 		}
 

@@ -64,9 +64,19 @@ namespace Raml.Tools.WebApiGenerator
                 var parameters = new Dictionary<string, MethodParameter>();
 
                 if (HasInputParameter())
-                    parameters.Add(Parameter.Name, new MethodParameter(false, (Parameter.Type == "string" || CollectionTypeHelper.IsCollection(Parameter.Type) ? "[FromBody] " + Parameter.Type : "[FromBody] Models." + Parameter.Type) + " " + Parameter.Name));
+                {
+	                var parameterSourceAttribute = FromForm ? "[FromForm]" : "[FromBody]";
 
-                if (UriParameters != null && UriParameters.Any())
+	                var parameterType = Parameter.Type == "string" || CollectionTypeHelper.IsCollection(Parameter.Type) 
+		                ? $"{parameterSourceAttribute} " + Parameter.Type 
+		                : $"{parameterSourceAttribute} Models." + Parameter.Type;
+
+	                var declaration = $"{parameterSourceAttribute} {parameterType} {Parameter.Name}";
+
+					parameters.Add(Parameter.Name, new MethodParameter(false, declaration));
+                }
+
+	            if (UriParameters != null && UriParameters.Any())
                     foreach (var parameter in UriParameters.Where(parameter => !parameters.ContainsKey(parameter.Name)))
                         parameters.Add(parameter.Name, new MethodParameter(false, parameter.Type + " " + parameter.Name));
 
@@ -185,5 +195,7 @@ namespace Raml.Tools.WebApiGenerator
                 return xmlComment;
             }
         }
+
+	    public bool FromForm { get; set; }
     }
 }
